@@ -1,43 +1,27 @@
-import { useState } from "react";
-import { Marker } from "./Marker";
-import Modal from "./modal/Modal";
-import { AddPoint } from "./AddPoint";
+import { useLoaderData } from "react-router-dom";
+import Marker from "./Marker";
 
-export const MarkerList = () => {
-  const [name, setName] = useState('Test Name');
-  const [lat, setLat] = useState('35.597042');
-  const [lon, setLon] = useState('-82.555625');
-  const [description, setDescription] = useState('Test Description');
-  const [showModal, setShowModal] = useState(false);
+interface MarkerData {
+  id: string;
+  title: string;
+  latitude: string;
+  longitude: string;
+  description: string;
+}
+interface MarkerProps {
+  markerData?: [];
+}
 
-  function onNameChangeHandler(event) {
-    setName(event?.target.value)
-  }
-  function onLatChangeHandler(event) {
-    setLat(event?.target.value)
-  }
-  function onLonChangeHandler(event) {
-    setLon(event?.target.value)
-  }
-  function onDescriptionChangeHandler(event) {
-    setDescription(event?.target.value)
-  }
+const MarkerList: React.FC<MarkerProps> = () => {
+  const markerData = useLoaderData() as MarkerData[];
 
   return (
     <>
-      <button className="btn" onClick={() => setShowModal(true)}>Add Lock Location</button>
-      {showModal &&
-        <Modal onClose={() => setShowModal(false)} title="Add Lock Location Details">
-          <AddPoint
-            onNameChange={onNameChangeHandler}
-            onLatChange={onLatChangeHandler}
-            onLonChange={onLonChangeHandler}
-            onDescriptionChange={onDescriptionChangeHandler}
-          />
-        </Modal>
-      }
-
-      <Marker name={name} lat={lat} lon={lon} description={description}/>
+      {markerData?.map((marker) => (
+        <Marker key={marker.id} {...marker}/>
+      ))}
     </>
   );
 }
+
+export default MarkerList;

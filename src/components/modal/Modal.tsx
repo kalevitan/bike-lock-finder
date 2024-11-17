@@ -1,37 +1,31 @@
+import { useNavigate } from "react-router-dom";
 import React from "react";
-import ReactDOM from "react-dom";
 import "./modal.css";
 
 interface ModalProps {
-  onClose: () => void;
+  title: string;
   children: React.ReactNode;
-  title?: string;
 }
 
-const Modal: React.FC<ModalProps> = ({ onClose, children, title }) => {
-  const handleCloseClick = (e) => {
-    e.preventDefault();
-    onClose();
+const Modal: React.FC<ModalProps> = ({ title, children }) => {
+  const navigate = useNavigate();
+
+  const closeHandler = () => {
+    navigate('..');
   };
 
-  const modalContent = (
-    <div className="modal-overlay">
-      <div className="modal-wrapper">
-        <div className="modal">
-          <div className="modal-header flex justify-between">
-            {title && <h2 className="font-bold text-black">{title}</h2>}
-            <button onClick={handleCloseClick}>x</button>
-          </div>
-          <div className="modal-body">{children}</div>
+  return (
+    <>
+      <div className="backdrop" onClick={closeHandler}></div>
+      <dialog open className="modal">
+        <div className="modal-header flex justify-between">
+          <h2 className="font-bold text-black">{title}</h2>
         </div>
-      </div>
-    </div>
+        <div className="modal-body">{children}</div>
+      </dialog>
+    </>
   );
 
-  return ReactDOM.createPortal(
-    modalContent,
-    document.getElementById("modal-root")
-  );
 };
 
 export default Modal;

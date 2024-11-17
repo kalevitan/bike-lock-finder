@@ -1,0 +1,17 @@
+aside {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 18rem;
+  background-color: #242424;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: 15;
+}
+
+.actions {
+  margin-top: 1rem;
+  align-items: center;
+  justify-content: center;
+}
