@@ -6,14 +6,14 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
 const Points = () => {
-  const { apiKey, mapId, mapTypeId, defaultCenter, defaultZoom } = useMapContext();
+  const { apiKey, libraries, version, mapId, mapTypeId, defaultCenter, defaultZoom } = useMapContext();
 
   return (
     <>
       <Outlet />
       <main className="flex place-content-center">
         <div id="map">
-          <APIProvider apiKey={apiKey}>
+          <APIProvider apiKey={apiKey} libraries={libraries} version={version}>
             <Map
               mapId={mapId}
               mapTypeId={mapTypeId}
