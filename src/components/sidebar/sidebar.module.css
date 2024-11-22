@@ -1,9 +1,9 @@
-aside {
+.sidebar {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   width: 18rem;
-  background-color: #242424;
+  background-color: var(--primary-gray);
   position: fixed;
   top: 60px;
   bottom: 0;

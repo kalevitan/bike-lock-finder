@@ -1,5 +1,5 @@
 import React from "react";
-import { StarIcon } from "../../assets/icons/star-icon";
+import { StarIcon } from "../../../assets/icons/star-icon";
 import "./markerdetails.css";
 
 interface Props {
