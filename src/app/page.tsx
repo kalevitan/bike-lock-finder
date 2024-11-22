@@ -1,16 +1,20 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { APIProvider, Map, useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
-import MarkerList from '../components/MarkerList';
-import { Outlet } from 'react-router-dom';
-import { useMapContext } from '../context/MapContext';
-import { getLocation } from '../utils/locationutils';
-import Sidebar from "../components/sidebar/Sidebar";
+'use client';
 
-const Points = () => {
+import { useEffect, useState } from 'react';
+import { APIProvider, Map, useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
+import MarkerList from '@/src/components/MarkerList';
+import Header from '@/src/components/header/Header';
+import { useMapContext } from './context/MapContext';
+import { getLocation } from '../utils/locationutils';
+import Sidebar from "@/src/components/sidebar/Sidebar";
+import AddPoint from "@/src/components/AddPoint";
+
+const Points: React.FC = () => {
   const { apiKey, libraries, version, mapId, mapTypeId, defaultCenter, defaultZoom } = useMapContext();
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [openMarkerId, setOpenMarkerId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const updateLocation = () => {
     getLocation()
@@ -39,8 +43,9 @@ const Points = () => {
   return (
     <>
       <div className="flex flex-col">
-        <Sidebar updateLocation={updateLocation}/>
-        <Outlet />
+        <Header />
+        <Sidebar updateLocation={updateLocation} openModal={() => setIsModalOpen(true)}/>
+        {isModalOpen && <AddPoint closeModal={() => setIsModalOpen(false)} />}
         <main className="flex place-content-center md:pl-72">
           {error && <div className="error fixed bg-red-50 mb-8 p-4">{error}</div>}
           <div id="map">
@@ -66,7 +71,14 @@ const Points = () => {
 
 export default Points
 
-const MapContent = ({ location, openMarkerId, onMarkerClick, onMarkerClose }: { location: { lat: number; lng: number } | null, openMarkerId: string | null, onMarkerClick: (id: string) => void, onMarkerClose: (id: string) => void }) => {
+const MapContent = ({
+  location, openMarkerId, onMarkerClick, onMarkerClose
+}: {
+  location: { lat: number; lng: number } | null,
+  openMarkerId: string | null,
+  onMarkerClick: (id: string) => void,
+  onMarkerClose: (id: string) => void
+}) => {
   const map = useMap();
 
   useEffect(() => {

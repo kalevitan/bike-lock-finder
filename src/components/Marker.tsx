@@ -16,15 +16,20 @@ const Marker: React.FC<MarkerProps> = (props) => {
       marker.addEventListener('mouseover', () => setHovered(true));
       marker.addEventListener('mouseout', () => setHovered(false));
       marker.addEventListener('gmp-click', (e) => {
-        const element = e.target as HTMLElement
-        console.log(element.style.zIndex);
-
+        // Set a prop to close the marker if it's open, otherwise open it.
         if (props.isOpen) {
           props.onClose();
         } else {
           props.onClick();
         }
       })
+
+      // Make sure the marker is on top when clicked.
+      if (props.isOpen) {
+        marker.style.zIndex = '1';
+      } else {
+        marker.style.zIndex = '0';
+      }
     }
   }, [marker, props]);
 
@@ -59,7 +64,6 @@ const Marker: React.FC<MarkerProps> = (props) => {
         onClick={props.onClick}
         position={position}
         title={props.title}
-        style={{ zIndex: 0 }}
         className={classNames('bike-lock-marker', {clicked: props.isOpen, hovered})}>
         {renderCustomPin()}
       </AdvancedMarker>

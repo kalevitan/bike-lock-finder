@@ -1,14 +1,14 @@
-import React, { createContext, useContext, ReactNode } from 'react';
-import { MapContextProps } from '../types/types';
+'use client';
 
+import { createContext, useContext, ReactNode } from 'react';
+import { MapContextProps } from '../../types/types';
 
 const MapContext = createContext<MapContextProps | undefined>(undefined);
 
 export const MapProvider = ({ children }: { children: ReactNode }) => {
-  // const mapRef = useRef<google.maps.Map | null>(null);
 
   const mapConfig: MapContextProps = {
-    apiKey: import.meta.env.VITE_GOOGLE_API_KEY,
+    apiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY || '',
     libraries: ['marker', 'places'],
     mapId: '739af084373f96fe',
     mapTypeId: 'roadmap',
