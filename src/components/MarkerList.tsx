@@ -1,4 +1,6 @@
-import { useLoaderData } from "react-router-dom";
+'use client';
+
+import { useEffect, useState } from "react";
 import Marker from "./Marker";
 import { MarkerProps as MarkerData } from "../types/types";
 
@@ -9,7 +11,17 @@ interface MarkerProps {
 }
 
 const MarkerList: React.FC<MarkerProps> = ({ openMarkerId, onMarkerClick, onMarkerClose }) => {
-  const markerData = useLoaderData() as MarkerData[];
+  const [markerData, setMarkerData] = useState<MarkerData[]>([]);
+
+  useEffect(() => {
+    const fetchMarkerData = async () => {
+      const response = await fetch('/api/markers');
+      const data = await response.json();
+      setMarkerData(data);
+    }
+
+    fetchMarkerData();
+  }, []);
 
   return (
     <>
