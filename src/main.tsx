@@ -1,9 +1,11 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import Points, { loader as pointsLoader } from './routes/Points';
+import Points from './routes/Points';
+import { loader as pointsLoader } from './utils/dataloader';
 import PointDetails, { loader as pointDetailsLoader } from './routes/PointDetails';
 import AddPoint, { action as addPointAction } from './routes/AddPoint';
+import About from './routes/About';
 import RootLayout from './routes/RootLayout';
 import './index.css';
 import { MapProvider } from './context/MapContext';
@@ -21,6 +23,10 @@ const router = createBrowserRouter([
           { path: '/point/:id', element: <PointDetails />, loader: pointDetailsLoader },
         ]
       },
+      {
+        path: '/about',
+        element: <About />,
+      }
   ] },
 ]);
 

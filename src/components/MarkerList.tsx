@@ -1,24 +1,25 @@
 import { useLoaderData } from "react-router-dom";
 import Marker from "./Marker";
+import { MarkerProps as MarkerData } from "../types/types";
 
-interface MarkerData {
-  id: string;
-  title: string;
-  latitude: string;
-  longitude: string;
-  description: string;
-}
 interface MarkerProps {
-  markerData?: [];
+  openMarkerId: string | null;
+  onMarkerClick: (id: string) => void;
+  onMarkerClose: (id: string) => void;
 }
 
-const MarkerList: React.FC<MarkerProps> = () => {
+const MarkerList: React.FC<MarkerProps> = ({ openMarkerId, onMarkerClick, onMarkerClose }) => {
   const markerData = useLoaderData() as MarkerData[];
 
   return (
     <>
-      {markerData?.map((marker) => (
-        <Marker key={marker.id} {...marker}/>
+      {markerData.map((marker) => (
+        <Marker
+          key={marker.id}
+          {...marker}
+          isOpen={openMarkerId === marker.id}
+          onClick={() => onMarkerClick(marker.id)}
+          onClose={() => onMarkerClose(marker.id)}/>
       ))}
     </>
   );

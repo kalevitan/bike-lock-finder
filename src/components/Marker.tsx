@@ -1,43 +1,53 @@
 import React, { useEffect, useState } from 'react';
-import {
-  AdvancedMarker,
-  InfoWindow,
-  useAdvancedMarkerRef
-} from '@vis.gl/react-google-maps';
+import { AdvancedMarker, useAdvancedMarkerRef } from '@vis.gl/react-google-maps';
 import { MarkerDetails } from './marker-details/MarkerDetails';
-
-interface MarkerProps {
-  title: string;
-  latitude: string;
-  longitude: string;
-  description: string;
-}
+import { MarkerProps } from '../types/types';
+// import { BikeIcon } from '../assets/icons/bike-icon';
+import classNames from 'classnames';
 
 const Marker: React.FC<MarkerProps> = (props) => {
-  const [infowindowOpen, setInfowindowOpen] = useState(false);
   const [markerRef, marker] = useAdvancedMarkerRef();
-  const [clicked, setClicked] = useState(false);
   const [hovered, setHovered] = useState(false);
-
-  // console.log(markerRef);
 
   const position = { lat: parseFloat(props.latitude), lng: parseFloat(props.longitude) };
 
   useEffect(() => {
-    if (markerRef.current) {
-      markerRef.current.addListener('mouseover', () => setHovered(true));
-      markerRef.current.addListener('mouseout', () => setHovered(false));
+    if (marker) {
+      marker.addEventListener('mouseover', () => setHovered(true));
+      marker.addEventListener('mouseout', () => setHovered(false));
+      marker.addEventListener('gmp-click', (e) => {
+        const element = e.target as HTMLElement
+        console.log(element.style.zIndex);
+
+        if (props.isOpen) {
+          props.onClose();
+        } else {
+          props.onClick();
+        }
+      })
     }
-  }, [markerRef, clicked]);
+  }, [marker, props]);
 
   const renderCustomPin = () => {
     return (
       <>
-        <div className={`marker-pin ${hovered ? 'hovered' : ''}`}>
-          <div className="marker-pin-inner">
-            <MarkerDetails details={props} />
+        <div className="custom-pin">
+          <button className="close-button">
+            <span className="material-symbols-outlined"> close </span>
+          </button>
+
+          <div className="image-container">
+            {/* <BikeLockImageGallery /> */}
+            <img src="/images/bike-lock.jpeg" className="image" alt="placeholder" />
+            <span className="icon">
+              {/* <BikeIcon /> */}
+            </span>
           </div>
+
+          <MarkerDetails details={props} />
         </div>
+
+        <div className="tip" />
       </>
     );
   };
@@ -46,20 +56,13 @@ const Marker: React.FC<MarkerProps> = (props) => {
     <>
       <AdvancedMarker
         ref={markerRef}
-        onClick={() => setInfowindowOpen(true)}
+        onClick={props.onClick}
         position={position}
-        title={props.title} />
-      {infowindowOpen && (
-        <InfoWindow
-          anchor={marker}
-          className='info marker-details'
-          maxWidth={320}
-          shouldFocus={true}
-          headerContent={<h2 className="text-black">{props.title}</h2>}
-          onCloseClick={() => setInfowindowOpen(false)}>
-          {renderCustomPin()}
-        </InfoWindow>
-      )}
+        title={props.title}
+        style={{ zIndex: 0 }}
+        className={classNames('bike-lock-marker', {clicked: props.isOpen, hovered})}>
+        {renderCustomPin()}
+      </AdvancedMarker>
     </>
   );
 };

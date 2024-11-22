@@ -3,13 +3,17 @@
 @tailwind utilities;
 
 :root {
+  --primary-gray: #242424;
+  --primary-white: #f9f9f9;
+  --purple: #646cff;
+
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
   /* color: rgba(255, 255, 255, 0.87); */
-  background-color: #242424;
+  background-color: var(--primary-gray);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -27,7 +31,7 @@ a {
 }
 a:not(.button):hover {
   text-decoration-line: underline;
-  text-decoration-color: #646cff;
+  text-decoration-color: var(--purple);
   text-decoration-thickness: 2px;
   text-underline-offset: 2px;
   ;
@@ -66,8 +70,16 @@ body {
   transition: border-color 0.25s;
   box-sizing: border-box;
 }
+
+.button--link {
+  background-color: transparent;
+  border: none;
+  color: var(--purple);
+  padding: 0.2em 0.4em;
+}
+
 .button:hover {
-  border-color: #646cff;
+  border-color: var(--purple);
 }
 .button:focus,
 .button:focus-visible {
