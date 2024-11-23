@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Marker from "./Marker";
-import { MarkerProps as MarkerData } from "../types/types";
+import { MarkerProps as MarkerData } from "@/src/types/types";
 
 interface MarkerProps {
   openMarkerId: string | null;

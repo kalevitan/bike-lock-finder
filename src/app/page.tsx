@@ -5,7 +5,7 @@ import { APIProvider, Map, useMap, useMapsLibrary } from '@vis.gl/react-google-m
 import MarkerList from '@/src/components/MarkerList';
 import Header from '@/src/components/header/Header';
 import { useMapContext } from './context/MapContext';
-import { getLocation } from '../utils/locationutils';
+import { getLocation } from '@/src/utils/locationutils';
 import Sidebar from "@/src/components/sidebar/Sidebar";
 import AddPoint from "@/src/components/AddPoint";
 

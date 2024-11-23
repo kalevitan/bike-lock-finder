@@ -1,5 +1,5 @@
 import { collection, getDocs, addDoc } from 'firebase/firestore';
-import { db } from '../../../lib/firebase';
+import { db } from '@/src/lib/firebase';
 import { redirect } from 'next/navigation';
 
 export async function GET() {

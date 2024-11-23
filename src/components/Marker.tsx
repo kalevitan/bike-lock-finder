@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { AdvancedMarker, useAdvancedMarkerRef } from '@vis.gl/react-google-maps';
 import { MarkerDetails } from './marker-details/MarkerDetails';
-import { MarkerProps } from '../types/types';
-// import { BikeIcon } from '../assets/icons/bike-icon';
+import { MarkerProps } from '@/src/types/types';
+// import { BikeIcon } from '@/src/assets/icons/bike-icon';
 import classNames from 'classnames';
 
 const Marker: React.FC<MarkerProps> = (props) => {

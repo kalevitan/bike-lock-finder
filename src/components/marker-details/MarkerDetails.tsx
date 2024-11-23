@@ -1,12 +1,13 @@
 import React from "react";
-import { StarIcon } from "../../../assets/icons/star-icon";
+import { StarIcon } from "@/assets/icons/star-icon";
 import "./markerdetails.css";
+import { MarkerProps } from "@/src/types/types";
 
 interface Props {
-  details: MarkerDetails;
+  details: MarkerProps;
 }
 
-export const MarkerDetails: React.FC<Props> = ({details}) => {
+export const MarkerDetails: React.FC<Props> = ({ details }) => {
   const {
     title,
     description,

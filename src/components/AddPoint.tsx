@@ -1,9 +1,8 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
 import Modal from './modal/Modal';
-import { getLocation } from '../utils/locationutils';
+import { getLocation } from '@/src/utils/locationutils';
 
 interface AddPointProps {
   closeModal: () => void;

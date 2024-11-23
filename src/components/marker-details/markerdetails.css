@@ -122,13 +122,11 @@
   height: 250px;
 }
 
-
 .bike-lock-marker.clicked
   .custom-pin
   .image-container {
   border-radius: inherit;
 }
-
 
 .bike-lock-marker.clicked
   .custom-pin
@@ -137,7 +135,6 @@
   opacity: 0;
   visibility: hidden;
 }
-
 
 .bike-lock-marker.clicked
   .custom-pin
@@ -148,7 +145,6 @@
 
   animation: slideInFadeIn 0.7s ease-in-out;
 }
-
 
 .bike-lock-marker.clicked
   .custom-pin
@@ -216,16 +212,8 @@
   justify-content: center;
   gap: 16px;
 }
-.listing-content h2 {
-  font-family: var(--font-family-rufina);
-}
-.listing-content p,
-.listing-content span {
-  font-family: var(--font-family-raleway);
-}
 
 .listing-content h2 {
-  color: var(--estate-green-light);
   font-size: 20px;
   font-style: normal;
   font-weight: 700;
@@ -235,7 +223,6 @@
 }
 
 .listing-content p {
-  color: var(--estate-green-light);
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
@@ -252,15 +239,6 @@
   letter-spacing: 0.2px;
 }
 
-.listing-content .price {
-  color: var(--estate-green-light);
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 18px;
-  letter-spacing: 0.2px;
-}
-
 .details {
   display: flex;
   flex-direction: row;
@@ -268,7 +246,6 @@
 }
 
 .details .detail_item {
-  color: var(--estate-grey-main);
   font-size: 14px;
   font-style: normal;
   font-weight: 600;
@@ -284,4 +261,14 @@
 .details .detail_item svg {
   font-size: 17px;
   color: gold;
+}
+
+.ratings__heading {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ratings__stars {
+  display: flex;
+  gap: 4px;
 }

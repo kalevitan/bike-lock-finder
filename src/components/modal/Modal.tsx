@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import React from "react";
-import "./modal.css";
+import classes from "./modal.module.css";
 
 interface ModalProps {
   title: string;
@@ -20,12 +20,12 @@ const Modal: React.FC<ModalProps> = ({ title, children, closeModal }) => {
 
   return (
     <>
-      <div className="backdrop" onClick={closeHandler}></div>
-      <dialog open className="modal" aria-modal="true">
+      <div className={classes.backdrop} onClick={closeHandler}></div>
+      <dialog open className={classes.modal} aria-modal="true">
         <div className="modal-header flex justify-between">
           <h2 className="font-bold text-black">{title}</h2>
         </div>
-        <div className="modal-body">{children}</div>
+        <div className={classes.modal_body}>{children}</div>
       </dialog>
     </>
   );
