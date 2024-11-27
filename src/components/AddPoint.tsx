@@ -1,27 +1,63 @@
 'use client';
 
-import React from 'react';
+import React, { use, useEffect, useState } from 'react';
 import Modal from './modal/Modal';
 import { getLocation } from '@/src/utils/locationutils';
 
 interface AddPointProps {
   closeModal: () => void;
+  pointData?: {
+    id?: string;
+    title: string;
+    latitude: string;
+    longitude: string;
+    description: string;
+  }
 }
 
-export const AddPoint: React.FC<AddPointProps> = ({ closeModal }) => {
+export const AddPoint: React.FC<AddPointProps> = ({ closeModal, pointData }) => {
+  const [formData, setFormData] = useState({
+    title: pointData?.title || '',
+    latitude: pointData?.latitude || '',
+    longitude: pointData?.longitude || '',
+    description: pointData?.description || '',
+  });
+
+  useEffect(() => {
+    if (pointData) {
+      setFormData({
+        title: pointData.title,
+        latitude: pointData.latitude,
+        longitude: pointData.longitude,
+        description: pointData.description,
+      });
+    }
+  }, [pointData]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
+    const url = '/api/markers';
+    const method = pointData?.id ? 'PUT' : 'POST';
 
-    const response = await fetch("/api/marker", {
-      method: "POST",
-      body: JSON.stringify(Object.fromEntries(formData)),
+    const response = await fetch(url, {
+      method,
+      body: JSON.stringify({
+        ...formData,
+        id: pointData?.id,
+      }),
       headers: { "Content-Type": "application/json" },
     });
 
     if (response.ok) {
       console.log("Form submitted successfully!");
+      closeModal();
     } else {
       console.error("Error submitting form.");
     }
@@ -31,12 +67,11 @@ export const AddPoint: React.FC<AddPointProps> = ({ closeModal }) => {
     e.preventDefault();
     getLocation()
       .then((position) => {
-        const latitude = document.getElementById('latitude') as HTMLInputElement;
-        const longitude = document.getElementById('longitude') as HTMLInputElement;
-        if (latitude && longitude) {
-          latitude.value = position.lat.toString();
-          longitude.value = position.lng.toString();
-        }
+        setFormData((prev) => ({
+          ...prev,
+          latitude: position.lat.toString(),
+          longitude: position.lng.toString(),
+        }));
       })
       .catch((error) => {
         console.error('Error getting location:', error);
@@ -54,6 +89,8 @@ export const AddPoint: React.FC<AddPointProps> = ({ closeModal }) => {
                 type="text"
                 id="title"
                 name="title"
+                value={formData.title}
+                onChange={handleChange}
                 className="p-2 border rounded"
                 required
               />
@@ -65,6 +102,8 @@ export const AddPoint: React.FC<AddPointProps> = ({ closeModal }) => {
                   type="text"
                   id="latitude"
                   name="latitude"
+                  value={formData.latitude}
+                  onChange={handleChange}
                   className="p-2 border rounded"
                   required
                 />
@@ -75,6 +114,8 @@ export const AddPoint: React.FC<AddPointProps> = ({ closeModal }) => {
                   type="text"
                   id="longitude"
                   name="longitude"
+                  value={formData.longitude}
+                  onChange={handleChange}
                   className="p-2 border rounded"
                   required
                 />
@@ -86,13 +127,15 @@ export const AddPoint: React.FC<AddPointProps> = ({ closeModal }) => {
               <textarea
                 id="description"
                 name="description"
+                value={formData.description}
+                onChange={handleChange}
                 className="p-2 border rounded"
               ></textarea>
             </div>
           </div>
           <div className="actions flex flex-row justify-end gap-2">
             <button onClick={closeModal} className="button mt-4 text-white">Cancel</button>
-            <button type="submit" className="button mt-4 text-white">Save</button>
+            <button type="submit" className="button mt-4 text-white">{pointData ? 'Update' : 'Submit'}</button>
           </div>
         </form>
       </div>

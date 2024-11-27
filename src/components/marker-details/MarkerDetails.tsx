@@ -2,25 +2,30 @@ import React from "react";
 import { Edit, Star } from "lucide-react";
 import "./markerdetails.css";
 import { MarkerProps } from "@/src/types/types";
-import Link from "next/link";
 
 interface Props {
   details: MarkerProps;
+  onEdit: (pointData: MarkerProps) => void;
 }
 
-export const MarkerDetails: React.FC<Props> = ({ details }) => {
+export const MarkerDetails: React.FC<Props> = ({ details, onEdit }) => {
   const {
-    id,
     title,
     description,
   } = details;
 
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    console.log(details);
+    onEdit(details);
+  }
+
   return (
     <div className="details-container flex flex-col">
-      <Link className="edit-button self-end"  href={`/point/${id}`}>
+      <button className="edit-button self-end" onClick={(e) => handleEditClick(e)}>
         <Edit size="20" color="var(--primary-white)" />
         <span className="sr-only">Edit</span>
-      </Link>
+      </button>
       <div className="listing-content">
         <h2>{title}</h2>
         <div className="details">
@@ -41,3 +46,5 @@ export const MarkerDetails: React.FC<Props> = ({ details }) => {
     </div>
   )
 }
+
+export default MarkerDetails;

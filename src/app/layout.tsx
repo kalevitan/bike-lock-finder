@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { Viewport } from 'next';
-import { MapProvider } from './context/MapContext';
+import { MapProvider } from '../context/MapContext';
 import './global.css';
 
 export const metadata: Metadata = {

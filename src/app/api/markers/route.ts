@@ -1,38 +1,62 @@
-import { collection, getDocs, addDoc } from 'firebase/firestore';
-import { db } from '@/src/lib/firebase';
-import { redirect } from 'next/navigation';
+import { collection, getDocs, addDoc, doc, updateDoc } from 'firebase/firestore';
+import { db } from '@/src/lib/firebase'; // Adjust path as needed
+import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
     const querySnapshot = await getDocs(collection(db, 'locations'));
-    const markerData = querySnapshot.docs.map(doc => ({
+    const markers = querySnapshot.docs.map(doc => ({
       id: doc.id,
-      ...doc.data()
+      ...doc.data(),
     }));
-    return new Response(JSON.stringify(markerData), {
-      headers: { 'Content-Type': 'application/json' },
-    });
+
+    return NextResponse.json(markers); // Return markers as JSON
   } catch (e) {
-    console.error('Error getting documents: ', e);
+    console.error('Error fetching markers:', e);
+    return NextResponse.error();
   }
 }
 
 export async function POST(req: Request) {
-  const formData = await req.formData();
-  const data = Object.fromEntries(formData.entries());
-  console.log(JSON.stringify(data));
+  const data = await req.json(); // Expecting JSON data instead of form data
+  const { title, latitude, longitude, description } = data;
 
   try {
     const docRef = await addDoc(collection(db, 'locations'), {
-      title: data.title,
-      latitude: data.latitude,
-      longitude: data.longitude,
-      description: data.description,
+      title,
+      latitude,
+      longitude,
+      description,
     });
-    console.log('Document written with ID: ', docRef.id);
+    console.log('Document written with ID:', docRef.id);
+    return NextResponse.json({ id: docRef.id });
   } catch (e) {
-    console.error('Error adding document: ', e);
+    console.error('Error adding document:', e);
+    return NextResponse.error();
+  }
+}
+
+export async function PUT(req: Request) {
+  const data = await req.json(); // Expecting JSON body
+  const { id, title, latitude, longitude, description } = data;
+
+  if (!id) {
+    return NextResponse.error(); // No ID found, return error
   }
 
-  return redirect('/');
+  try {
+    const docRef = doc(db, 'locations', id); // Get document reference by ID
+    await updateDoc(docRef, {
+      title,
+      latitude,
+      longitude,
+      description,
+    });
+
+    console.log('Document updated with ID:', id);
+    return NextResponse.json({ id }); // Return updated document ID
+  } catch (e) {
+    console.error('Error updating document:', e);
+    return NextResponse.error(); // Handle error and return error response
+  }
 }

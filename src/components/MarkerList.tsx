@@ -1,14 +1,15 @@
 import Marker from "./Marker";
 import { MarkerProps as MarkerData } from "@/src/types/types";
 
-interface MarkerProps {
+interface MarkerProps extends MarkerData {
   markerData: MarkerData[];
   openMarkerId: string | null;
   onMarkerClick: (id: string) => void;
   onMarkerClose: (id: string) => void;
+  onEditPoint: (pointData: MarkerData) => void;
 }
 
-const MarkerList: React.FC<MarkerProps> = ({ markerData, openMarkerId, onMarkerClick, onMarkerClose }) => {
+const MarkerList: React.FC<MarkerProps> = ({ markerData, openMarkerId, onMarkerClick, onMarkerClose, onEditPoint }) => {
   return (
     <>
       {markerData.map((marker) => (
@@ -18,6 +19,7 @@ const MarkerList: React.FC<MarkerProps> = ({ markerData, openMarkerId, onMarkerC
           isOpen={openMarkerId === marker.id}
           onClick={() => onMarkerClick(marker.id)}
           onClose={() => onMarkerClose(marker.id)}
+          onEditPoint={() => onEditPoint(marker)}
         />
       ))}
     </>

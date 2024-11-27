@@ -22,4 +22,5 @@ export interface MarkerProps {
   isOpen: boolean;
   onClick: () => void;
   onClose: () => void;
+  onEdit: (pointData: MarkerProps) => void;
 }

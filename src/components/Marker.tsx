@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { AdvancedMarker, useAdvancedMarkerRef } from '@vis.gl/react-google-maps';
 import { MarkerDetails } from './marker-details/MarkerDetails';
-import { MarkerProps } from '@/src/types/types';
+import { MarkerProps as MarkerData } from '@/src/types/types';
 import classNames from 'classnames';
+
+interface MarkerProps extends MarkerData {
+  isOpen: boolean;
+  onClick: () => void;
+  onClose: () => void;
+  onEditPoint: (pointData: MarkerData) => void;
+}
 
 const Marker: React.FC<MarkerProps> = (props) => {
   const [markerRef, marker] = useAdvancedMarkerRef();
@@ -32,13 +39,14 @@ const Marker: React.FC<MarkerProps> = (props) => {
         marker.style.zIndex = '0';
       }
     }
-  }, [marker, props, position]);
+  }, [marker, props]);
 
   const renderCustomPin = () => {
+    // console.log(props);
     return (
       <>
         <div className="custom-pin">
-          <button className="close-button">
+          <button className="close-button" onClick={(e) => { e.stopPropagation(); props.onClose(); }}>
             <span className="material-symbols-outlined">close</span>
           </button>
 
@@ -50,7 +58,7 @@ const Marker: React.FC<MarkerProps> = (props) => {
             </span>
           </div>
 
-          <MarkerDetails details={props} />
+          <MarkerDetails details={props} onEdit={(pointData) => props.onEditPoint({ ...props, ...pointData })} />
         </div>
 
         {/* <div className="tip" /> */}
