@@ -10,7 +10,7 @@ export const MapProvider = ({ children }: { children: ReactNode }) => {
   const mapConfig: MapContextProps = {
     apiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY || '',
     libraries: ['marker', 'places'],
-    mapId: 'bf51a910020fa25a', // gray 739af084373f96fe
+    mapId: 'b752bc18ec3c0879', // gray 739af084373f96fe
     mapTypeId: 'roadmap',
     defaultCenter: { lat: 35.60, lng: -82.55 },
     defaultZoom: 15,

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { AdvancedMarker, useAdvancedMarkerRef } from '@vis.gl/react-google-maps';
 import { MarkerDetails } from './marker-details/MarkerDetails';
 import { MarkerProps } from '@/src/types/types';
-// import { BikeIcon } from '@/src/assets/icons/bike-icon';
 import classNames from 'classnames';
 
 const Marker: React.FC<MarkerProps> = (props) => {
@@ -21,6 +20,8 @@ const Marker: React.FC<MarkerProps> = (props) => {
           props.onClose();
         } else {
           props.onClick();
+          // Refit the bounds to include the marker.
+          // console.log(position);
         }
       })
 
@@ -31,14 +32,14 @@ const Marker: React.FC<MarkerProps> = (props) => {
         marker.style.zIndex = '0';
       }
     }
-  }, [marker, props]);
+  }, [marker, props, position]);
 
   const renderCustomPin = () => {
     return (
       <>
         <div className="custom-pin">
           <button className="close-button">
-            <span className="material-symbols-outlined"> close </span>
+            <span className="material-symbols-outlined">close</span>
           </button>
 
           <div className="image-container">
@@ -52,7 +53,7 @@ const Marker: React.FC<MarkerProps> = (props) => {
           <MarkerDetails details={props} />
         </div>
 
-        <div className="tip" />
+        {/* <div className="tip" /> */}
       </>
     );
   };

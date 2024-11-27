@@ -1,7 +1,8 @@
 import React from "react";
-import { StarIcon } from "@/assets/icons/star-icon";
+import { Edit, Star } from "lucide-react";
 import "./markerdetails.css";
 import { MarkerProps } from "@/src/types/types";
+import Link from "next/link";
 
 interface Props {
   details: MarkerProps;
@@ -9,12 +10,17 @@ interface Props {
 
 export const MarkerDetails: React.FC<Props> = ({ details }) => {
   const {
+    id,
     title,
     description,
   } = details;
 
   return (
-    <div className="details-container">
+    <div className="details-container flex flex-col">
+      <Link className="edit-button self-end"  href={`/point/${id}`}>
+        <Edit size="20" color="var(--primary-white)" />
+        <span className="sr-only">Edit</span>
+      </Link>
       <div className="listing-content">
         <h2>{title}</h2>
         <div className="details">
@@ -22,9 +28,9 @@ export const MarkerDetails: React.FC<Props> = ({ details }) => {
             <div className="ratings">
               <h4 className="ratings__heading text-sm">Rating</h4>
               <span className="ratings__stars flex">
-                <StarIcon />
-                <StarIcon />
-                <StarIcon />
+                <Star size="20" color="#ffd700" />
+                <Star size="20" color="#ffd700" />
+                <Star size="20" color="#ffd700" />
               </span>
             </div>
           </div>

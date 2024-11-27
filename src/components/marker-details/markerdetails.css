@@ -257,12 +257,6 @@
   gap: 4px;
 }
 
-.details .detail_item span,
-.details .detail_item svg {
-  font-size: 17px;
-  color: gold;
-}
-
 .ratings__heading {
   font-size: 14px;
   font-weight: 600;

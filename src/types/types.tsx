@@ -8,6 +8,11 @@ export interface MapContextProps {
   defaultZoom: number;
 }
 
+export interface MarkerContextProps {
+  markers: MarkerProps[];
+  setMarkers: (markers: MarkerProps[]) => void;
+}
+
 export interface MarkerProps {
   id: string;
   title: string;

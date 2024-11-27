@@ -2,5 +2,32 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-right: 1rem;
   gap: 1rem;
+}
+
+.search_form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  display: none;
+
+  @media (min-width: 640px) {
+    display: flex;
+    position: static;
+    width: auto;
+  }
+}
+
+.search_form.open {
+  @media (max-width: 640px) {
+    display: flex;
+    position: absolute;
+    z-index: 999;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    justify-content: center;
+  }
 }
