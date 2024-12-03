@@ -45,7 +45,7 @@ const Points: React.FC = () => {
     }
   };
 
-  const handleMarkersClose = () => {
+  const handleMapClick = () => {
     setOpenMarkerId(null);
   };
 
@@ -76,7 +76,7 @@ const Points: React.FC = () => {
                 defaultZoom={defaultZoom}
                 gestureHandling={'greedy'}
                 disableDefaultUI
-                onClick={handleMarkersClose}>
+                onClick={handleMapClick}>
 
                 <MapContent
                   location={location}
