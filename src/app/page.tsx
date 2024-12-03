@@ -45,30 +45,34 @@ const Points: React.FC = () => {
     }
   };
 
+  const openModal = (editPointData: MarkerProps | null = null) => {
+    setEditPointData(null);
+    setIsModalOpen(true);
+  }
+
   const handleEditPoint = (pointData: MarkerProps) => {
     if (!pointData.id) throw new Error("Point data must include an ID for editing.");
     setEditPointData(pointData);
     setIsModalOpen(true);
-    console.log(isModalOpen);
   };
 
   return (
     <APIProvider apiKey={apiKey} libraries={libraries} version={version}>
-      <div className="flex flex-col">
-        <Header onSearch={handleSearch}/>
-        <Sidebar updateLocation={updateLocation} openModal={() => setIsModalOpen(true)}/>
-        <main className="flex place-content-center md:pl-72">
-          {error && <div className="error fixed bg-red-50 mb-8 p-4">{error}</div>}
-          <div id="map">
-            <Map
-              mapId={mapId}
-              mapTypeId={mapTypeId}
-              defaultCenter={defaultCenter}
-              defaultZoom={defaultZoom}
-              gestureHandling={'greedy'}
-              disableDefaultUI>
+      <MarkerProvider>
+        <div className="flex flex-col">
+          <Header onSearch={handleSearch}/>
+          <Sidebar updateLocation={updateLocation} openModal={openModal}/>
+          <main className="flex place-content-center md:pl-72">
+            {error && <div className="error fixed bg-red-50 mb-8 p-4">{error}</div>}
+            <div id="map">
+              <Map
+                mapId={mapId}
+                mapTypeId={mapTypeId}
+                defaultCenter={defaultCenter}
+                defaultZoom={defaultZoom}
+                gestureHandling={'greedy'}
+                disableDefaultUI>
 
-              <MarkerProvider>
                 <MapContent
                   location={location}
                   place={selectedPlace}
@@ -77,15 +81,15 @@ const Points: React.FC = () => {
                   onMarkerClose={handleMarkerClose}
                   onEditPoint={handleEditPoint}
                 />
-              </MarkerProvider>
 
-            </Map>
-          </div>
-        </main>
-      </div>
-      {isModalOpen && editPointData && (
-        <AddPoint closeModal={() => setIsModalOpen(false)} pointData={editPointData}/>
-      )}
+              </Map>
+            </div>
+          </main>
+        </div>
+        {isModalOpen && (
+          <AddPoint closeModal={() => setIsModalOpen(false)} pointData={editPointData}/>
+        )}
+      </MarkerProvider>
     </APIProvider>
   )
 }
@@ -111,9 +115,7 @@ const MapContent = ({
   const { markers } = useMarkerContext();
 
   useEffect(() => {
-    if (!map || (!location && !place)) return;
-
-    console.log(place, "Place");
+    if (!map || !location) return;
 
     if (location) {
       const bounds = new google.maps.LatLngBounds();
@@ -127,13 +129,19 @@ const MapContent = ({
       return () => {
         google.maps.event.removeListener(listener);
       };
-    } else if (place?.geometry?.viewport) {
+    };
+  }, [map, location]);
+
+  useEffect(() => {
+    if (!map || (!place)) return;
+
+    if (place?.geometry?.viewport) {
       map.fitBounds(place.geometry.viewport);
     } else if (place?.geometry?.location) {
       map.setCenter(place.geometry.location);
       map.setZoom(15);
     }
-  }, [map, location, place]);
+  }, [map, place]);
 
   return <MarkerList markerData={markers} openMarkerId={openMarkerId} onMarkerClick={onMarkerClick} onMarkerClose={onMarkerClose} onEditPoint={onEditPoint}/>;
 };

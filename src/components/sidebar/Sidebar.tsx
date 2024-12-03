@@ -1,7 +1,8 @@
 import classes from "./sidebar.module.css";
+import { MarkerProps } from "@/src/types/types";
 
 interface SidebarProps {
-  openModal: () => void;
+  openModal: (editPointData?: MarkerProps | null) => void;
   updateLocation: () => void;
 }
 
@@ -20,7 +21,7 @@ const Sidebar: React.FC<SidebarProps> = ({ openModal, updateLocation }) => {
               <button onClick={updateLocation} className="button">Locate Me</button>
             </li>
             <li>
-              <button onClick={openModal} className="button">Add Point</button>
+              <button onClick={() => openModal(null)} className="button">Add Lock</button>
             </li>
           </ul>
         </nav>

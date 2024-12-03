@@ -3,16 +3,12 @@
 import React, { use, useEffect, useState } from 'react';
 import Modal from './modal/Modal';
 import { getLocation } from '@/src/utils/locationutils';
+import { useMarkerContext } from '@/src/context/MarkerContext';
+import { MarkerProps } from '@/src/types/types';
 
 interface AddPointProps {
   closeModal: () => void;
-  pointData?: {
-    id?: string;
-    title: string;
-    latitude: string;
-    longitude: string;
-    description: string;
-  }
+  pointData?: MarkerProps | null;
 }
 
 export const AddPoint: React.FC<AddPointProps> = ({ closeModal, pointData }) => {
@@ -23,16 +19,18 @@ export const AddPoint: React.FC<AddPointProps> = ({ closeModal, pointData }) => 
     description: pointData?.description || '',
   });
 
-  useEffect(() => {
-    if (pointData) {
-      setFormData({
-        title: pointData.title,
-        latitude: pointData.latitude,
-        longitude: pointData.longitude,
-        description: pointData.description,
-      });
-    }
-  }, [pointData]);
+  const { markers, setMarkers } = useMarkerContext();
+
+  // useEffect(() => {
+  //   if (pointData) {
+  //     setFormData({
+  //       title: pointData.title,
+  //       latitude: pointData.latitude,
+  //       longitude: pointData.longitude,
+  //       description: pointData.description,
+  //     });
+  //   }
+  // }, [pointData]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -43,6 +41,7 @@ export const AddPoint: React.FC<AddPointProps> = ({ closeModal, pointData }) => 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     const url = '/api/markers';
     const method = pointData?.id ? 'PUT' : 'POST';
 
@@ -57,6 +56,29 @@ export const AddPoint: React.FC<AddPointProps> = ({ closeModal, pointData }) => 
 
     if (response.ok) {
       console.log("Form submitted successfully!");
+      const responseData = await response.json();
+
+      // Firebase typically returns the generated ID
+      const newMarkerId = responseData.id;
+
+      if (!pointData?.id) {
+        // Add new marker with the ID from Firebase
+        setMarkers((prev: MarkerProps[]) => [
+          ...prev,
+          { ...formData, id: newMarkerId },
+        ]);
+      } else {
+        // Update existing marker
+        setMarkers((prev: MarkerProps[]) => {
+          console.log('Previous Markers:', prev);
+          console.log('Updating Marker with ID:', pointData?.id);
+          const updatedMarkers = prev.map((m) =>
+            m.id === pointData.id ? { ...m, ...formData } : m
+          );
+          console.log('Updated Markers:', updatedMarkers);
+          return updatedMarkers;
+        });
+      }
       closeModal();
     } else {
       console.error("Error submitting form.");
@@ -140,7 +162,6 @@ export const AddPoint: React.FC<AddPointProps> = ({ closeModal, pointData }) => 
         </form>
       </div>
     </Modal>
-
   );
 };
 

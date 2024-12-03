@@ -22,27 +22,32 @@ const Marker: React.FC<MarkerProps> = (props) => {
       marker.addEventListener('mouseover', () => setHovered(true));
       marker.addEventListener('mouseout', () => setHovered(false));
       marker.addEventListener('gmp-click', (e) => {
-        // Set a prop to close the marker if it's open, otherwise open it.
         if (props.isOpen) {
           props.onClose();
         } else {
           props.onClick();
-          // Refit the bounds to include the marker.
-          // console.log(position);
         }
-      })
+      });
 
-      // Make sure the marker is on top when clicked.
-      if (props.isOpen) {
-        marker.style.zIndex = '1';
-      } else {
-        marker.style.zIndex = '0';
-      }
+      marker.style.zIndex = props.isOpen ? '1' : '0';
     }
+
+    return () => {
+      if (marker) {
+        marker.removeEventListener('mouseover', () => setHovered(true));
+        marker.removeEventListener('mouseout', () => setHovered(false));
+        marker.removeEventListener('gmp-click', (e) => {
+          if (props.isOpen) {
+            props.onClose();
+          } else {
+            props.onClick();
+          }
+        });
+      }
+    };
   }, [marker, props]);
 
   const renderCustomPin = () => {
-    // console.log(props);
     return (
       <>
         <div className="custom-pin">
@@ -60,8 +65,6 @@ const Marker: React.FC<MarkerProps> = (props) => {
 
           <MarkerDetails details={props} onEdit={(pointData) => props.onEditPoint({ ...props, ...pointData })} />
         </div>
-
-        {/* <div className="tip" /> */}
       </>
     );
   };

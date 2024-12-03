@@ -10,7 +10,7 @@ export interface MapContextProps {
 
 export interface MarkerContextProps {
   markers: MarkerProps[];
-  setMarkers: (markers: MarkerProps[]) => void;
+  setMarkers: React.Dispatch<React.SetStateAction<MarkerProps[]>>;
 }
 
 export interface MarkerProps {
@@ -19,8 +19,5 @@ export interface MarkerProps {
   latitude: string;
   longitude: string;
   description: string;
-  isOpen: boolean;
-  onClick: () => void;
-  onClose: () => void;
-  onEdit: (pointData: MarkerProps) => void;
+  isOpen?: boolean;
 }
