@@ -45,6 +45,10 @@ const Points: React.FC = () => {
     }
   };
 
+  const handleMarkersClose = () => {
+    setOpenMarkerId(null);
+  };
+
   const openModal = (editPointData: MarkerProps | null = null) => {
     setEditPointData(null);
     setIsModalOpen(true);
@@ -71,7 +75,8 @@ const Points: React.FC = () => {
                 defaultCenter={defaultCenter}
                 defaultZoom={defaultZoom}
                 gestureHandling={'greedy'}
-                disableDefaultUI>
+                disableDefaultUI
+                onClick={handleMarkersClose}>
 
                 <MapContent
                   location={location}
