@@ -64,6 +64,8 @@ const Marker: React.FC<MarkerProps> = (props) => {
           </div>
 
           <MarkerDetails details={props} onEdit={(pointData) => props.onEditPoint({ ...props, ...pointData })} />
+
+          <div className="triangle"></div>
         </div>
       </>
     );

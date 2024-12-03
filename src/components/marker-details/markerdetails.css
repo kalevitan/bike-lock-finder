@@ -5,7 +5,7 @@
   transition: all 0.2s ease-in-out;
 }
 
-.bike-lock-marker.tip {
+.bike-lock-marker .triangle {
   position: absolute;
   bottom: 0;
   width: 0;
@@ -104,7 +104,7 @@
   opacity: 0;
 }
 
-.bike-lock-marker.hovered .tip {
+.bike-lock-marker.hovered .triangle {
   transform: translateY(23%) translateX(-50%) rotate(45deg) scale(1.4);
 }
 
@@ -162,7 +162,7 @@
   font-size: 24px;
 }
 
-.bike-lock-marker.clicked .tip {
+.bike-lock-marker.clicked .triangle {
   transform: translateY(23%) translateX(-50%) rotate(45deg) scale(1.4);
 }
 
