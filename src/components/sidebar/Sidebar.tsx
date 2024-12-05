@@ -1,5 +1,5 @@
 import classes from "./sidebar.module.css";
-import { MarkerProps } from "@/src/types/types";
+import { MarkerProps } from "@/src/interfaces/markers";
 
 interface SidebarProps {
   openModal: (editPointData?: MarkerProps | null) => void;

@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { MarkerContextProps, MarkerProps } from '@/src/types/types';
+import { MarkerContextProps, MarkerProps } from '@/src/interfaces/markers';
 
 const MarkerContext = createContext<MarkerContextProps | undefined>(undefined);
 

@@ -5,7 +5,7 @@ import './global.css';
 
 export const metadata: Metadata = {
   title: 'BikeLock Finder',
-  description: 'An app to find bike locking stations around town.',
+  description: 'An app to find or add bike locking stations around town.',
 };
 
 export const viewport: Viewport = {

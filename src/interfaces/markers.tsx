@@ -1,13 +1,3 @@
-export interface MapContextProps {
-  apiKey: string;
-  libraries?: string[];
-  version: string;
-  mapId: string;
-  mapTypeId: string;
-  defaultCenter: { lat: number; lng: number };
-  defaultZoom: number;
-}
-
 export interface MarkerContextProps {
   markers: MarkerProps[];
   setMarkers: React.Dispatch<React.SetStateAction<MarkerProps[]>>;
@@ -19,5 +9,6 @@ export interface MarkerProps {
   latitude: string;
   longitude: string;
   description: string;
+  rating: number;
   isOpen?: boolean;
 }

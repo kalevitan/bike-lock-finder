@@ -1,5 +1,5 @@
 import Marker from "./Marker";
-import { MarkerProps as MarkerData } from "@/src/types/types";
+import { MarkerProps as MarkerData } from "@/src/interfaces/markers";
 
 interface MarkerProps extends MarkerData {
   markerData: MarkerData[];

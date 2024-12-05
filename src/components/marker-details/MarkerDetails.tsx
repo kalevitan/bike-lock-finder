@@ -1,7 +1,7 @@
 import React from "react";
 import { Edit, Star } from "lucide-react";
 import "./markerdetails.css";
-import { MarkerProps } from "@/src/types/types";
+import { MarkerProps } from "@/src/interfaces/markers";
 
 interface Props {
   details: MarkerProps;
@@ -12,7 +12,10 @@ export const MarkerDetails: React.FC<Props> = ({ details, onEdit }) => {
   const {
     title,
     description,
+    rating,
   } = details;
+
+  console.log(title, rating);
 
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -32,9 +35,9 @@ export const MarkerDetails: React.FC<Props> = ({ details, onEdit }) => {
             <div className="ratings">
               <h4 className="ratings__heading text-sm">Rating</h4>
               <span className="ratings__stars flex">
-                <Star size="20" color="#ffd700" />
-                <Star size="20" color="#ffd700" />
-                <Star size="20" color="#ffd700" />
+                {Array.from({ length: rating }).map((_, index) => (
+                  <Star key={index} size="20" color="#ffd700" />
+                ))}
               </span>
             </div>
           </div>

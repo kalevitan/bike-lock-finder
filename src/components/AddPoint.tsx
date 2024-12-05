@@ -4,7 +4,7 @@ import React, { use, useEffect, useState } from 'react';
 import Modal from './modal/Modal';
 import { getLocation } from '@/src/utils/locationutils';
 import { useMarkerContext } from '@/src/context/MarkerContext';
-import { MarkerProps } from '@/src/types/types';
+import { MarkerProps } from '@/src/interfaces/markers';
 
 interface AddPointProps {
   closeModal: () => void;
@@ -17,25 +17,23 @@ export const AddPoint: React.FC<AddPointProps> = ({ closeModal, pointData }) => 
     latitude: pointData?.latitude || '',
     longitude: pointData?.longitude || '',
     description: pointData?.description || '',
+    rating: pointData?.rating || 0,
   });
 
-  const { markers, setMarkers } = useMarkerContext();
-
-  // useEffect(() => {
-  //   if (pointData) {
-  //     setFormData({
-  //       title: pointData.title,
-  //       latitude: pointData.latitude,
-  //       longitude: pointData.longitude,
-  //       description: pointData.description,
-  //     });
-  //   }
-  // }, [pointData]);
+  const { setMarkers } = useMarkerContext();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
+    });
+  }
+
+  const handleRatingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rating = Number(e.target.value);
+    setFormData({
+      ...formData,
+      rating,
     });
   }
 
@@ -70,8 +68,6 @@ export const AddPoint: React.FC<AddPointProps> = ({ closeModal, pointData }) => 
       } else {
         // Update existing marker
         setMarkers((prev: MarkerProps[]) => {
-          console.log('Previous Markers:', prev);
-          console.log('Updating Marker with ID:', pointData?.id);
           const updatedMarkers = prev.map((m) =>
             m.id === pointData.id ? { ...m, ...formData } : m
           );
@@ -154,6 +150,92 @@ export const AddPoint: React.FC<AddPointProps> = ({ closeModal, pointData }) => 
                 className="p-2 border rounded"
               ></textarea>
             </div>
+            <div className="rating flex flex-col text-left">
+              <label className="mb-2">Rating</label>
+              <div className="flex">
+                <input
+                  className="star"
+                  type="radio"
+                  name="rating"
+                  id="str0"
+                  value="0"
+                  checked={formData.rating === 0}
+                  onChange={handleRatingChange}
+                />
+                <label className="star-label !hidden" htmlFor="str0">
+                  None chosen
+                </label>
+                <input
+                  className="star"
+                  type="radio"
+                  name="rating"
+                  id="str1"
+                  value="1"
+                  checked={formData.rating === 1}
+                  onChange={handleRatingChange}
+                />
+                <label className="star-label" htmlFor="str1">
+                  <div className="star-shape"></div>
+                </label>
+                <input
+                  className="star"
+                  type="radio"
+                  name="rating"
+                  id="str2"
+                  value="2"
+                  checked={formData.rating === 2}
+                  onChange={handleRatingChange}
+                />
+                <label className="star-label" htmlFor="str2">
+                  <div className="star-shape"></div>
+                </label>
+                <input
+                  className="star"
+                  type="radio"
+                  name="rating"
+                  id="str3"
+                  value="3"
+                  checked={formData.rating === 3}
+                  onChange={handleRatingChange}
+                />
+                <label className="star-label" htmlFor="str3">
+                  <div className="star-shape"></div>
+                </label>
+                <input
+                  className="star"
+                  type="radio"
+                  name="rating"
+                  id="str4"
+                  value="4"
+                  checked={formData.rating === 4}
+                  onChange={handleRatingChange}
+                />
+                <label className="star-label" htmlFor="str4">
+                  <div className="star-shape"></div>
+                </label>
+                <input
+                  className="star"
+                  type="radio"
+                  name="rating"
+                  id="str5"
+                  value="5"
+                  checked={formData.rating === 5}
+                  onChange={handleRatingChange}
+                />
+                <label className="star-label" htmlFor="str5">
+                  <div className="star-shape"></div>
+                </label>
+              </div>
+            </div>
+            {/* <div className="flex flex-col text-left">
+              <label htmlFor="image" className="hidden mb-2">Upload Image</label>
+              <input
+                type="file"
+                id="image"
+                name="image"
+                className="hidden" />
+                <button type="button" className="button text-white">Upload Image</button>
+            </div> */}
           </div>
           <div className="actions flex flex-row justify-end gap-2">
             <button onClick={closeModal} className="button mt-4 text-white">Cancel</button>

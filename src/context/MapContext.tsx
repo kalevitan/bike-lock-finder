@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, ReactNode } from 'react';
-import { MapContextProps } from '@/src/types/types';
+import { MapContextProps } from '@/src/interfaces/map';
 
 const MapContext = createContext<MapContextProps | undefined>(undefined);
 

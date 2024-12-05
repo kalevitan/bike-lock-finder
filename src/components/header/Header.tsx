@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from "react";
+import { usePathname } from 'next/navigation';
 import NavLink from "./nav-link";
 import Search from "./search";
 import { Bike, CircleUserRound, CircleX } from "lucide-react";
@@ -8,11 +9,12 @@ import { Search as SearchIcon } from "lucide-react";
 import classes from "./header.module.css";
 
 interface HeaderProps {
-  onSearch: (query: google.maps.places.PlaceResult | null) => void;
+  onSearch?: (query: google.maps.places.PlaceResult | null) => void;
 }
 
 const Header: React.FC<HeaderProps>= ({ onSearch }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <header className="flex items-center text-white bg-[#242424]">
@@ -36,9 +38,11 @@ const Header: React.FC<HeaderProps>= ({ onSearch }) => {
           ) : (
             <SearchIcon className="sm:hidden cursor-pointer" onClick={() => setIsSearchOpen(true)} />
           )}
-          <form className={`${classes.search_form} ${isSearchOpen ? classes.open : ''}`}>
-            <Search onSearch={onSearch} />
-          </form>
+          {pathname !== '/about' && (
+            <form className={`${classes.search_form} ${isSearchOpen ? classes.open : ''}`}>
+              <Search onSearch={onSearch} />
+            </form>
+          )}
         </div>
 
         <nav className={classes.nav}>

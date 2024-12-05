@@ -19,7 +19,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const data = await req.json(); // Expecting JSON data instead of form data
-  const { title, latitude, longitude, description } = data;
+  const { title, latitude, longitude, description, rating } = data;
 
   try {
     const docRef = await addDoc(collection(db, 'locations'), {
@@ -27,6 +27,7 @@ export async function POST(req: Request) {
       latitude,
       longitude,
       description,
+      rating
     });
     console.log('Document written with ID:', docRef.id);
     return NextResponse.json({ id: docRef.id });
@@ -38,7 +39,7 @@ export async function POST(req: Request) {
 
 export async function PUT(req: Request) {
   const data = await req.json(); // Expecting JSON body
-  const { id, title, latitude, longitude, description } = data;
+  const { id, title, latitude, longitude, description, rating } = data;
 
   if (!id) {
     return NextResponse.error(); // No ID found, return error
@@ -51,6 +52,7 @@ export async function PUT(req: Request) {
       latitude,
       longitude,
       description,
+      rating
     });
 
     console.log('Document updated with ID:', id);

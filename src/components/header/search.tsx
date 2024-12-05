@@ -4,7 +4,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useMapsLibrary } from '@vis.gl/react-google-maps';
 
 interface Props {
-  onSearch: (place: google.maps.places.PlaceResult | null) => void;
+  onSearch?: (place: google.maps.places.PlaceResult | null) => void;
 }
 
 // This is an example of the classic "Place Autocomplete" widget.
@@ -29,7 +29,7 @@ export const Search = ({ onSearch }: Props) => {
     if (!placeAutocomplete) return;
 
     placeAutocomplete.addListener('place_changed', () => {
-      onSearch(placeAutocomplete.getPlace());
+      onSearch?.(placeAutocomplete.getPlace());
     });
   }, [onSearch, placeAutocomplete]);
 

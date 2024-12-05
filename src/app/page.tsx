@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { APIProvider, Map, useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
 import MarkerList from '@/src/components/MarkerList';
 import Header from '@/src/components/header/Header';
@@ -9,7 +9,7 @@ import { getLocation } from '@/src/utils/locationutils';
 import Sidebar from "@/src/components/sidebar/Sidebar";
 import AddPoint from "@/src/components/AddPoint";
 import { MarkerProvider, useMarkerContext } from '@/src/context/MarkerContext';
-import { MarkerProps } from '@/src/types/types';
+import { MarkerProps } from '@/src/interfaces/markers';
 
 const Points: React.FC = () => {
   const { apiKey, libraries, version, mapId, mapTypeId, defaultCenter, defaultZoom } = useMapContext();
@@ -21,7 +21,7 @@ const Points: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editPointData, setEditPointData] = useState<MarkerProps | null>(null);
 
-  const updateLocation = () => {
+  const updateLocation = useCallback(() => {
     getLocation()
       .then((location) => {
         setLocation(location);
@@ -29,36 +29,36 @@ const Points: React.FC = () => {
       .catch((error) => {
         setError(error.message);
       });
-  };
+  }, []);
 
-  const handleSearch = (query: google.maps.places.PlaceResult | null) => {
+  const handleSearch = useCallback((query: google.maps.places.PlaceResult | null) => {
     setSelectedPlace(query);
-  };
+  }, []);
 
-  const handleMarkerClick = (id: string) => {
+  const handleMarkerClick = useCallback((id: string) => {
     setOpenMarkerId(id);
-  };
+  }, []);
 
-  const handleMarkerClose = (id: string) => {
+  const handleMarkerClose = useCallback((id: string) => {
     if (openMarkerId === id) {
       setOpenMarkerId(null);
     }
-  };
+  }, [openMarkerId]);
 
-  const handleMapClick = () => {
+  const handleMapClick = useCallback(() => {
     setOpenMarkerId(null);
-  };
+  }, []);
 
-  const openModal = (editPointData: MarkerProps | null = null) => {
+  const openModal = useCallback((editPointData: MarkerProps | null = null) => {
     setEditPointData(null);
     setIsModalOpen(true);
-  }
+  }, []);
 
-  const handleEditPoint = (pointData: MarkerProps) => {
+  const handleEditPoint =  useCallback((pointData: MarkerProps) => {
     if (!pointData.id) throw new Error("Point data must include an ID for editing.");
     setEditPointData(pointData);
     setIsModalOpen(true);
-  };
+  }, []);
 
   return (
     <APIProvider apiKey={apiKey} libraries={libraries} version={version}>
@@ -142,6 +142,21 @@ const MapContent = ({
 
     if (place?.geometry?.viewport) {
       map.fitBounds(place.geometry.viewport);
+      const infoContent = `<p class="text-black">${place.geometry.location?.lat()}, ${place.geometry.location?.lng()}</p>`
+      const infowindow = new google.maps.InfoWindow({
+        content: infoContent,
+        ariaLabel: "Info window",
+      });
+      const marker = new google.maps.marker.AdvancedMarkerElement({
+        position: place.geometry.location,
+        map,
+        title: place.name,
+      });
+      infowindow.open({
+        anchor: marker,
+        map,
+      });
+      console.log(place.geometry.location?.lat(), place.geometry.location?.lng());
     } else if (place?.geometry?.location) {
       map.setCenter(place.geometry.location);
       map.setZoom(15);

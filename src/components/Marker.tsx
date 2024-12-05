@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { AdvancedMarker, useAdvancedMarkerRef } from '@vis.gl/react-google-maps';
 import { MarkerDetails } from './marker-details/MarkerDetails';
-import { MarkerProps as MarkerData } from '@/src/types/types';
+import { MarkerProps as MarkerData } from '@/src/interfaces/markers';
 import classNames from 'classnames';
 
 interface MarkerProps extends MarkerData {
@@ -57,7 +58,7 @@ const Marker: React.FC<MarkerProps> = (props) => {
 
           <div className="image-container">
             {/* <BikeLockImageGallery /> */}
-            <img src="/images/bike-lock.jpeg" className="image" alt="placeholder" />
+            <Image src="/images/bike-lock.jpeg" className="image" alt="placeholder" width={400} height={400} />
             <span className="icon">
               {/* <BikeIcon /> */}
             </span>
