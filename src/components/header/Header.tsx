@@ -17,7 +17,7 @@ const Header: React.FC<HeaderProps>= ({ onSearch }) => {
   const pathname = usePathname();
 
   return (
-    <header className="flex items-center text-white bg-[#242424]">
+    <header className="fixed top-0 z-10 w-full flex items-center text-white bg-[#242424]">
 
       <div className="logo p-4 sm:min-w-72 max-w-72 min-w-fit">
         <h1>
