@@ -286,7 +286,7 @@
   outline: 2px dotted black;
 }
 .star-shape {
-  background-color: gold;
+  background-color: #ffd700;
   width: 80%;
   height: 80%;
   clip-path: polygon(

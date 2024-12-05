@@ -15,8 +15,6 @@ export const MarkerDetails: React.FC<Props> = ({ details, onEdit }) => {
     rating,
   } = details;
 
-  console.log(title, rating);
-
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onEdit(details);
