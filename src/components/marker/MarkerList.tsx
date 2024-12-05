@@ -1,15 +1,15 @@
 import Marker from "./Marker";
-import { MarkerProps as MarkerData } from "@/src/interfaces/markers";
+import { MarkerProps } from "@/src/interfaces/markers";
 
-interface MarkerProps extends MarkerData {
-  markerData: MarkerData[];
+interface MarkerListProps {
+  markerData: MarkerProps[];
   openMarkerId: string | null;
   onMarkerClick: (id: string) => void;
   onMarkerClose: (id: string) => void;
-  onEditPoint: (pointData: MarkerData) => void;
+  onEditPoint: (pointData: MarkerProps) => void;
 }
 
-const MarkerList: React.FC<MarkerProps> = ({ markerData, openMarkerId, onMarkerClick, onMarkerClose, onEditPoint }) => {
+const MarkerList: React.FC<MarkerListProps> = ({ markerData, openMarkerId, onMarkerClick, onMarkerClose, onEditPoint }) => {
   return (
     <>
       {markerData.map((marker) => (

@@ -5,7 +5,14 @@ const config: Config = {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primaryGray: "var(--primary-gray)",
+        primaryWhite: "var(--primary-white)",
+        primaryPurple: "var(--primary-purple)",
+        primaryGold: "var(--primary-gold)",
+      },
+    },
   },
   plugins: [require('@tailwindcss/forms'),],
 }

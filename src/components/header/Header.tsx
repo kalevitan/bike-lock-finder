@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import { usePathname } from 'next/navigation';
-import NavLink from "./nav-link";
-import Search from "./search";
+import NavLink from "./NavLink";
+import SearchForm from "./SearchForm";
 import { Bike, CircleUserRound, CircleX } from "lucide-react";
 import { Search as SearchIcon } from "lucide-react";
 import classes from "./header.module.css";
@@ -40,7 +40,7 @@ const Header: React.FC<HeaderProps>= ({ onSearch }) => {
           )}
           {pathname !== '/about' && (
             <form className={`${classes.search_form} ${isSearchOpen ? classes.open : ''}`}>
-              <Search onSearch={onSearch} />
+              <SearchForm onSearch={onSearch} />
             </form>
           )}
         </div>

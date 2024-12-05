@@ -1,0 +1,26 @@
+/* hide the actual radio inputs */
+.star {
+  position: fixed;
+  opacity: 0;
+  left: -90000px;
+}
+
+.star:focus + .star_label {
+  outline: 2px dotted black;
+}
+
+.star_label {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 3rem;
+  height: 3rem;
+}
+
+.star_shape {
+  stroke: lightgray;
+}
+
+.star_label .star_shape.highlighted {
+  stroke: var(--primary-gold);
+}

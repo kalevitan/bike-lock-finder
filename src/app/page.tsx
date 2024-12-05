@@ -1,13 +1,13 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { APIProvider, Map, useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
-import MarkerList from '@/src/components/MarkerList';
+import { APIProvider, Map, useMap } from '@vis.gl/react-google-maps';
+import MarkerList from '@/src/components/marker/MarkerList';
 import Header from '@/src/components/header/Header';
 import { useMapContext } from '@/src/context/MapContext';
 import { getLocation } from '@/src/utils/locationutils';
 import Sidebar from "@/src/components/sidebar/Sidebar";
-import AddPoint from "@/src/components/AddPoint";
+import AddPoint from "@/src/components/addpoint/AddPoint";
 import { MarkerProvider, useMarkerContext } from '@/src/context/MarkerContext';
 import { MarkerProps } from '@/src/interfaces/markers';
 
@@ -68,7 +68,7 @@ const Points: React.FC = () => {
           <Sidebar updateLocation={updateLocation} openModal={openModal}/>
           <main className="flex place-content-center md:pl-72">
             {error && <div className="error fixed bg-red-50 mb-8 p-4">{error}</div>}
-            <div id="map">
+            <div id="map" className="w-screen h-screen">
               <Map
                 mapId={mapId}
                 mapTypeId={mapTypeId}
@@ -143,7 +143,7 @@ const MapContent = ({
     if (place?.geometry?.viewport) {
       map.fitBounds(place.geometry.viewport);
       const infoContent = `<p class="text-black">${place.geometry.location?.lat()}, ${place.geometry.location?.lng()}</p>`
-      const infowindow = new google.maps.InfoWindow({
+      const infoWindow = new google.maps.InfoWindow({
         content: infoContent,
         ariaLabel: "Info window",
       });
@@ -152,11 +152,11 @@ const MapContent = ({
         map,
         title: place.name,
       });
-      infowindow.open({
+      infoWindow.open({
         anchor: marker,
         map,
       });
-      console.log(place.geometry.location?.lat(), place.geometry.location?.lng());
+      console.log(place.name, place.geometry.location?.lat(), place.geometry.location?.lng());
     } else if (place?.geometry?.location) {
       map.setCenter(place.geometry.location);
       map.setZoom(15);

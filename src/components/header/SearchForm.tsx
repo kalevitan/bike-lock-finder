@@ -9,7 +9,7 @@ interface Props {
 
 // This is an example of the classic "Place Autocomplete" widget.
 // https://developers.google.com/maps/documentation/javascript/place-autocomplete
-export const Search = ({ onSearch }: Props) => {
+export const SearchForm = ({ onSearch }: Props) => {
   const [placeAutocomplete, setPlaceAutocomplete] =
     useState<google.maps.places.Autocomplete | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -40,4 +40,4 @@ export const Search = ({ onSearch }: Props) => {
   );
 };
 
-export default Search;
+export default SearchForm;

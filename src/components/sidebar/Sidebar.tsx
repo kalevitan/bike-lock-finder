@@ -21,7 +21,7 @@ const Sidebar: React.FC<SidebarProps> = ({ openModal, updateLocation }) => {
               <button onClick={updateLocation} className="button">Locate Me</button>
             </li>
             <li>
-              <button onClick={() => openModal(null)} className="button">Add Lock</button>
+              <button onClick={() => openModal(null)} className="button">Add Point</button>
             </li>
           </ul>
         </nav>
