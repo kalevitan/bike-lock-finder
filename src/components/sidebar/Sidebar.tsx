@@ -16,13 +16,13 @@ const Sidebar: React.FC<SidebarProps> = ({ openModal, updateLocation }) => {
         </div>
 
         <nav className={classes.actions}>
-          <ul className="grid grid-cols-2">
+          <ul className="grid col-auto grid-flow-col justify-around">
             <li>
               <button onClick={updateLocation} className="button">Locate Me</button>
             </li>
-            <li>
+            {/* <li>
               <button onClick={() => openModal(null)} className="button">Add Point</button>
-            </li>
+            </li> */}
           </ul>
         </nav>
       </div>

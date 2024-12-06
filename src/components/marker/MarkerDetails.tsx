@@ -16,7 +16,8 @@ export const MarkerDetails: React.FC<Props> = ({ details, onEdit }) => {
 
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onEdit(details);
+    console.log('Auth needed...')
+    // onEdit(details);
   }
 
   return (
