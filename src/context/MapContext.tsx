@@ -12,7 +12,7 @@ export const MapProvider = ({ children }: { children: ReactNode }) => {
     libraries: ['marker', 'places'],
     mapId: 'b752bc18ec3c0879', // gray 739af084373f96fe
     mapTypeId: 'roadmap',
-    defaultCenter: { lat: 35.60, lng: -82.55 },
+    defaultCenter: { lat: 35.5946, lng: -82.5540 },
     defaultZoom: 15,
     version: "beta",
   };

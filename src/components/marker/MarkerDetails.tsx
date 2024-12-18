@@ -1,6 +1,7 @@
 import React from "react";
 import { Edit, Star } from "lucide-react";
 import { MarkerProps } from "@/src/interfaces/markers";
+import useAuth from "@/src/app/hooks/useAuth";
 
 interface Props {
   details: MarkerProps;
@@ -14,20 +15,23 @@ export const MarkerDetails: React.FC<Props> = ({ details, onEdit }) => {
     rating,
   } = details;
 
+  const loggedIn = useAuth();
+
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    console.log('Auth needed...')
-    // onEdit(details);
+    onEdit(details);
   }
 
   return (
     <div className="details-container flex flex-col bg-primaryGray h-full opacity-0 max-w-0 rounded-r-none invisible">
-      <button className="edit-button absolute right-1 top-1" onClick={(e) => handleEditClick(e)}>
-        <Edit size="20" color="var(--primary-white)" />
-        <span className="sr-only">Edit</span>
-      </button>
+      {loggedIn && (
+        <button className="edit-button absolute right-1 top-1" onClick={(e) => handleEditClick(e)}>
+          <Edit size="20" color="var(--primary-white)" />
+          <span className="sr-only">Edit</span>
+        </button>
+      )}
       <div className="listing-content flex flex-col justify-center gap-4 h-full px-6 overflow-hidden">
-        <h2>{title}</h2>
+        <h2 className="pt-2 sm:pt-0">{title}</h2>
         <div className="details flex flex-row gap-4">
           <div className="detail_item flex items-center gap-1">
             <div className="ratings">

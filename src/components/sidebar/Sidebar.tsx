@@ -1,5 +1,6 @@
 import classes from "./sidebar.module.css";
 import { MarkerProps } from "@/src/interfaces/markers";
+import useAuth from "@/src/app/hooks/useAuth";
 
 interface SidebarProps {
   openModal: (editPointData?: MarkerProps | null) => void;
@@ -7,10 +8,12 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ openModal, updateLocation }) => {
+  const loggedIn = useAuth();
+
   return (
     <aside className={classes.sidebar}>
 
-      <div className="sidebar-layout-wrapper flex flex-col gap-4 px-4">
+      <div className="sidebar-layout-wrapper flex flex-col gap-0 sm:gap-4 px-12 pb-4 sm:px-4">
         <div className="intro pt-4">
           <p>Find or add lock stations on the map to safely and conveniently lock your bike.</p>
         </div>
@@ -20,9 +23,11 @@ const Sidebar: React.FC<SidebarProps> = ({ openModal, updateLocation }) => {
             <li>
               <button onClick={updateLocation} className="button">Locate Me</button>
             </li>
-            {/* <li>
+            {loggedIn && (
+              <li>
               <button onClick={() => openModal(null)} className="button">Add Point</button>
-            </li> */}
+            </li>
+            )}
           </ul>
         </nav>
       </div>

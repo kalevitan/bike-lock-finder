@@ -4,7 +4,7 @@ const About: React.FC = () => {
   return (
     <>
       <Header />
-      <main className="px-4">
+      <main className="px-4 pt-2">
         <section className="max-w-[960px]">
           <h1>About</h1>
           <p>BikeLock Finder is a community-driven tool designed to help cyclists locate safe and reliable bike lock stations around town. Whether you're commuting or exploring, our interactive map provides the information you need to secure your bike with confidence.</p>

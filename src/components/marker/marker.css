@@ -33,10 +33,16 @@
   align-items: center;
 
   transform-origin: bottom;
-  transition:
-    max-width 0.2s ease-in-out,
-    height 0.2s ease-in-out,
+  transition: max-width 0.2s ease-in-out, height 0.2s ease-in-out,
     border-radius 0.2s ease-in-out;
+}
+
+@media (max-width: 768px) {
+  .bike-lock-marker.clicked .custom-pin {
+    flex-direction: column;
+    padding: 1rem;
+    width: 100vw;
+  }
 }
 
 .bike-lock-marker .custom-pin .close-button {
@@ -68,9 +74,10 @@
 }
 
 .bike-lock-marker .custom-pin .image-container .image {
-  height: 100%;
-  object-fit: contain;
   display: block;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
 }
 
 .bike-lock-marker .custom-pin .image-container .icon {
@@ -90,17 +97,12 @@
   border-radius: 50%;
 }
 
-.bike-lock-marker.hovered
-  .custom-pin
-  .image-container {
+.bike-lock-marker.hovered .custom-pin .image-container {
   opacity: 1;
   border-radius: inherit;
 }
 
-.bike-lock-marker.hovered
-  .custom-pin
-  .image-container
-  .icon {
+.bike-lock-marker.hovered .custom-pin .image-container .icon {
   opacity: 0;
 }
 
@@ -122,23 +124,16 @@
   height: 285px;
 }
 
-.bike-lock-marker.clicked
-  .custom-pin
-  .image-container {
+.bike-lock-marker.clicked .custom-pin .image-container {
   border-radius: inherit;
 }
 
-.bike-lock-marker.clicked
-  .custom-pin
-  .image-container
-  .icon {
+.bike-lock-marker.clicked .custom-pin .image-container .icon {
   opacity: 0;
   visibility: hidden;
 }
 
-.bike-lock-marker.clicked
-  .custom-pin
-  .details-container {
+.bike-lock-marker.clicked .custom-pin .details-container {
   max-width: 380px;
   opacity: 1;
   visibility: visible;
@@ -146,19 +141,11 @@
   animation: slideInFadeIn 0.7s ease-in-out;
 }
 
-.bike-lock-marker.clicked
-  .custom-pin
-  .details-container
-  .close-button {
+.bike-lock-marker.clicked .custom-pin .details-container .close-button {
   display: flex;
 }
 
-
-.bike-lock-marker.clicked
-  .custom-pin
-  .details-container
-  .close-button
-  span {
+.bike-lock-marker.clicked .custom-pin .details-container .close-button span {
   font-size: 24px;
 }
 

@@ -35,7 +35,6 @@ a:not(.button):hover {
   text-decoration-color: var(--primary-purple);
   text-decoration-thickness: 2px;
   text-underline-offset: 2px;
-  ;
 }
 
 h1 {
@@ -65,6 +64,10 @@ body {
 
 p {
   margin-bottom: 1rem;
+}
+
+input {
+  @apply text-black;
 }
 
 .button {

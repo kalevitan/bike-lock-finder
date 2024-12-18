@@ -4,6 +4,9 @@ import { AdvancedMarker, useAdvancedMarkerRef } from '@vis.gl/react-google-maps'
 import { MarkerDetails } from './MarkerDetails';
 import { MarkerProps as MarkerData } from '@/src/interfaces/markers';
 import classNames from 'classnames';
+import bikeImage from '@/public/images/bike-lock.jpeg';
+import { Lock } from 'lucide-react';
+import { BikeLockIcon } from '@/assets/icons/bike-lock-icon';
 import './marker.css';
 
 interface MarkerProps extends MarkerData {
@@ -59,9 +62,12 @@ const Marker: React.FC<MarkerProps> = (props) => {
 
           <div className="image-container">
             {/* <BikeLockImageGallery /> */}
-            <Image src="/images/bike-lock.jpeg" className="image" alt="placeholder" width={600} height={400} />
+            <div className="w-full h-full relative">
+              <Image src={bikeImage} sizes="50vw" className="image" alt="bike lock placeholder" />
+            </div>
             <span className="icon">
-              {/* <BikeIcon /> */}
+              <BikeLockIcon />
+              {/* <img src={bikeLock.src} alt="bike lock icon" width={bikeLock.width} height={bikeLock.height}/> */}
             </span>
           </div>
 

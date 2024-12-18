@@ -1,20 +1,26 @@
+import { NextResponse } from 'next/server';
 import { auth } from './firebase';
-import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
+import { signInWithEmailAndPassword } from "firebase/auth";
 
-export const signInWithGoogle = async () => {
-  const provider = new GoogleAuthProvider();
+export const signIn = async (email: string, password: string) => {
   try {
-    const result = await signInWithPopup(auth, provider);
-    return result.user;
-  } catch (error) {
-    console.error(error);
-    return null;
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    if (user) {
+      return NextResponse.json({
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName || null,
+      });
+    }
+  } catch (error: any) {
+    return NextResponse.json('Error signing in', error);
   }
 }
 
-export const signOutOfGoogle = async () => {
+export const signOut = async () => {
   try {
-    await signOut(auth);
+    await auth.signOut();
   } catch (error) {
     console.error(error);
   }

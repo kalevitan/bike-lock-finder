@@ -17,7 +17,7 @@ const Header: React.FC<HeaderProps>= ({ onSearch }) => {
   const pathname = usePathname();
 
   return (
-    <header className="fixed top-0 z-10 w-full flex items-center text-white bg-[#242424]">
+    <header className="z-10 w-full flex items-center text-white bg-[#242424]">
 
       <div className="logo p-4 sm:min-w-72 max-w-72 min-w-fit">
         <h1>
@@ -31,17 +31,19 @@ const Header: React.FC<HeaderProps>= ({ onSearch }) => {
 
       <div className="flex justify-between w-full items-center">
         <div className="search-wrapper">
-          {isSearchOpen ? (
-            <CircleX className="sm:hidden cursor-pointer" onClick={() => setIsSearchOpen(false)}>
-              <span className="sr-only">Close</span>
-            </CircleX>
-          ) : (
-            <SearchIcon className="sm:hidden cursor-pointer" onClick={() => setIsSearchOpen(true)} />
-          )}
-          {pathname !== '/about' && (
-            <form className={`${classes.search_form} ${isSearchOpen ? classes.open : ''}`}>
-              <SearchForm onSearch={onSearch} />
-            </form>
+          {pathname === '/' && (
+            <>
+              {isSearchOpen ? (
+                <CircleX className="sm:hidden cursor-pointer" onClick={() => setIsSearchOpen(false)}>
+                  <span className="sr-only">Close</span>
+                </CircleX>
+              ) : (
+                <SearchIcon className="sm:hidden cursor-pointer" onClick={() => setIsSearchOpen(true)} />
+              )}
+              <form className={`${classes.search_form} ${isSearchOpen ? classes.open : ''}`}>
+                <SearchForm onSearch={onSearch} />
+              </form>
+            </>
           )}
         </div>
 

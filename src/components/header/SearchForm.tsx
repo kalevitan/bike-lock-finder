@@ -35,7 +35,7 @@ export const SearchForm = ({ onSearch }: Props) => {
 
   return (
     <div className="autocomplete-container">
-      <input ref={inputRef} className="text-black w-[300px]" placeholder='Search locations...'/>
+      <input ref={inputRef} className="w-[300px]" placeholder='Search locations...'/>
     </div>
   );
 };
