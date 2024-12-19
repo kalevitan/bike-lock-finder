@@ -1,6 +1,10 @@
 import React from "react";
 
-const PointDetails: React.FC = ({ params }) => {
+interface PointProps {
+  params: any
+}
+
+const PointDetails: React.FC<PointProps> = ({ params }) => {
   const id = params?.id;
   return (
     <div>
