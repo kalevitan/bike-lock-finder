@@ -12,7 +12,6 @@ export const MarkerProvider = ({ children }: { children: ReactNode }) => {
       try {
         const response = await fetch('/api/markers');
         const data = await response.json();
-        setTimeout(() => {} , 1000000);
         setMarkers(data);
       } catch (error) {
         console.error('Error fetching markers:', error);
