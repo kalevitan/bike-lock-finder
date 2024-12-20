@@ -109,7 +109,7 @@ input {
   display: grid;
   grid-template-rows: max-content 1fr;
   grid-template-columns: max-content 1fr;
-  height: 100vh;
+  height: 100dvh;
 }
 
 header {
@@ -119,7 +119,7 @@ header {
 
 @media (max-width: 768px) {
   .grid-layout {
-    grid-template-rows: max-content 1fr auto;
+    grid-template-rows: auto 1fr auto;
     grid-template-columns: 1fr;
   }
 
