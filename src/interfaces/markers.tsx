@@ -1,6 +1,7 @@
 export interface MarkerContextProps {
   markers: MarkerProps[];
   setMarkers: React.Dispatch<React.SetStateAction<MarkerProps[]>>;
+  isLoading: boolean;
 }
 
 export interface MarkerProps {

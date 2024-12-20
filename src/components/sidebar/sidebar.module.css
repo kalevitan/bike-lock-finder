@@ -1,16 +1,11 @@
 .sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
   width: 18rem;
   background-color: var(--primary-gray);
-  position: fixed;
-  top: 60px;
-  bottom: 0;
   z-index: 15;
 
   @media (max-width: 768px) {
     width: 100%;
+    position: absolute;
     top: unset;
     bottom: 0;
   }

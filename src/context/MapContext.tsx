@@ -26,6 +26,7 @@ export const MapProvider = ({ children }: { children: ReactNode }) => {
 
 export const useMapContext = () => {
   const context = useContext(MapContext);
+  console.log('useMarkerContext is being called');
   if (!context) {
     throw new Error('useMapContext must be used within a MapProvider');
   }

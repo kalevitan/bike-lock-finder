@@ -71,7 +71,6 @@ input {
 }
 
 .button {
-  display: inline-block;
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
@@ -102,6 +101,31 @@ input {
 .container {
   padding-left: 2rem;
   padding-right: 2rem;
+}
+
+.grid-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  display: grid;
+  grid-template-rows: max-content 1fr;
+  grid-template-columns: max-content 1fr;
+  height: 100vh;
+}
+
+header {
+  grid-column: 1 / -1;
+  height: 60px;
+}
+
+@media (max-width: 768px) {
+  .grid-layout {
+    grid-template-rows: max-content 1fr auto;
+    grid-template-columns: 1fr;
+  }
+
+  .header {
+    grid-row: 1;
+  }
 }
 
 @media (prefers-color-scheme: light) {

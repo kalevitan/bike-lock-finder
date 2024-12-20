@@ -13,7 +13,7 @@ import { MarkerProps } from '@/src/interfaces/markers';
 
 const Points: React.FC = () => {
   const { apiKey, libraries, version, mapId, mapTypeId, defaultCenter, defaultZoom } = useMapContext();
-  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [location, setLocation] = useState<{ lat: number; lng: number; zoom?: number } | null>(null);
   const [selectedPlace, setSelectedPlace] =
     useState<google.maps.places.PlaceResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -60,34 +60,41 @@ const Points: React.FC = () => {
     setIsModalOpen(true);
   }, []);
 
+  const handleRecenter = useCallback(() => {
+    const cords = { ...defaultCenter, zoom: defaultZoom };
+    setLocation(cords);
+  }, [defaultCenter, defaultZoom]);
+
   return (
     <APIProvider apiKey={apiKey} libraries={libraries} version={version}>
       <MarkerProvider>
-        <div className="flex flex-col">
-          <Header onSearch={handleSearch}/>
+        <div className="grid-layout">
+          <Header onSearch={handleSearch} onRecenter={handleRecenter}/>
           <Sidebar updateLocation={updateLocation} openModal={openModal}/>
-          <main className="flex place-content-center md:pl-72">
-            {error && <div className="error fixed bg-red-50 mb-8 p-4">{error}</div>}
-            <div id="map" className="w-screen h-screen">
-              <Map
-                mapId={mapId}
-                mapTypeId={mapTypeId}
-                defaultCenter={defaultCenter}
-                defaultZoom={defaultZoom}
-                gestureHandling={'greedy'}
-                disableDefaultUI
-                onClick={handleMapClick}>
+          <main className="relative">
+            <div className="absolute w-full h-full">
+              {error && <div className="error fixed bg-red-50 mb-8 p-4">{error}</div>}
+              <div id="map" className="w-full h-full">
+                <Map
+                  mapId={mapId}
+                  mapTypeId={mapTypeId}
+                  defaultCenter={defaultCenter}
+                  defaultZoom={defaultZoom}
+                  gestureHandling={'greedy'}
+                  disableDefaultUI
+                  onClick={handleMapClick}>
 
-                <MapContent
-                  location={location}
-                  place={selectedPlace}
-                  openMarkerId={openMarkerId}
-                  onMarkerClick={handleMarkerClick}
-                  onMarkerClose={handleMarkerClose}
-                  onEditPoint={handleEditPoint}
-                />
+                  <MapContent
+                    location={location}
+                    place={selectedPlace}
+                    openMarkerId={openMarkerId}
+                    onMarkerClick={handleMarkerClick}
+                    onMarkerClose={handleMarkerClose}
+                    onEditPoint={handleEditPoint}
+                  />
 
-              </Map>
+                </Map>
+              </div>
             </div>
           </main>
         </div>
@@ -109,7 +116,7 @@ const MapContent = ({
   onMarkerClose,
   onEditPoint,
 }: {
-  location: { lat: number; lng: number } | null,
+  location: { lat: number; lng: number; zoom?: number } | null,
   place: google.maps.places.PlaceResult | null,
   openMarkerId: string | null,
   onMarkerClick: (id: string) => void,
@@ -117,7 +124,7 @@ const MapContent = ({
   onEditPoint: (pointData: MarkerProps) => void;
 }) => {
   const map = useMap();
-  const { markers } = useMarkerContext();
+  const { markers, isLoading } = useMarkerContext();
 
   useEffect(() => {
     if (!map || !location) return;
@@ -128,7 +135,11 @@ const MapContent = ({
       map.fitBounds(bounds);
 
       const listener = google.maps.event.addListenerOnce(map, 'bounds_changed', () => {
-        map.setZoom(map.getZoom()! - 1);
+        if (location.zoom) {
+          map.setZoom(location.zoom);
+        } else {
+          map.setZoom(map.getZoom()! - 1);
+        }
       });
 
       return () => {
@@ -163,5 +174,21 @@ const MapContent = ({
     }
   }, [map, place]);
 
-  return <MarkerList markerData={markers} openMarkerId={openMarkerId} onMarkerClick={onMarkerClick} onMarkerClose={onMarkerClose} onEditPoint={onEditPoint}/>;
+  return (
+    <>
+      {isLoading && (
+        <div className="absolute top-0 left-0 inset-0 flex items-center justify-center bg-gray-50">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[var(--primary-purple)]"></div>
+          <p className="sr-only">Loading...</p>
+        </div>
+      )}
+      <MarkerList
+        markerData={markers}
+        openMarkerId={openMarkerId}
+        onMarkerClick={onMarkerClick}
+        onMarkerClose={onMarkerClose}
+        onEditPoint={onEditPoint}
+      />
+    </>
+  );
 };

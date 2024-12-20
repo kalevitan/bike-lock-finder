@@ -1,5 +1,3 @@
-'use client';
-
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { MarkerContextProps, MarkerProps } from '@/src/interfaces/markers';
 
@@ -7,19 +5,27 @@ const MarkerContext = createContext<MarkerContextProps | undefined>(undefined);
 
 export const MarkerProvider = ({ children }: { children: ReactNode }) => {
   const [markers, setMarkers] = useState<MarkerProps[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchMarkerData = async () => {
-      const response = await fetch('/api/markers');
-      const data = await response.json();
-      setMarkers(data);
+      try {
+        const response = await fetch('/api/markers');
+        const data = await response.json();
+        setTimeout(() => {} , 1000000);
+        setMarkers(data);
+      } catch (error) {
+        console.error('Error fetching markers:', error);
+      } finally {
+        setIsLoading(false);
+      }
     }
 
     fetchMarkerData();
   }, []);
 
   return (
-    <MarkerContext.Provider value={{ markers, setMarkers }}>
+    <MarkerContext.Provider value={{ markers, setMarkers, isLoading }}>
       {children}
     </MarkerContext.Provider>
   );
