@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Header from "@/src/components/header/Header";
@@ -41,6 +41,13 @@ const Login: React.FC = () => {
       setError(err.message);
     }
   }
+
+  useEffect(() => {
+    setError(null);
+    if (formMode == 'register') {
+      setError('Registration is not yet supported.');
+    }
+  });
 
   const loggedIn = useAuth();
 
