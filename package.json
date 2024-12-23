@@ -11,6 +11,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@vercel/analytics": "1.4.1",
     "@vis.gl/react-google-maps": "latest",
     "classnames": "2.5.1",
     "firebase": "10.13.1",
