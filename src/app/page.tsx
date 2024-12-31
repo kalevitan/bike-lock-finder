@@ -155,6 +155,7 @@ const MapContent = ({
       map.fitBounds(place.geometry.viewport);
       const infoContent = `<p class="text-black">${place.geometry.location?.lat()}, ${place.geometry.location?.lng()}</p>`
       const infoWindow = new google.maps.InfoWindow({
+        headerContent: `<h3 class="text-black font-bold">${place.name}</h3>`,
         content: infoContent,
         ariaLabel: "Info window",
       });

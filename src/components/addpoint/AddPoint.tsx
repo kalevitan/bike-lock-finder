@@ -5,6 +5,7 @@ import Modal from '../modal/Modal';
 import { getLocation } from '@/src/utils/locationutils';
 import { useMarkerContext } from '@/src/context/MarkerContext';
 import { MarkerProps } from '@/src/interfaces/markers';
+import { Locate } from 'lucide-react';
 import FormField from './FormField';
 import Rating from './Rating';
 import xss from 'xss';
@@ -135,7 +136,8 @@ export const AddPoint: React.FC<AddPointProps> = ({ closeModal, pointData }) => 
                 required={true}
               />
             </div>
-            <div className="text-left"><button onClick={locateMe} className="button button--link">Locate me...</button></div>
+            <div className="text-left"><button onClick={locateMe} className="button button--link flex gap-1">
+              <span><Locate /></span>Locate me...</button></div>
             <FormField
               label="Description"
               type="textarea"

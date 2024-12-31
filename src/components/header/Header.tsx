@@ -4,7 +4,8 @@ import React, { useState } from "react";
 import { usePathname } from 'next/navigation';
 import NavLink from "./NavLink";
 import SearchForm from "./SearchForm";
-import { Bike, CircleUserRound, CircleX, Target } from "lucide-react";
+import { CircleUserRound, CircleX, Target } from "lucide-react";
+import { BikeLockIcon } from '@/assets/icons/bike-lock-icon';
 import { Search as SearchIcon } from "lucide-react";
 import classes from "./header.module.css";
 
@@ -24,7 +25,7 @@ const Header: React.FC<HeaderProps>= ({ onSearch, onRecenter }) => {
         <h1>
           <span className="font-bold text-lg m-0">
             <NavLink href="/"><span className="flex items-center gap-1">
-              <Bike size="20" color="var(--primary-white)" />BikeLock Finder</span>
+              <span className="pr-1"><BikeLockIcon /></span>BikeLock Finder</span>
             </NavLink>
           </span>
         </h1>
@@ -46,7 +47,7 @@ const Header: React.FC<HeaderProps>= ({ onSearch, onRecenter }) => {
               </form>
 
               <Target className="md:hidden cursor-pointer" onClick={onRecenter} />
-              <button className="button hidden md:inline-block" onClick={onRecenter}>Recenter</button>
+              <button className="button hidden md:inline-block" onClick={onRecenter}>Re-center</button>
             </>
           )}
         </div>

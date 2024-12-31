@@ -1,8 +1,9 @@
 .bike-lock-marker {
   cursor: pointer;
   position: relative;
+  max-width: 280px;
   transform: translateY(-5px);
-  transition: all 0.2s ease-in-out;
+  /* transition: all 0.2s ease-in-out; */
 }
 
 .bike-lock-marker .triangle {
@@ -16,7 +17,7 @@
   z-index: -1;
   left: 50%;
   transform: translateY(22%) translateX(-50%) rotate(45deg);
-  transition: all 0.2s ease-in-out;
+  /* transition: all 0.2s ease-in-out; */
 }
 
 .bike-lock-marker .custom-pin {
@@ -29,19 +30,20 @@
   border-radius: 50%;
 
   display: flex;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
 
   transform-origin: bottom;
-  transition: max-width 0.2s ease-in-out, height 0.2s ease-in-out,
-    border-radius 0.2s ease-in-out;
+  /* transition: max-width 0.2s ease-in-out, height 0.2s ease-in-out,
+    border-radius 0.2s ease-in-out; */
 }
 
 @media (max-width: 768px) {
   .bike-lock-marker.clicked .custom-pin {
     flex-direction: column;
-    padding: 1rem;
-    width: 100vw;
+    /* padding: 1rem; */
+    /* height: 100dvw; */
   }
 }
 
@@ -89,43 +91,49 @@
 .bike-lock-marker.hovered {
   z-index: 2;
 
-  transform: translateY(-9px);
+  /* transform: translateY(-9px); */
 }
-.bike-lock-marker.hovered .custom-pin {
+/* .bike-lock-marker.hovered .custom-pin {
   max-width: 80px;
   height: 80px;
   border-radius: 50%;
-}
+} */
 
-.bike-lock-marker.hovered .custom-pin .image-container {
+/* .bike-lock-marker.hovered .custom-pin .image-container {
   opacity: 1;
   border-radius: inherit;
 }
 
 .bike-lock-marker.hovered .custom-pin .image-container .icon {
   opacity: 0;
-}
+} */
 
-.bike-lock-marker.hovered .triangle {
+/* .bike-lock-marker.hovered .triangle {
   transform: translateY(23%) translateX(-50%) rotate(45deg) scale(1.4);
-}
+} */
 
-.bike-lock-marker.clicked {
+/* .bike-lock-marker.clicked {
   z-index: 3;
 
   transform: translateY(-9px);
-}
+} */
 
 .bike-lock-marker.clicked .custom-pin {
   background-color: var(--primary-gray);
-  border-radius: 0;
+  border-radius: 8px;
+  flex-direction: column;
   width: fit-content;
-  max-width: 625px;
-  height: 285px;
+  height: fit-content;
+  max-width: 100%;
+  max-height: 285px;
 }
 
 .bike-lock-marker.clicked .custom-pin .image-container {
   border-radius: inherit;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  max-width: 380px;
+  max-height: 145px;
 }
 
 .bike-lock-marker.clicked .custom-pin .image-container .icon {
@@ -136,24 +144,29 @@
 .bike-lock-marker.clicked .custom-pin .details-container {
   max-width: 380px;
   opacity: 1;
+  padding: 0.5rem;
   visibility: visible;
 
-  animation: slideInFadeIn 0.7s ease-in-out;
+  /* animation: slideInFadeIn 0.7s ease-in-out; */
 }
 
 .bike-lock-marker.clicked .custom-pin .details-container .close-button {
   display: flex;
 }
 
+.bike-lock-marker.clicked .custom-pin .details-container .edit-button {
+  display: inline-block;
+}
+
 .bike-lock-marker.clicked .custom-pin .details-container .close-button span {
   font-size: 24px;
 }
 
-.bike-lock-marker.clicked .triangle {
+/* .bike-lock-marker.clicked .triangle {
   transform: translateY(23%) translateX(-50%) rotate(45deg) scale(1.4);
-}
+} */
 
-@keyframes slideInFadeIn {
+/* @keyframes slideInFadeIn {
   0% {
     max-width: 0;
     opacity: 0;
@@ -161,14 +174,14 @@
   }
 
   75% {
-    max-width: 380px;
+    max-width: 280px;
     opacity: 0;
     visibility: hidden;
   }
 
   100% {
-    max-width: 380px;
+    max-width: 280px;
     opacity: 1;
     visibility: visible;
   }
-}
+} */

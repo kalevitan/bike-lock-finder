@@ -57,7 +57,7 @@ const Marker: React.FC<MarkerProps> = (props) => {
       <>
         <div className="custom-pin">
           <button className="close-button" onClick={(e) => { e.stopPropagation(); props.onClose(); }}>
-            <span className="material-symbols-outlined">close</span>
+            <span className="close-button-text">close</span>
           </button>
 
           <div className="image-container">
