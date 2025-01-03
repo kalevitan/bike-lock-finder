@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { MarkerContextProps, MarkerProps } from '@/src/interfaces/markers';
+import { MarkerContextProps, MarkerProps } from '@/interfaces/markers';
 
 const MarkerContext = createContext<MarkerContextProps | undefined>(undefined);
 

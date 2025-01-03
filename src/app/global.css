@@ -117,6 +117,10 @@ header {
   height: 60px;
 }
 
+.gm-title {
+  color: #333;
+}
+
 @media (max-width: 768px) {
   .grid-layout {
     grid-template-rows: auto 1fr auto;

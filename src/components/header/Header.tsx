@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import NavLink from "./NavLink";
 import SearchForm from "./SearchForm";
 import { CircleUserRound, CircleX, Target } from "lucide-react";
-import { BikeLockIcon } from '@/assets/icons/bike-lock-icon';
+import { BikeLockIcon } from '@/components/icons/bike-lock-icon';
 import { Search as SearchIcon } from "lucide-react";
 import classes from "./header.module.css";
 
@@ -22,8 +22,8 @@ const Header: React.FC<HeaderProps>= ({ onSearch, onRecenter }) => {
     <header className="z-10 w-full flex items-center text-white bg-[#242424]">
 
       <div className="logo p-4 md:min-w-72 max-w-72 min-w-fit">
-        <h1>
-          <span className="font-bold text-lg m-0">
+        <h1 className="font-bold text-[1.25rem]">
+          <span className="font-bold m-0">
             <NavLink href="/"><span className="flex items-center gap-1">
               <span className="pr-1"><BikeLockIcon /></span>BikeLock Finder</span>
             </NavLink>

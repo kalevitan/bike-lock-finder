@@ -1,13 +1,12 @@
 'use client';
 
 import React, { use, useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import Header from "@/src/components/header/Header";
+import Header from "@/components/header/Header";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from '@/src/lib/firebase';
-import { signOut } from "@/src/lib/auth";
-import useAuth from "@/src/app/hooks/useAuth";
+import { auth } from '@/lib/firebase';
+import { signOut } from "@/lib/auth";
+import useAuth from "@/app/hooks/useAuth";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -30,7 +29,7 @@ const Login: React.FC = () => {
       });
       const result = await response.json();
       if (result.user) {
-        // Authenticate user on the client-side as well
+        // Need to authenticate user on the client-side as well
         await signInWithEmailAndPassword(auth, email, password);
         router.push('..')
       } else {

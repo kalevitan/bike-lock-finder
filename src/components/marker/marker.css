@@ -120,12 +120,12 @@
 
 .bike-lock-marker.clicked .custom-pin {
   background-color: var(--primary-gray);
-  border-radius: 8px;
+  border-radius: 4px;
   flex-direction: column;
   width: fit-content;
   height: fit-content;
   max-width: 100%;
-  max-height: 285px;
+  max-height: 300px;
 }
 
 .bike-lock-marker.clicked .custom-pin .image-container {
@@ -133,7 +133,7 @@
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
   max-width: 380px;
-  max-height: 145px;
+  max-height: 150px;
 }
 
 .bike-lock-marker.clicked .custom-pin .image-container .icon {
@@ -146,7 +146,8 @@
   opacity: 1;
   padding: 0.5rem;
   visibility: visible;
-
+  border: 0px solid rgb(209, 209, 213);
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 2px 4px 0px;
   /* animation: slideInFadeIn 0.7s ease-in-out; */
 }
 

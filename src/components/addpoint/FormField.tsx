@@ -1,10 +1,12 @@
 import React from "react";
-import { FormFieldProps } from "@/src/interfaces/forms";
+import { FormFieldProps } from "@/interfaces/forms";
 
 const FormField: React.FC<FormFieldProps> = ({ label, name, value, onChange, type = 'text', required = false }) => {
   return (
     <div className="flex flex-col text-left">
-      <label htmlFor={name} className="mb-2">{label}</label>
+      <label htmlFor={name} className="mb-2">{label}
+        {required && <span className="text-red-500">*</span>}
+      </label>
       {type === 'textarea' ? (
         <textarea
           id={name}

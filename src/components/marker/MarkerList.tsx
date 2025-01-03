@@ -1,5 +1,5 @@
 import Marker from "./Marker";
-import { MarkerProps } from "@/src/interfaces/markers";
+import { MarkerProps } from "@/interfaces/markers";
 
 interface MarkerListProps {
   markerData: MarkerProps[];

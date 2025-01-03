@@ -1,7 +1,7 @@
 import React from "react";
-import { Edit, Star } from "lucide-react";
-import { MarkerProps } from "@/src/interfaces/markers";
-import useAuth from "@/src/app/hooks/useAuth";
+import { Edit, Star, Navigation } from "lucide-react";
+import { MarkerProps } from "@/interfaces/markers";
+import useAuth from "@/app/hooks/useAuth";
 
 interface Props {
   details: MarkerProps;
@@ -12,6 +12,8 @@ export const MarkerDetails: React.FC<Props> = ({ details, onEdit }) => {
   const {
     title,
     description,
+    latitude,
+    longitude,
     rating,
   } = details;
 
@@ -30,9 +32,11 @@ export const MarkerDetails: React.FC<Props> = ({ details, onEdit }) => {
           <span className="sr-only">Edit</span>
         </button>
       )}
-      <div className="listing-content flex flex-col justify-center gap-4 h-full overflow-hidden">
+      <div className="listing-content flex flex-col justify-center gap-[.25rem] h-full overflow-hidden">
         <div className="">
-          <h2 className="text-lg">{title}</h2>
+          <a href={`https://maps.google.com/?q=${latitude},${longitude}`} target="_blank" rel="noreferrer" title="Get Directions">
+            <h2 className="text-lg flex gap-1 items-center">{title}<span><Navigation size={15}/></span></h2>
+          </a>
           <p className="description text-sm mb-0">{description}</p>
         </div>
         <div className="details flex flex-row gap-4">
@@ -47,7 +51,7 @@ export const MarkerDetails: React.FC<Props> = ({ details, onEdit }) => {
             </div>
           </div>
         </div>
-        <button type="button" className="button cursor-pointer" onClick={(e) => e.stopPropagation()}>Get Directions</button>
+        {/* <button type="button" className="button cursor-pointer" onClick={(e) => e.stopPropagation()}>Get Directions</button> */}
       </div>
     </article>
   )

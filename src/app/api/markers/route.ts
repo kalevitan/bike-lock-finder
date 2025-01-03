@@ -1,5 +1,5 @@
 import { collection, getDocs, addDoc, doc, updateDoc } from 'firebase/firestore';
-import { db } from '@/src/lib/firebase'; // Adjust path as needed
+import { db } from '@/lib/firebase';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
@@ -10,7 +10,7 @@ export async function GET() {
       ...doc.data(),
     }));
 
-    return NextResponse.json(markers); // Return markers as JSON
+    return NextResponse.json(markers);
   } catch (e) {
     console.error('Error fetching markers:', e);
     return NextResponse.error();
@@ -18,7 +18,7 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const data = await req.json(); // Expecting JSON data instead of form data
+  const data = await req.json();
   const { title, latitude, longitude, description, rating } = data;
 
   try {
@@ -38,15 +38,15 @@ export async function POST(req: Request) {
 }
 
 export async function PUT(req: Request) {
-  const data = await req.json(); // Expecting JSON body
+  const data = await req.json();
   const { id, title, latitude, longitude, description, rating } = data;
 
   if (!id) {
-    return NextResponse.error(); // No ID found, return error
+    return NextResponse.error();
   }
 
   try {
-    const docRef = doc(db, 'locations', id); // Get document reference by ID
+    const docRef = doc(db, 'locations', id);
     await updateDoc(docRef, {
       title,
       latitude,
@@ -56,9 +56,9 @@ export async function PUT(req: Request) {
     });
 
     console.log('Document updated with ID:', id);
-    return NextResponse.json({ id }); // Return updated document ID
+    return NextResponse.json({ id });
   } catch (e) {
     console.error('Error updating document:', e);
-    return NextResponse.error(); // Handle error and return error response
+    return NextResponse.error();
   }
 }

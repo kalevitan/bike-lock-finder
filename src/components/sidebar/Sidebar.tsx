@@ -1,6 +1,6 @@
 import classes from "./sidebar.module.css";
-import { MarkerProps } from "@/src/interfaces/markers";
-import useAuth from "@/src/app/hooks/useAuth";
+import { MarkerProps } from "@/interfaces/markers";
+import useAuth from "@/app/hooks/useAuth";
 
 interface SidebarProps {
   openModal: (editPointData?: MarkerProps | null) => void;
@@ -25,7 +25,7 @@ const Sidebar: React.FC<SidebarProps> = ({ openModal, updateLocation }) => {
             </li>
             {loggedIn && (
               <li>
-              <button onClick={() => openModal(null)} className="button">Add Point</button>
+              <button onClick={() => openModal(null)} className="button">Add Lock</button>
             </li>
             )}
           </ul>

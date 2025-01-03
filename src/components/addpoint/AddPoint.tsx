@@ -2,9 +2,9 @@
 
 import React, { use, useEffect, useState } from 'react';
 import Modal from '../modal/Modal';
-import { getLocation } from '@/src/utils/locationutils';
-import { useMarkerContext } from '@/src/context/MarkerContext';
-import { MarkerProps } from '@/src/interfaces/markers';
+import { getLocation } from '@/utils/locationutils';
+import { useMarkerContext } from '@/context/MarkerContext';
+import { MarkerProps } from '@/interfaces/markers';
 import { Locate } from 'lucide-react';
 import FormField from './FormField';
 import Rating from './Rating';
@@ -136,15 +136,17 @@ export const AddPoint: React.FC<AddPointProps> = ({ closeModal, pointData }) => 
                 required={true}
               />
             </div>
-            <div className="text-left"><button onClick={locateMe} className="button button--link flex gap-1">
-              <span><Locate /></span>Locate me...</button></div>
+            <div className="text-left">
+              <button onClick={locateMe} className="button button--link flex gap-1">
+              <span><Locate /></span>Locate me...</button>
+            </div>
             <FormField
               label="Description"
               type="textarea"
               name="description"
               value={formData.description}
               onChange={handleChange}
-              required={true}
+              required={false}
             />
             <Rating rating={formData.rating} onChange={handleRatingChange} />
           </div>

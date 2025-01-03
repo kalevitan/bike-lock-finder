@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Header from "@/src/components/header/Header";
+import Header from "@/components/header/Header";
 
 const About: React.FC = () => {
   return (

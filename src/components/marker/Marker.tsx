@@ -2,11 +2,9 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { AdvancedMarker, useAdvancedMarkerRef } from '@vis.gl/react-google-maps';
 import { MarkerDetails } from './MarkerDetails';
-import { MarkerProps as MarkerData } from '@/src/interfaces/markers';
+import { MarkerProps as MarkerData } from '@/interfaces/markers';
 import classNames from 'classnames';
-import bikeImage from '@/public/images/bike-lock.jpeg';
-import { Lock } from 'lucide-react';
-import { BikeLockIcon } from '@/assets/icons/bike-lock-icon';
+import { BikeLockIcon } from '@/components/icons/bike-lock-icon';
 import './marker.css';
 
 interface MarkerProps extends MarkerData {
@@ -19,7 +17,6 @@ interface MarkerProps extends MarkerData {
 const Marker: React.FC<MarkerProps> = (props) => {
   const [markerRef, marker] = useAdvancedMarkerRef();
   const [hovered, setHovered] = useState(false);
-
   const position = { lat: parseFloat(props.latitude), lng: parseFloat(props.longitude) };
 
   useEffect(() => {
@@ -63,11 +60,10 @@ const Marker: React.FC<MarkerProps> = (props) => {
           <div className="image-container">
             {/* <BikeLockImageGallery /> */}
             <div className="w-full h-full relative">
-              <Image src={bikeImage} sizes="50vw" className="image" alt="bike lock placeholder" />
+              <Image src="/images/bike-lock.jpeg" width={300} height={300} sizes="50vw" className="image" alt="bike lock placeholder image" />
             </div>
             <span className="icon">
               <BikeLockIcon />
-              {/* <img src={bikeLock.src} alt="bike lock icon" width={bikeLock.width} height={bikeLock.height}/> */}
             </span>
           </div>
 
