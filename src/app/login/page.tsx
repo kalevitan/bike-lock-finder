@@ -44,7 +44,7 @@ const Login: React.FC = () => {
   useEffect(() => {
     setError(null);
     if (formMode == 'register') {
-      setError('Registration is not yet supported.');
+      setError('Sorry, registration is not yet supported.');
     }
   });
 
@@ -54,20 +54,21 @@ const Login: React.FC = () => {
     <>
       <Header />
       <main>
-        <div className="grid justify-center pt-8">
-          <div className="px-4">
+        <div className="w-fit m-auto">
+          <div className="grid justify-center pt-8 px-4">
             {!loggedIn ? (
               <>
-                <h1 className="pb-2">
+                <h1 className="pb-6">
                   {formMode == 'login' ? (
                     "Login"
                   ) : (
                     "Register"
                   )}
                 </h1>
-                <form method="post" onSubmit={handleSubmit}>
+
+                <form className="min-w-80" method="post" onSubmit={handleSubmit}>
                   <div className="grid grid-cols-1 gap-4 max-w-96">
-                    <div className="flex flex-col text-left">
+                    <div className="flex flex-col text-left gap-2">
                       <label htmlFor="email">Email</label>
                       <input
                         type="email"
@@ -79,7 +80,7 @@ const Login: React.FC = () => {
                         required
                       />
                     </div>
-                    <div className="flex flex-col text-left">
+                    <div className="flex flex-col text-left gap-2">
                       <label htmlFor="password">Password</label>
                       <input
                         type="password"
@@ -90,22 +91,22 @@ const Login: React.FC = () => {
                         required
                       />
                     </div>
-                    <button className="button" type="submit">
+                    <button className="button mt-6" type="submit">
                       {formMode == 'login' ? (
                         "Login"
                       ) : (
                         "Register"
                       )}
                     </button>
-                    <div className="pt-2">
-                      {formMode == 'login' ? (
-                        <button onClick={() => setFormMode('register')}>Don't have an account? Please register here.</button>
-                      ) : (
-                        <button onClick={() => setFormMode('login')}>Already have an account? Please login here.</button>
-                      )}
-                    </div>
                   </div>
-                  {error && <p style={{ color: 'red' }}>{error}</p>}
+                <div className="pt-6 pb-4 text-center">
+                  {formMode == 'login' ? (
+                    <button onClick={() => setFormMode('register')}>Don't have an account? Register here.</button>
+                  ) : (
+                    <button onClick={() => setFormMode('login')}>Already have an account? Login here.</button>
+                  )}
+                </div>
+                  {error && <p className="text-red-600 text-center">{error}</p>}
                 </form>
               </>
             ) : (

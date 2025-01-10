@@ -53,21 +53,24 @@ const Marker: React.FC<MarkerProps> = (props) => {
     return (
       <>
         <div className="custom-pin">
-          <button className="close-button" onClick={(e) => { e.stopPropagation(); props.onClose(); }}>
-            <span className="close-button-text">close</span>
-          </button>
-
           <div className="image-container">
             {/* <BikeLockImageGallery /> */}
             <div className="w-full h-full relative">
-              <Image src="/images/bike-lock.jpeg" width={300} height={300} sizes="50vw" className="image" alt="bike lock placeholder image" />
+              <Image
+                src="/images/bike-lock.jpeg"
+                width={300}
+                height={300}
+                sizes="50vw"
+                className="image"
+                alt="bike lock placeholder image"
+              />
             </div>
             <span className="icon">
               <BikeLockIcon />
             </span>
           </div>
 
-          <MarkerDetails details={props} onEdit={(pointData) => props.onEditPoint({ ...props, ...pointData })} />
+          <MarkerDetails details={props} onEdit={(pointData) => props.onEditPoint({ ...props, ...pointData })}/>
 
           <div className="triangle"></div>
         </div>

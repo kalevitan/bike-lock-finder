@@ -1,6 +1,6 @@
 import React from "react";
 import { Star } from "lucide-react";
-import classes from './addpoint.module.css';
+import classes from './addlock.module.css';
 
 interface RatingProps {
   rating: number;

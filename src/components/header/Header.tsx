@@ -3,11 +3,12 @@
 import React, { useState } from "react";
 import { usePathname } from 'next/navigation';
 import NavLink from "./NavLink";
-import SearchForm from "./SearchForm";
+import SearchForm from "@/components/searchform/SearchForm";
 import { CircleUserRound, CircleX, Target } from "lucide-react";
 import { BikeLockIcon } from '@/components/icons/bike-lock-icon';
 import { Search as SearchIcon } from "lucide-react";
 import classes from "./header.module.css";
+import useAuth from "@/app/hooks/useAuth";
 
 interface HeaderProps {
   onSearch?: (query: google.maps.places.PlaceResult | null) => void;
@@ -17,14 +18,14 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps>= ({ onSearch, onRecenter }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pathname = usePathname();
+  const loggedIn = useAuth();
 
   return (
     <header className="z-10 w-full flex items-center text-white bg-[#242424]">
-
       <div className="logo p-4 md:min-w-72 max-w-72 min-w-fit">
         <h1 className="font-bold text-[1.25rem]">
           <span className="font-bold m-0">
-            <NavLink href="/"><span className="flex items-center gap-1">
+            <NavLink href="/" classes="logo"><span className="flex items-center gap-1">
               <span className="pr-1"><BikeLockIcon /></span>BikeLock Finder</span>
             </NavLink>
           </span>
@@ -58,7 +59,16 @@ const Header: React.FC<HeaderProps>= ({ onSearch, onRecenter }) => {
               <NavLink href="/about">About</NavLink>
             </li>
             <li>
-              <NavLink href="/login"><CircleUserRound /><span className="sr-only">Login</span></NavLink>
+              <NavLink href="/login" classes="flex gap-1">
+                <CircleUserRound />
+                  {loggedIn ? (
+                    <div className="login-info hidden md:block">
+                      <span>{loggedIn.email}</span>
+                    </div>
+                  ) : (
+                    <span className="hidden sm:block">Login</span>
+                  )}
+              </NavLink>
             </li>
           </ul>
         </nav>

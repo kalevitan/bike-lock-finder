@@ -6,7 +6,7 @@ import Header from '@/components/header/Header';
 import { useMapContext } from '@/context/MapContext';
 import { getLocation } from '@/utils/locationutils';
 import Sidebar from "@/components/sidebar/Sidebar";
-import AddPoint from "@/components/addpoint/AddPoint";
+import AddLock from "@/components/addlock/AddLock";
 import MapContent from "@/components/map/MapContent";
 import { MarkerProvider } from '@/context/MarkerContext';
 import { MarkerProps } from '@/interfaces/markers';
@@ -89,7 +89,7 @@ const Points: React.FC = () => {
           </main>
         </div>
         {isModalOpen && (
-          <AddPoint closeModal={() => setIsModalOpen(false)} pointData={editPointData}/>
+          <AddLock closeModal={() => setIsModalOpen(false)} pointData={editPointData}/>
         )}
       </MarkerProvider>
     </APIProvider>

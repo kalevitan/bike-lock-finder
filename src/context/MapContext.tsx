@@ -1,12 +1,11 @@
 'use client';
 
-import { createContext, useContext, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode } from 'react';
 import { MapContextProps } from '@/interfaces/map';
 
 const MapContext = createContext<MapContextProps | undefined>(undefined);
 
 export const MapProvider = ({ children }: { children: ReactNode }) => {
-
   const mapConfig: MapContextProps = {
     apiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY || '',
     libraries: ['marker', 'places'],

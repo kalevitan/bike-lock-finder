@@ -21,6 +21,10 @@
   stroke: lightgray;
 }
 
+.star_shape:hover {
+  stroke: var(--primary-gold);
+}
+
 .star_label .star_shape.highlighted {
   stroke: var(--primary-gold);
 }

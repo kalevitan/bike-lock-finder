@@ -8,9 +8,10 @@ export const getLocation = (): Promise<{ lat: number; lng: number }> => {
           resolve({ lat: latitude, lng: longitude });
         },
         (error) => {
+          console.error('Location error:', error.code, error.message);
           reject(error);
         },
-        { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 }
+        { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
       );
     } else {
       reject(new Error('Geolocation is not supported by this browser.'));

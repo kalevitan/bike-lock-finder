@@ -3,12 +3,12 @@ import { Edit, Star, Navigation } from "lucide-react";
 import { MarkerProps } from "@/interfaces/markers";
 import useAuth from "@/app/hooks/useAuth";
 
-interface Props {
+interface MarkerDetailsProps {
   details: MarkerProps;
   onEdit: (pointData: MarkerProps) => void;
 }
 
-export const MarkerDetails: React.FC<Props> = ({ details, onEdit }) => {
+export const MarkerDetails: React.FC<MarkerDetailsProps> = ({ details, onEdit }) => {
   const {
     title,
     description,
@@ -33,8 +33,8 @@ export const MarkerDetails: React.FC<Props> = ({ details, onEdit }) => {
         </button>
       )}
       <div className="listing-content flex flex-col justify-center gap-[.25rem] h-full overflow-hidden">
-        <div className="">
-          <a href={`https://maps.google.com/?q=${latitude},${longitude}`} target="_blank" rel="noreferrer" title="Get Directions">
+        <div className="heading">
+          <a href={`https://maps.google.com/?q=${latitude},${longitude}`} className="heading-link" target="_blank" rel="noreferrer" title="Get Directions">
             <h2 className="text-lg flex gap-1 items-center">{title}<span><Navigation size={15}/></span></h2>
           </a>
           <p className="description text-sm mb-0">{description}</p>

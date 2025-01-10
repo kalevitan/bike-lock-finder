@@ -5,4 +5,5 @@ export interface FormFieldProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   type?: 'text' | 'textarea';
   required?: boolean;
+  hidden?: boolean;
 }

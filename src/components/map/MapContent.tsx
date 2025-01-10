@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { use, useEffect } from "react";
 import { useMap } from "@vis.gl/react-google-maps";
 import { useMarkerContext } from "@/context/MarkerContext";
 import { MapContentProps } from "@/interfaces/map";
@@ -14,6 +14,13 @@ export const MapContent: React.FC<MapContentProps> = ({
 }) => {
   const map = useMap();
   const { markers, isLoading } = useMarkerContext();
+
+  useEffect(() => {
+    if (map) {
+      const bikeLayer = new google.maps.BicyclingLayer();
+      bikeLayer.setMap(map);
+    }
+  }, [map]);
 
   useEffect(() => {
     if (!map || !location) return;
@@ -42,24 +49,24 @@ export const MapContent: React.FC<MapContentProps> = ({
 
     if (place?.geometry?.viewport) {
       map.fitBounds(place.geometry.viewport);
-      const infoContent = `
-        <div class="text-black">
-          <h3>${place.name}</h3>
-          <p>${place.geometry.location?.lat()}, ${place.geometry.location?.lng()}</p>
-        </div>`
-      const infoWindow = new google.maps.InfoWindow({
-        content: infoContent,
-        ariaLabel: "Info window",
-      });
-      const marker = new google.maps.marker.AdvancedMarkerElement({
-        position: place.geometry.location,
-        map,
-        title: place.name,
-      });
-      infoWindow.open({
-        anchor: marker,
-        map,
-      });
+      // const infoContent = `
+      //   <div class="text-black">
+      //     <h3>${place.name}</h3>
+      //     <p>${place.geometry.location?.lat()}, ${place.geometry.location?.lng()}</p>
+      //   </div>`
+      // const infoWindow = new google.maps.InfoWindow({
+      //   content: infoContent,
+      //   ariaLabel: "Info window",
+      // });
+      // const marker = new google.maps.marker.AdvancedMarkerElement({
+      //   position: place.geometry.location,
+      //   map,
+      //   title: place.name,
+      // });
+      // infoWindow.open({
+      //   anchor: marker,
+      //   map,
+      // });
       console.log(place.name, place.geometry.location?.lat(), place.geometry.location?.lng());
     } else if (place?.geometry?.location) {
       map.setCenter(place.geometry.location);

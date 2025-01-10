@@ -1,21 +1,22 @@
 'use client';
 
-import React, { use, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Modal from '../modal/Modal';
 import { getLocation } from '@/utils/locationutils';
 import { useMarkerContext } from '@/context/MarkerContext';
 import { MarkerProps } from '@/interfaces/markers';
-import { Locate } from 'lucide-react';
+import { Locate, UserPen, MessageCircleWarning } from 'lucide-react';
 import FormField from './FormField';
 import Rating from './Rating';
-import xss from 'xss';
+import SearchForm from '@/components/searchform/SearchForm';
+import useSubmitForm from '@/app/hooks/useSubmitForm';
 
-interface AddPointProps {
+interface AddLockProps {
   closeModal: () => void;
   pointData?: MarkerProps | null;
 }
 
-export const AddPoint: React.FC<AddPointProps> = ({ closeModal, pointData }) => {
+export const AddLock: React.FC<AddLockProps> = ({ closeModal, pointData }) => {
   const [formData, setFormData] = useState({
     title: pointData?.title || '',
     latitude: pointData?.latitude || '',
@@ -23,14 +24,25 @@ export const AddPoint: React.FC<AddPointProps> = ({ closeModal, pointData }) => 
     description: pointData?.description || '',
     rating: pointData?.rating || 0,
   });
+  const [expandGeometry, setExpandGeometry] = useState(pointData ? false : true);
+  const [noChange, setNoChange] = useState(true);
+  console.log(noChange);
 
   const { setMarkers } = useMarkerContext();
+
+  const { handleSubmit, isSubmitting } = useSubmitForm({
+    pointData,
+    setMarkers,
+    closeModal,
+    formData,
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
+    setNoChange(false);
   }
 
   const handleRatingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,53 +53,26 @@ export const AddPoint: React.FC<AddPointProps> = ({ closeModal, pointData }) => 
     });
   }
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleOnSearch = (place: google.maps.places.PlaceResult | null) => {
+    if (!place || !place.geometry) return;
+
+    const lat = place.geometry.location?.lat() ?? '';
+    const lng = place.geometry.location?.lng() ?? '';
+
+    setFormData((prev) => ({
+      ...prev,
+      title: place.name ?? '',
+      latitude: lat.toString(),
+      longitude: lng.toString(),
+    }));
+
+    setExpandGeometry(false);
+    setNoChange(false);
+  };
+
+  const handleExpandGeometry = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-
-    const url = '/api/markers';
-    const method = pointData?.id ? 'PUT' : 'POST';
-
-    // Sanitize form data
-    const sanitizedData = Object.fromEntries(
-      Object.entries(formData).map(([key, value]) => [key, xss(String(value))])
-    );
-
-    const response = await fetch(url, {
-      method,
-      body: JSON.stringify({
-        ...sanitizedData,
-        id: pointData?.id,
-      }),
-      headers: { "Content-Type": "application/json" },
-    });
-
-    if (response.ok) {
-      console.log("Form submitted successfully!");
-      const responseData = await response.json();
-
-      // Firebase typically returns the generated ID
-      const newMarkerId = responseData.id;
-
-      if (!pointData?.id) {
-        // Add new marker with the ID from Firebase
-        setMarkers((prev: MarkerProps[]) => [
-          ...prev,
-          { ...formData, id: newMarkerId },
-        ]);
-      } else {
-        // Update existing marker
-        setMarkers((prev: MarkerProps[]) => {
-          const updatedMarkers = prev.map((m) =>
-            m.id === pointData.id ? { ...m, ...formData } : m
-          );
-          console.log('Updated Markers:', updatedMarkers);
-          return updatedMarkers;
-        });
-      }
-      closeModal();
-    } else {
-      console.error("Error submitting form.");
-    }
+    setExpandGeometry(!expandGeometry);
   }
 
   const locateMe = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -99,6 +84,7 @@ export const AddPoint: React.FC<AddPointProps> = ({ closeModal, pointData }) => 
           latitude: position.lat.toString(),
           longitude: position.lng.toString(),
         }));
+        setExpandGeometry(false);
       })
       .catch((error) => {
         console.error('Error getting location:', error);
@@ -117,8 +103,18 @@ export const AddPoint: React.FC<AddPointProps> = ({ closeModal, pointData }) => 
               value={formData.title}
               onChange={handleChange}
               required={true}
+              hidden={expandGeometry}
             />
-            <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col text-left">
+              <label htmlFor="search" className="my-2">Location<span className="text-red-500">*</span></label>
+              <div className="flex flex-row gap-2">
+                <SearchForm onSearch={handleOnSearch}/>
+                <button className="button text-white flex gap-1" onClick={handleExpandGeometry}>
+                  <UserPen/><span className="">{expandGeometry ? 'Edit' : 'Collapse'}</span>
+                </button>
+              </div>
+            </div>
+            <div className={`grid grid-cols-2 gap-4 ${expandGeometry ? 'hidden' : 'visible'}`}>
               <FormField
                 label="Latitude"
                 type="text"
@@ -126,6 +122,7 @@ export const AddPoint: React.FC<AddPointProps> = ({ closeModal, pointData }) => 
                 value={formData.latitude}
                 onChange={handleChange}
                 required={true}
+                hidden={expandGeometry}
               />
               <FormField
                 label="Longitude"
@@ -134,6 +131,7 @@ export const AddPoint: React.FC<AddPointProps> = ({ closeModal, pointData }) => 
                 value={formData.longitude}
                 onChange={handleChange}
                 required={true}
+                hidden={expandGeometry}
               />
             </div>
             <div className="text-left">
@@ -151,8 +149,11 @@ export const AddPoint: React.FC<AddPointProps> = ({ closeModal, pointData }) => 
             <Rating rating={formData.rating} onChange={handleRatingChange} />
           </div>
           <div className="actions flex flex-row justify-end gap-2">
-            <button type="button" onClick={closeModal} className="button mt-4 text-white">Cancel</button>
-            <button type="submit" className="button mt-4 text-white">{pointData ? 'Update' : 'Submit'}</button>
+            <button type="button" onClick={closeModal} className="button button--secondary mt-4 text-white">Cancel</button>
+            <button type="submit" className="button mt-4 text-white" disabled={isSubmitting || noChange}>{pointData ? 'Update' : 'Submit'}</button>
+          </div>
+          <div className="report-issue text-sm">
+            <a href="" className="flex items-center justify-end gap-1 text-gray-500" target="_blank"><MessageCircleWarning size={15}/><span>Report an issue</span></a>
           </div>
         </form>
       </div>
@@ -160,4 +161,4 @@ export const AddPoint: React.FC<AddPointProps> = ({ closeModal, pointData }) => 
   );
 };
 
-export default AddPoint;
+export default AddLock;
