@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { Viewport } from 'next';
-import { MapProvider } from '../context/MapContext';
+import { MapProvider } from '../contexts/MapContext';
 import { Analytics } from "@vercel/analytics/react"
 import './global.css';
 

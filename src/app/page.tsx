@@ -3,12 +3,12 @@
 import { useCallback, useState } from 'react';
 import { APIProvider, Map } from '@vis.gl/react-google-maps';
 import Header from '@/components/header/Header';
-import { useMapContext } from '@/context/MapContext';
+import { useMapContext } from '@/contexts/MapContext';
 import { getLocation } from '@/utils/locationutils';
 import Sidebar from "@/components/sidebar/Sidebar";
 import AddLock from "@/components/addlock/AddLock";
 import MapContent from "@/components/map/MapContent";
-import { MarkerProvider } from '@/context/MarkerContext';
+import { MarkerProvider } from '@/contexts/MarkerContext';
 import { MarkerProps } from '@/interfaces/markers';
 
 const Points: React.FC = () => {
@@ -73,7 +73,8 @@ const Points: React.FC = () => {
                   defaultCenter={defaultCenter}
                   defaultZoom={defaultZoom}
                   gestureHandling={'greedy'}
-                  disableDefaultUI
+                  disableDefaultUI={true}
+                  fullscreenControl={true}
                   onClick={() => setOpenMarkerId(null)}>
                   <MapContent
                     location={location}

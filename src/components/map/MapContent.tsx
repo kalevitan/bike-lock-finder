@@ -1,6 +1,6 @@
 import React, { use, useEffect } from "react";
 import { useMap } from "@vis.gl/react-google-maps";
-import { useMarkerContext } from "@/context/MarkerContext";
+import { useMarkerContext } from "@/contexts/MarkerContext";
 import { MapContentProps } from "@/interfaces/map";
 import MarkerList from "@/components/marker/MarkerList";
 
@@ -67,12 +67,28 @@ export const MapContent: React.FC<MapContentProps> = ({
       //   anchor: marker,
       //   map,
       // });
-      console.log(place.name, place.geometry.location?.lat(), place.geometry.location?.lng());
     } else if (place?.geometry?.location) {
       map.setCenter(place.geometry.location);
-      map.setZoom(15);
+      map.setZoom(14);
     }
   }, [map, place]);
+
+  useEffect(() => {
+    if (!map || !openMarkerId) return;
+
+    const openMarker = markers.find(marker => marker.id === openMarkerId);
+    if (!openMarker) return;
+
+    const markerPosition = {
+      lat: parseFloat(openMarker.latitude),
+      lng: parseFloat(openMarker.longitude)
+    };
+
+    const bounds = new google.maps.LatLngBounds();
+    bounds.extend(markerPosition);
+
+    map.panTo(bounds.getCenter());
+  }, [map, openMarkerId, markers]);
 
   return (
     <>

@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from '../modal/Modal';
 import { getLocation } from '@/utils/locationutils';
-import { useMarkerContext } from '@/context/MarkerContext';
+import { useMarkerContext } from '@/contexts/MarkerContext';
 import { MarkerProps } from '@/interfaces/markers';
 import { Locate, UserPen, MessageCircleWarning } from 'lucide-react';
 import FormField from './FormField';
@@ -17,20 +17,30 @@ interface AddLockProps {
 }
 
 export const AddLock: React.FC<AddLockProps> = ({ closeModal, pointData }) => {
-  const [formData, setFormData] = useState({
+  const initialFormData = {
     title: pointData?.title || '',
     latitude: pointData?.latitude || '',
     longitude: pointData?.longitude || '',
     description: pointData?.description || '',
     rating: pointData?.rating || 0,
-  });
+  };
+
+  const [formData, setFormData] = useState(initialFormData);
   const [expandGeometry, setExpandGeometry] = useState(pointData ? false : true);
   const [noChange, setNoChange] = useState(true);
-  console.log(noChange);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   const { setMarkers } = useMarkerContext();
 
-  const { handleSubmit, isSubmitting } = useSubmitForm({
+  // Check if form data has changed from initial values
+  useEffect(() => {
+    const hasChanges = Object.keys(initialFormData).some(
+      key => initialFormData[key as keyof typeof initialFormData] !== formData[key as keyof typeof formData]
+    );
+    setNoChange(!hasChanges);
+  }, [formData]);
+
+  const { handleSubmit: submitForm, isSubmitting, error, success } = useSubmitForm({
     pointData,
     setMarkers,
     closeModal,
@@ -42,7 +52,6 @@ export const AddLock: React.FC<AddLockProps> = ({ closeModal, pointData }) => {
       ...formData,
       [e.target.name]: e.target.value,
     });
-    setNoChange(false);
   }
 
   const handleRatingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,7 +76,6 @@ export const AddLock: React.FC<AddLockProps> = ({ closeModal, pointData }) => {
     }));
 
     setExpandGeometry(false);
-    setNoChange(false);
   };
 
   const handleExpandGeometry = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -91,10 +99,33 @@ export const AddLock: React.FC<AddLockProps> = ({ closeModal, pointData }) => {
       });
   };
 
+  const validateForm = () => {
+    if (!formData.title.trim()) {
+      setValidationError('Title is required');
+      return false;
+    }
+    if (!formData.latitude || !formData.longitude) {
+      setValidationError('Location coordinates are required');
+      return false;
+    }
+    setValidationError(null);
+    return true;
+  };
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    await submitForm(e);
+  };
+
   return (
     <Modal title="Add Lock Location Details" closeModal={closeModal}>
       <div className="add-point mt-4 mb-4">
-        <form method="post" className="space-y-4 text-black" onSubmit={handleSubmit}>
+        <form method="post" className="space-y-4 text-black" onSubmit={onSubmit}>
           <div className="grid grid-cols-1 gap-4">
             <FormField
               label="Title"
@@ -148,9 +179,40 @@ export const AddLock: React.FC<AddLockProps> = ({ closeModal, pointData }) => {
             />
             <Rating rating={formData.rating} onChange={handleRatingChange} />
           </div>
+
+          {validationError && (
+            <div className="text-red-500 text-sm p-2 bg-red-50 rounded-md" role="alert">
+              {validationError}
+            </div>
+          )}
+
+          {error && (
+            <div className="text-red-500 text-sm p-2 bg-red-50 rounded-md" role="alert">
+              {error}
+            </div>
+          )}
+
+          {success && (
+            <div className="text-green-500 text-sm p-2 bg-green-50 rounded-md" role="alert">
+              {success}
+            </div>
+          )}
+
           <div className="actions flex flex-row justify-end gap-2">
-            <button type="button" onClick={closeModal} className="button button--secondary mt-4 text-white">Cancel</button>
-            <button type="submit" className="button mt-4 text-white" disabled={isSubmitting || noChange}>{pointData ? 'Update' : 'Submit'}</button>
+            <button
+              type="button"
+              onClick={closeModal}
+              className="button button--secondary mt-4 text-white"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="button mt-4 text-white"
+              disabled={isSubmitting || noChange}
+            >
+              {isSubmitting ? 'Saving...' : (pointData ? 'Update' : 'Submit')}
+            </button>
           </div>
           <div className="report-issue text-sm">
             <a href="" className="flex items-center justify-end gap-1 text-gray-500" target="_blank"><MessageCircleWarning size={15}/><span>Report an issue</span></a>

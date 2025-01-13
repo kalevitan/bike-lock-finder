@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { AdvancedMarker, useAdvancedMarkerRef } from '@vis.gl/react-google-maps';
 import { MarkerDetails } from './MarkerDetails';
@@ -14,81 +14,80 @@ interface MarkerProps extends MarkerData {
   onEditPoint: (pointData: MarkerData) => void;
 }
 
-const Marker: React.FC<MarkerProps> = (props) => {
+const Marker: React.FC<MarkerProps> = ({
+  isOpen,
+  onClick,
+  onClose,
+  onEditPoint,
+  ...markerData
+}) => {
   const [markerRef, marker] = useAdvancedMarkerRef();
   const [hovered, setHovered] = useState(false);
-  const position = { lat: parseFloat(props.latitude), lng: parseFloat(props.longitude) };
+  const position = { lat: parseFloat(markerData.latitude), lng: parseFloat(markerData.longitude) };
 
   useEffect(() => {
     if (marker) {
       marker.addEventListener('mouseover', () => setHovered(true));
       marker.addEventListener('mouseout', () => setHovered(false));
-      marker.addEventListener('gmp-click', (e) => {
-        if (props.isOpen) {
-          props.onClose();
+      marker.addEventListener('gmp-click', () => {
+        if (isOpen) {
+          onClose();
         } else {
-          props.onClick();
+          onClick();
         }
       });
 
-      marker.style.zIndex = props.isOpen ? '1' : '0';
+      marker.style.zIndex = isOpen ? '1' : '0';
     }
 
     return () => {
       if (marker) {
         marker.removeEventListener('mouseover', () => setHovered(true));
         marker.removeEventListener('mouseout', () => setHovered(false));
-        marker.removeEventListener('gmp-click', (e) => {
-          if (props.isOpen) {
-            props.onClose();
+        marker.removeEventListener('gmp-click', () => {
+          if (isOpen) {
+            onClose();
           } else {
-            props.onClick();
+            onClick();
           }
         });
       }
     };
-  }, [marker, props]);
-
-  const renderCustomPin = () => {
-    return (
-      <>
-        <div className="custom-pin">
-          <div className="image-container">
-            {/* <BikeLockImageGallery /> */}
-            <div className="w-full h-full relative">
-              <Image
-                src="/images/bike-lock.jpeg"
-                width={300}
-                height={300}
-                sizes="50vw"
-                className="image"
-                alt="bike lock placeholder image"
-              />
-            </div>
-            <span className="icon">
-              <BikeLockIcon />
-            </span>
-          </div>
-
-          <MarkerDetails details={props} onEdit={(pointData) => props.onEditPoint({ ...props, ...pointData })}/>
-
-          <div className="triangle"></div>
-        </div>
-      </>
-    );
-  };
+  }, [marker, isOpen, onClick, onClose]);
 
   return (
-    <>
-      <AdvancedMarker
-        ref={markerRef}
-        onClick={props.onClick}
-        position={position}
-        title={props.title}
-        className={classNames('bike-lock-marker', {clicked: props.isOpen, hovered})}>
-        {renderCustomPin()}
-      </AdvancedMarker>
-    </>
+    <AdvancedMarker
+      ref={markerRef}
+      onClick={onClick}
+      position={position}
+      title={markerData.title}
+      className={classNames('bike-lock-marker', {clicked: isOpen, hovered})}>
+      <div className="custom-pin">
+        <div className="image-container">
+          <div className="w-full h-full relative">
+            <Image
+              src="/images/bike-lock.jpeg"
+              width={300}
+              height={300}
+              sizes="50vw"
+              className="image"
+              alt={`Bike lock location: ${markerData.title}`}
+              priority={isOpen}
+            />
+          </div>
+          <span className="icon">
+            <BikeLockIcon />
+          </span>
+        </div>
+
+        <MarkerDetails
+          details={markerData}
+          onEdit={(onEditPoint)}
+        />
+
+        <div className="triangle" />
+      </div>
+    </AdvancedMarker>
   );
 };
 

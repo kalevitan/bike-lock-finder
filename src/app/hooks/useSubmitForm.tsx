@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { MarkerProps } from '@/interfaces/markers';
 import xss from 'xss';
+import { useMarkerContext } from '@/contexts/MarkerContext';
 
 interface UseSubmitFormProps {
   pointData?: MarkerProps | null;
@@ -16,64 +17,68 @@ interface UseSubmitFormProps {
 }
 
 const useSubmitForm = ({ pointData, setMarkers, closeModal, formData }: UseSubmitFormProps) => {
+  const { refreshMarkers } = useMarkerContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       setIsSubmitting(true);
+      setError(null);
+      setSuccess(null);
 
-      const url = '/api/markers';
-      const method = pointData?.id ? 'PUT' : 'POST';
+      try {
+        const url = '/api/markers';
+        const method = pointData?.id ? 'PUT' : 'POST';
 
-      // Sanitize form data
-      const sanitizedData = Object.fromEntries(
-        Object.entries(formData).map(([key, value]) => [key, xss(String(value))])
-      );
+        const sanitizedData = Object.fromEntries(
+          Object.entries(formData).map(([key, value]) => [key, xss(String(value))])
+        );
 
-      const response = await fetch(url, {
-        method,
-        body: JSON.stringify({
-          ...sanitizedData,
-          id: pointData?.id,
-        }),
-        headers: { 'Content-Type': 'application/json' },
-      });
+        const response = await fetch(url, {
+          method,
+          body: JSON.stringify({
+            ...sanitizedData,
+            id: pointData?.id,
+          }),
+          headers: { 'Content-Type': 'application/json' },
+        });
 
-      if (response.ok) {
-        console.log('Form submitted successfully!');
+        if (!response.ok) {
+          throw new Error(`Failed to ${pointData?.id ? 'update' : 'create'} marker`);
+        }
+
         const responseData = await response.json();
-
-        // Firebase typically returns the generated ID
         const newMarkerId = responseData.id;
 
         if (!pointData?.id) {
-          // Add new marker with the ID from Firebase
           setMarkers((prev: MarkerProps[]) => [
             ...prev,
             { ...formData, id: newMarkerId },
           ]);
         } else {
-          // Update existing marker
           setMarkers((prev: MarkerProps[]) => {
-            const updatedMarkers = prev.map((m) =>
+            return prev.map((m) =>
               m.id === pointData.id ? { ...m, ...formData } : m
             );
-            console.log('Updated Markers:', updatedMarkers);
-            return updatedMarkers;
           });
         }
-        closeModal();
-      } else {
-        console.error('Error submitting form.');
-      }
 
-      setIsSubmitting(false);
+        await refreshMarkers();
+        setSuccess('Location saved successfully!');
+        closeModal();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+      } finally {
+        setIsSubmitting(false);
+      }
     },
-    [pointData, setMarkers, closeModal, formData]
+    [pointData, setMarkers, closeModal, formData, refreshMarkers]
   );
 
-  return { handleSubmit, isSubmitting };
+  return { handleSubmit, isSubmitting, error, success };
 };
 
 export default useSubmitForm;
