@@ -21,7 +21,7 @@ const Header: React.FC<HeaderProps>= ({ onSearch, onRecenter }) => {
   const loggedIn = useAuth();
 
   return (
-    <header className="z-10 w-full flex items-center text-white bg-[#242424]">
+    <header className="z-10 w-full flex items-center text-white bg-[var(--primary-gray)]">
       <div className="logo p-4 md:min-w-72 max-w-72 min-w-fit">
         <h1 className="font-bold text-[1.25rem]">
           <span className="font-bold m-0">

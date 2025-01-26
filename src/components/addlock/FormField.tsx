@@ -17,7 +17,7 @@ const FormField: React.FC<FormFieldProps> = ({ label, name, value, onChange, typ
           className="p-2 border rounded"
           required={required}
           hidden={hidden}
-        ></textarea>
+        />
         ) : (
         <input
           type={type}
