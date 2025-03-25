@@ -34,7 +34,7 @@ export const MapContent: React.FC<MapContentProps> = ({
         if (location.zoom) {
           map.setZoom(location.zoom);
         } else {
-          map.setZoom(map.getZoom()! - 1);
+          map.setZoom(map.getZoom()! - 2);
         }
       });
 
