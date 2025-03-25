@@ -66,7 +66,7 @@ const Marker: React.FC<MarkerProps> = ({
         <div className="image-container">
           <div className="w-full h-full relative">
             <Image
-              src="/images/bike-lock.jpeg"
+              src={markerData.file instanceof File ? URL.createObjectURL(markerData.file) : (markerData.file || '/images/bike-lock.jpeg')}
               width={300}
               height={300}
               sizes="50vw"

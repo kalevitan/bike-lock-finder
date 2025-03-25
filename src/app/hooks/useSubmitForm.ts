@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { MarkerProps } from '@/interfaces/markers';
 import xss from 'xss';
 import { useMarkerContext } from '@/contexts/MarkerContext';
+import { uploadImage } from '@/lib/storage';
 
 interface UseSubmitFormProps {
   pointData?: MarkerProps | null;
@@ -13,6 +14,7 @@ interface UseSubmitFormProps {
     longitude: string;
     description: string;
     rating: number;
+    file: File | string | null;
   };
 }
 
@@ -33,8 +35,19 @@ const useSubmitForm = ({ pointData, setMarkers, closeModal, formData }: UseSubmi
         const url = '/api/markers';
         const method = pointData?.id ? 'PUT' : 'POST';
 
+        // Upload file first if it exists
+        let downloadURL = null;
+        if (formData.file instanceof File) {
+          downloadURL = await uploadImage(formData.file);
+        } else if (typeof formData.file === 'string') {
+          downloadURL = formData.file;
+        }
+
         const sanitizedData = Object.fromEntries(
-          Object.entries(formData).map(([key, value]) => [key, xss(String(value))])
+          Object.entries({
+            ...formData,
+            file: downloadURL || null,
+          }).map(([key, value]) => [key, xss(String(value))])
         );
 
         const response = await fetch(url, {
@@ -52,16 +65,15 @@ const useSubmitForm = ({ pointData, setMarkers, closeModal, formData }: UseSubmi
 
         const responseData = await response.json();
         const newMarkerId = responseData.id;
-
         if (!pointData?.id) {
           setMarkers((prev: MarkerProps[]) => [
             ...prev,
-            { ...formData, id: newMarkerId },
+            { ...formData, id: newMarkerId, file: downloadURL || null } as MarkerProps,
           ]);
         } else {
           setMarkers((prev: MarkerProps[]) => {
             return prev.map((m) =>
-              m.id === pointData.id ? { ...m, ...formData } : m
+              m.id === pointData.id ? { ...m, ...formData, file: downloadURL || null } as MarkerProps : m
             );
           });
         }

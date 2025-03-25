@@ -1,9 +1,11 @@
 export interface FormFieldProps {
   label: string;
   name: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-  type?: 'text' | 'textarea';
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  type?: 'text' | 'textarea' | 'file';
   required?: boolean;
   hidden?: boolean;
+  disabled?: boolean;
+  onFileChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }

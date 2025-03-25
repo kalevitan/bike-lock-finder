@@ -10,35 +10,47 @@ import FormField from './FormField';
 import Rating from './Rating';
 import SearchForm from '@/components/searchform/SearchForm';
 import useSubmitForm from '@/app/hooks/useSubmitForm';
+import { uploadImage } from '@/lib/storage';
 
 interface AddLockProps {
   closeModal: () => void;
   pointData?: MarkerProps | null;
 }
 
+interface FormData {
+  title: string;
+  latitude: string;
+  longitude: string;
+  description: string;
+  rating: number;
+  file: File | string | null;
+}
+
 export const AddLock: React.FC<AddLockProps> = ({ closeModal, pointData }) => {
-  const initialFormData = {
+  const initialFormData: FormData = {
     title: pointData?.title || '',
     latitude: pointData?.latitude || '',
     longitude: pointData?.longitude || '',
     description: pointData?.description || '',
     rating: pointData?.rating || 0,
+    file: null,
   };
-
-  const [formData, setFormData] = useState(initialFormData);
-  const [expandGeometry, setExpandGeometry] = useState(pointData ? false : true);
+  const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [fileUrl, setFileUrl] = useState<string | null>(typeof pointData?.file === 'string' ? pointData.file : null);
+  const [expandGeometry, setExpandGeometry] = useState(!pointData);
   const [noChange, setNoChange] = useState(true);
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const { setMarkers } = useMarkerContext();
 
   // Check if form data has changed from initial values
   useEffect(() => {
     const hasChanges = Object.keys(initialFormData).some(
-      key => initialFormData[key as keyof typeof initialFormData] !== formData[key as keyof typeof formData]
-    );
+      key => initialFormData[key as keyof FormData] !== formData[key as keyof FormData]
+    ) || fileUrl !== (pointData?.file || '');
     setNoChange(!hasChanges);
-  }, [formData]);
+  }, [formData, fileUrl]);
 
   const { handleSubmit: submitForm, isSubmitting, error, success } = useSubmitForm({
     pointData,
@@ -53,6 +65,28 @@ export const AddLock: React.FC<AddLockProps> = ({ closeModal, pointData }) => {
       [e.target.name]: e.target.value,
     });
   }
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target || !e.target.files) return;
+
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const downloadURL = await uploadImage(file);
+      setFormData({
+        ...formData,
+        file,
+      });
+      setFileUrl(downloadURL);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      setValidationError('Failed to upload image. Please try again.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const handleRatingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rating = Number(e.target.value);
@@ -169,6 +203,17 @@ export const AddLock: React.FC<AddLockProps> = ({ closeModal, pointData }) => {
               <button onClick={locateMe} className="button button--link flex gap-1">
               <span><Locate /></span>Locate me...</button>
             </div>
+            <FormField
+              label="Image"
+              type="file"
+              name="file"
+              onFileChange={handleFileChange}
+              required={false}
+              disabled={isUploading}
+            />
+            {isUploading && (
+              <div className="text-sm text-gray-500">Uploading image...</div>
+            )}
             <FormField
               label="Description"
               type="textarea"

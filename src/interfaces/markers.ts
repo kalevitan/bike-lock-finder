@@ -12,5 +12,6 @@ export interface MarkerProps {
   longitude: string;
   description: string;
   rating: number;
+  file: File | string | null;
   isOpen?: boolean;
 }
