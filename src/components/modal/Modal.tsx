@@ -23,7 +23,7 @@ const Modal: React.FC<ModalProps> = ({ title, children, closeModal }) => {
       <div className={classes.backdrop} onClick={closeHandler}></div>
       <dialog open className={classes.modal} aria-modal="true">
         <div className="modal-header flex justify-center">
-          <h2 className="font-bold text-black">{title}</h2>
+          <h2 className="font-bold text-black mb-4">{title}</h2>
         </div>
         <div className={classes.modal_body}>{children}</div>
       </dialog>

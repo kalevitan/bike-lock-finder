@@ -3,7 +3,7 @@
   justify-content: space-between;
   align-items: center;
   padding-right: 1rem;
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 .search_form {
@@ -30,4 +30,8 @@
     width: 100%;
     justify-content: center;
   }
+}
+
+.autocomplete_container {
+  min-width: 300px;
 }

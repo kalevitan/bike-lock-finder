@@ -32,7 +32,7 @@ const Header: React.FC<HeaderProps>= ({ onSearch, onRecenter }) => {
         </h1>
       </div>
 
-      <div className="flex justify-between w-full items-center">
+      <div className="flex justify-between w-full items-center gap-2">
         <div className="search-wrapper flex items-center gap-2">
           {pathname === '/' && (
             <>
@@ -44,7 +44,7 @@ const Header: React.FC<HeaderProps>= ({ onSearch, onRecenter }) => {
                 <SearchIcon className="sm:hidden cursor-pointer" onClick={() => setIsSearchOpen(true)} />
               )}
               <form className={`${classes.search_form} ${isSearchOpen ? classes.open : ''}`}>
-                <SearchForm onSearch={onSearch} />
+                <SearchForm onSearch={onSearch} classes={classes.autocomplete_container} />
               </form>
 
               <Target className="md:hidden cursor-pointer" onClick={onRecenter} />

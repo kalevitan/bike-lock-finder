@@ -158,7 +158,7 @@ export const AddLock: React.FC<AddLockProps> = ({ closeModal, pointData }) => {
 
   return (
     <Modal title="Add Lock Location Details" closeModal={closeModal}>
-      <div className="add-point mt-4 mb-4">
+      <div className="add-point">
         <form method="post" className="space-y-4 text-black" onSubmit={onSubmit}>
           <div className="grid grid-cols-1 gap-4">
             <FormField
@@ -171,8 +171,8 @@ export const AddLock: React.FC<AddLockProps> = ({ closeModal, pointData }) => {
               hidden={expandGeometry}
             />
             <div className="flex flex-col text-left">
-              <label htmlFor="search" className="my-2">Location<span className="text-red-500">*</span></label>
-              <div className="flex flex-row gap-2">
+              <label htmlFor="search" className="mb-2">Location<span className="text-red-500">*</span></label>
+              <div className="grid grid-cols-[3fr_1fr] gap-4">
                 <SearchForm onSearch={handleOnSearch}/>
                 <button className="button text-white flex gap-1" onClick={handleExpandGeometry}>
                   <UserPen/><span className="">{expandGeometry ? 'Edit' : 'Collapse'}</span>

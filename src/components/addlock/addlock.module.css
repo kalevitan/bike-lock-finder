@@ -27,4 +27,5 @@
 
 .star_label .star_shape.highlighted {
   stroke: var(--primary-gold);
+  fill: var(--primary-gold);
 }

@@ -5,9 +5,10 @@ import { useMapsLibrary } from '@vis.gl/react-google-maps';
 
 interface Props {
   onSearch?: (place: google.maps.places.PlaceResult | null) => void;
+  classes?: string;
 }
 
-export const SearchForm = ({ onSearch }: Props) => {
+export const SearchForm = ({ onSearch, classes }: Props) => {
   const [placeAutocomplete, setPlaceAutocomplete] =
     useState<google.maps.places.Autocomplete | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -32,8 +33,8 @@ export const SearchForm = ({ onSearch }: Props) => {
   }, [onSearch, placeAutocomplete]);
 
   return (
-    <div className="autocomplete-container">
-      <input ref={inputRef} name="search" className="w-[300px] rounded-[4px] h-[45px]" placeholder='Search locations...'/>
+    <div className={`autocomplete-container ${classes}`}>
+      <input ref={inputRef} name="search" className="w-full rounded-[4px] h-[45px]" placeholder='Search locations...'/>
     </div>
   );
 };
