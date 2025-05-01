@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@vercel/analytics": "1.4.1",
+    "@vercel/speed-insights": "1.2.0",
     "@vis.gl/react-google-maps": "latest",
     "classnames": "2.5.1",
     "firebase": "10.13.1",

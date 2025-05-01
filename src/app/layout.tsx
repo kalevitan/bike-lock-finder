@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { Viewport } from 'next';
 import { MapProvider } from '../contexts/MapContext';
 import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import './global.css';
 
 export const metadata: Metadata = {
@@ -24,6 +25,7 @@ export default function RouteLayout({
       <body>
         <MapProvider>{children}</MapProvider>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )
