@@ -5,12 +5,13 @@ import Modal from '../modal/Modal';
 import { getLocation } from '@/utils/locationutils';
 import { useMarkerContext } from '@/contexts/MarkerContext';
 import { MarkerProps } from '@/interfaces/markers';
-import { Locate, UserPen, MessageCircleWarning } from 'lucide-react';
+import { Locate, UserPen, MessageCircleWarning, X, ImagePlus, ImageOff } from 'lucide-react';
 import FormField from './FormField';
 import Rating from './Rating';
 import SearchForm from '@/components/searchform/SearchForm';
 import useSubmitForm from '@/app/hooks/useSubmitForm';
 import { uploadImage } from '@/lib/storage';
+import Image from 'next/image';
 
 interface AddLockProps {
   closeModal: () => void;
@@ -33,7 +34,7 @@ export const AddLock: React.FC<AddLockProps> = ({ closeModal, pointData }) => {
     longitude: pointData?.longitude || '',
     description: pointData?.description || '',
     rating: pointData?.rating || 0,
-    file: null,
+    file: pointData?.file || null,
   };
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [fileUrl, setFileUrl] = useState<string | null>(typeof pointData?.file === 'string' ? pointData.file : null);
@@ -168,7 +169,6 @@ export const AddLock: React.FC<AddLockProps> = ({ closeModal, pointData }) => {
               value={formData.title}
               onChange={handleChange}
               required={true}
-              hidden={expandGeometry}
             />
             <div className="flex flex-col text-left">
               <label htmlFor="search" className="mb-2">Location<span className="text-red-500">*</span></label>
@@ -206,13 +206,41 @@ export const AddLock: React.FC<AddLockProps> = ({ closeModal, pointData }) => {
             <FormField
               label="Image"
               type="file"
-              name="file"
+              name="file-image"
+              value={fileUrl || undefined}
               onFileChange={handleFileChange}
               required={false}
               disabled={isUploading}
+              hidden={true}
             />
             {isUploading && (
               <div className="text-sm text-gray-500">Uploading image...</div>
+            )}
+            {fileUrl ? (
+              <div className="relative mt-2">
+                {fileUrl.startsWith('http') ? (
+                  <Image
+                    src={fileUrl}
+                    alt="Preview"
+                    width={300}
+                    height={300}
+                    className="w-full object-contain rounded-md border border-gray-200"
+                    onClick={() => document.getElementById('file-image')?.click()}
+                  />
+                ) : (
+                  <div className="text-red-500">Invalid image URL</div>
+                )}
+              </div>
+            ) : (
+              <div className="relative mt-2">
+                <button
+                  type="button"
+                  onClick={() => document.getElementById('file-image')?.click()}
+                  className="w-full p-8 border border-gray-200 rounded-md flex items-center justify-center"
+                >
+                  <ImagePlus />
+                </button>
+              </div>
             )}
             <FormField
               label="Description"

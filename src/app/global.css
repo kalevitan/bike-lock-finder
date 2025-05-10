@@ -24,13 +24,9 @@
 }
 
 html {
-  overflow: hidden;
+  overflow-x: scroll;
 }
 
-main a:not(.heading-link) {
-  text-decoration: underline;
-  transition: border-color 0.25s;
-}
 a:not(.button):hover,
 a:not(.button):not(.logo).active {
   text-decoration-line: underline;
@@ -98,6 +94,11 @@ input {
   border: none;
   color: var(--primary-purple);
   padding: 0.2em 0.4em;
+}
+
+.button--icon {
+  border-radius: 100%;
+  padding: 0.75rem;
 }
 
 .button:hover {

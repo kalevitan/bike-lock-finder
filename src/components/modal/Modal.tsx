@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import React from "react";
 import classes from "./modal.module.css";
+import { X } from "lucide-react";
 
 interface ModalProps {
   title: string;
@@ -22,8 +23,11 @@ const Modal: React.FC<ModalProps> = ({ title, children, closeModal }) => {
     <>
       <div className={classes.backdrop} onClick={closeHandler}></div>
       <dialog open className={classes.modal} aria-modal="true">
-        <div className="modal-header flex justify-center">
-          <h2 className="font-bold text-black mb-4">{title}</h2>
+        <div className="modal-header flex justify-between items-center mb-4">
+          <h2 className="font-bold text-black">{title}</h2>
+          <button className="flex gap-1" onClick={closeHandler}>
+            <X className="w-6 h-6" color="black" />
+          </button>
         </div>
         <div className={classes.modal_body}>{children}</div>
       </dialog>

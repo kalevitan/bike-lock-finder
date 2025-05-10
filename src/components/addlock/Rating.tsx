@@ -10,7 +10,7 @@ interface RatingProps {
 const Rating: React.FC<RatingProps> = ({ rating, onChange }) => {
   return (
     <div className="flex flex-col text-left">
-      <label className="mb-2">Rating</label>
+      <label className="mb-2">How would you rate this lock?</label>
       <div className="flex">
         {[1, 2, 3, 4, 5].map((value) => (
           <span key={value}>

@@ -1,9 +1,14 @@
 .nav ul {
-  display: flex;
+  display: none;
   justify-content: space-between;
   align-items: center;
   padding-right: 1rem;
   gap: 0.5rem;
+
+  @media (min-width: 640px) {
+    display: flex;
+    gap: 1rem;
+  }
 }
 
 .search_form {

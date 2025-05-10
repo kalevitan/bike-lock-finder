@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Edit, Star, Navigation } from "lucide-react";
+import { Star, Navigation, LocationEdit } from "lucide-react";
 import { MarkerProps } from "@/interfaces/markers";
 import useAuth from "@/app/hooks/useAuth";
 
@@ -23,15 +23,6 @@ export const MarkerDetails: React.FC<MarkerDetailsProps> = ({ details, onEdit })
 
   return (
     <article className="details-container flex flex-col bg-primaryGray w-full h-full opacity-0 max-w-0 rounded-r-none invisible">
-      {loggedIn && (
-        <button
-          className="edit-button absolute right-1 top-1 hidden"
-          onClick={handleEditClick}
-        >
-          <Edit size="20" color="var(--primary-white)" />
-        </button>
-      )}
-
       <div className="listing-content flex flex-col justify-center gap-[.25rem] h-full overflow-hidden">
         <div className="heading">
           <a
@@ -48,7 +39,7 @@ export const MarkerDetails: React.FC<MarkerDetailsProps> = ({ details, onEdit })
           <p className="description text-sm mb-0">{details.description}</p>
         </div>
 
-        <div className="details flex flex-row gap-4">
+        <div className="details flex justify-between gap-4">
           <div className="detail_item flex items-center gap-1">
             <div className="ratings">
               <h4 className="text-sm pb-2 sr-only">Rating</h4>
@@ -62,6 +53,14 @@ export const MarkerDetails: React.FC<MarkerDetailsProps> = ({ details, onEdit })
               </span>
             </div>
           </div>
+          {loggedIn && (
+              <button
+                className="button button--icon"
+                onClick={handleEditClick}
+              >
+                <LocationEdit size="20" color="var(--primary-white)" />
+              </button>
+            )}
         </div>
       </div>
     </article>

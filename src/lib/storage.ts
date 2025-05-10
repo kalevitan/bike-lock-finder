@@ -5,6 +5,10 @@ const storage = getStorage(app);
 
 export const uploadImage = async (file: File): Promise<string> => {
   try {
+    if (!file) {
+      throw new Error('No file provided');
+    }
+
     // Create a unique filename using timestamp and original filename
     const timestamp = Date.now();
     const filename = `${timestamp}-${file.name}`;
@@ -17,6 +21,11 @@ export const uploadImage = async (file: File): Promise<string> => {
 
     // Get the download URL
     const downloadURL = await getDownloadURL(snapshot.ref);
+
+    // Validate URL
+    if (!downloadURL.startsWith('http')) {
+      throw new Error('Invalid download URL received from Firebase');
+    }
 
     return downloadURL;
   } catch (error) {
