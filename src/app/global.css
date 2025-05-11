@@ -23,10 +23,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-html {
-  overflow-x: scroll;
-}
-
 a:not(.button):hover,
 a:not(.button):not(.logo).active {
   text-decoration-line: underline;
