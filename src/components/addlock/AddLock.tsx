@@ -1,20 +1,19 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Modal from '../modal/Modal';
+import Image from 'next/image';
 import { getLocation } from '@/utils/locationutils';
-import { useMarkerContext } from '@/contexts/MarkerContext';
+import { useMarkerContext } from '@/contexts/MarkerProvider';
 import { MarkerProps } from '@/interfaces/markers';
-import { Locate, UserPen, MessageCircleWarning, X, ImagePlus, ImageOff } from 'lucide-react';
+import { Locate, UserPen, ImagePlus, MessageCircleWarning } from 'lucide-react';
 import FormField from './FormField';
-import Rating from './Rating';
 import SearchForm from '@/components/searchform/SearchForm';
 import useSubmitForm from '@/app/hooks/useSubmitForm';
 import { uploadImage } from '@/lib/storage';
-import Image from 'next/image';
+import { useModal } from '@/contexts/ModalProvider';
+import Rating from './Rating';
 
 interface AddLockProps {
-  closeModal: () => void;
   pointData?: MarkerProps | null;
 }
 
@@ -27,7 +26,7 @@ interface FormData {
   file: File | string | null;
 }
 
-export const AddLock: React.FC<AddLockProps> = ({ closeModal, pointData }) => {
+export default function AddLock({ pointData }: AddLockProps) {
   const initialFormData: FormData = {
     title: pointData?.title || '',
     latitude: pointData?.latitude || '',
@@ -44,6 +43,7 @@ export const AddLock: React.FC<AddLockProps> = ({ closeModal, pointData }) => {
   const [isUploading, setIsUploading] = useState(false);
 
   const { setMarkers } = useMarkerContext();
+  const { closeModal } = useModal();
 
   // Check if form data has changed from initial values
   useEffect(() => {
@@ -89,13 +89,15 @@ export const AddLock: React.FC<AddLockProps> = ({ closeModal, pointData }) => {
     }
   };
 
-  const handleRatingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rating = Number(e.target.value);
-    setFormData({
-      ...formData,
-      rating,
-    });
-  }
+  const handleRatingChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (e.target instanceof HTMLInputElement) {
+      const rating = Number(e.target.value);
+      setFormData({
+        ...formData,
+        rating,
+      });
+    }
+  };
 
   const handleOnSearch = (place: google.maps.places.PlaceResult | null) => {
     if (!place || !place.geometry) return;
@@ -158,142 +160,138 @@ export const AddLock: React.FC<AddLockProps> = ({ closeModal, pointData }) => {
   };
 
   return (
-    <Modal title="Add Lock Location Details" closeModal={closeModal}>
-      <div className="add-point">
-        <form method="post" className="space-y-4 text-black" onSubmit={onSubmit}>
-          <div className="grid grid-cols-1 gap-4">
+    <div className="add-point">
+      <form method="post" className="space-y-4 text-black" onSubmit={onSubmit}>
+        <div className="grid grid-cols-1 gap-4">
+          <FormField
+            label="Title"
+            type="text"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            required={true}
+          />
+          <div className="flex flex-col text-left">
+            <label htmlFor="search" className="mb-2">Location<span className="text-red-500">*</span></label>
+            <div className="grid grid-cols-[3fr_1fr] gap-4">
+              <SearchForm onSearch={handleOnSearch}/>
+              <button className="button text-white flex gap-1" onClick={handleExpandGeometry}>
+                <UserPen/><span className="">{expandGeometry ? 'Edit' : 'Collapse'}</span>
+              </button>
+            </div>
+          </div>
+          <div className={`grid grid-cols-2 gap-4 ${expandGeometry ? 'hidden' : 'visible'}`}>
             <FormField
-              label="Title"
+              label="Latitude"
               type="text"
-              name="title"
-              value={formData.title}
+              name="latitude"
+              value={formData.latitude}
               onChange={handleChange}
               required={true}
+              hidden={expandGeometry}
             />
-            <div className="flex flex-col text-left">
-              <label htmlFor="search" className="mb-2">Location<span className="text-red-500">*</span></label>
-              <div className="grid grid-cols-[3fr_1fr] gap-4">
-                <SearchForm onSearch={handleOnSearch}/>
-                <button className="button text-white flex gap-1" onClick={handleExpandGeometry}>
-                  <UserPen/><span className="">{expandGeometry ? 'Edit' : 'Collapse'}</span>
-                </button>
-              </div>
-            </div>
-            <div className={`grid grid-cols-2 gap-4 ${expandGeometry ? 'hidden' : 'visible'}`}>
-              <FormField
-                label="Latitude"
-                type="text"
-                name="latitude"
-                value={formData.latitude}
-                onChange={handleChange}
-                required={true}
-                hidden={expandGeometry}
-              />
-              <FormField
-                label="Longitude"
-                type="text"
-                name="longitude"
-                value={formData.longitude}
-                onChange={handleChange}
-                required={true}
-                hidden={expandGeometry}
-              />
-            </div>
-            <div className="text-left">
-              <button onClick={locateMe} className="button button--link flex gap-1">
-              <span><Locate /></span>Locate me...</button>
-            </div>
             <FormField
-              label="Image"
-              type="file"
-              name="file-image"
-              value={fileUrl || undefined}
-              onFileChange={handleFileChange}
-              required={false}
-              disabled={isUploading}
-              hidden={true}
-            />
-            {isUploading && (
-              <div className="text-sm text-gray-500">Uploading image...</div>
-            )}
-            {fileUrl ? (
-              <div className="relative mt-2">
-                {fileUrl.startsWith('http') ? (
-                  <Image
-                    src={fileUrl}
-                    alt="Preview"
-                    width={300}
-                    height={300}
-                    className="w-full object-contain rounded-md border border-gray-200"
-                    onClick={() => document.getElementById('file-image')?.click()}
-                  />
-                ) : (
-                  <div className="text-red-500">Invalid image URL</div>
-                )}
-              </div>
-            ) : (
-              <div className="relative mt-2">
-                <button
-                  type="button"
-                  onClick={() => document.getElementById('file-image')?.click()}
-                  className="w-full p-8 border border-gray-200 rounded-md flex items-center justify-center"
-                >
-                  <ImagePlus />
-                </button>
-              </div>
-            )}
-            <FormField
-              label="Description"
-              type="textarea"
-              name="description"
-              value={formData.description}
+              label="Longitude"
+              type="text"
+              name="longitude"
+              value={formData.longitude}
               onChange={handleChange}
-              required={false}
+              required={true}
+              hidden={expandGeometry}
             />
-            <Rating rating={formData.rating} onChange={handleRatingChange} />
           </div>
-
-          {validationError && (
-            <div className="text-red-500 text-sm p-2 bg-red-50 rounded-md" role="alert">
-              {validationError}
+          <div className="text-left">
+            <button onClick={locateMe} className="button button--link flex gap-1">
+              <span><Locate /></span>Locate me...</button>
+          </div>
+          <FormField
+            label="Image"
+            type="file"
+            name="file-image"
+            value={fileUrl || undefined}
+            onFileChange={handleFileChange}
+            required={false}
+            disabled={isUploading}
+            hidden={true}
+          />
+          {isUploading && (
+            <div className="text-sm text-gray-500">Uploading image...</div>
+          )}
+          {fileUrl ? (
+            <div className="relative mt-2">
+              {fileUrl.startsWith('http') ? (
+                <Image
+                  src={fileUrl}
+                  alt="Preview"
+                  width={300}
+                  height={300}
+                  className="w-full object-contain rounded-md border border-[#6b7280]"
+                  onClick={() => document.getElementById('file-image')?.click()}
+                />
+              ) : (
+                <div className="text-red-500">Invalid image URL</div>
+              )}
+            </div>
+          ) : (
+            <div className="relative mt-2">
+              <button
+                type="button"
+                onClick={() => document.getElementById('file-image')?.click()}
+                className="w-full p-8 border border-[#6b7280] rounded-md flex items-center justify-center"
+              >
+                <ImagePlus />
+              </button>
             </div>
           )}
+          <FormField
+            label="Description"
+            type="textarea"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            required={false}
+          />
+          <Rating rating={formData.rating} onChange={handleRatingChange} />
+        </div>
 
-          {error && (
-            <div className="text-red-500 text-sm p-2 bg-red-50 rounded-md" role="alert">
-              {error}
-            </div>
-          )}
-
-          {success && (
-            <div className="text-green-500 text-sm p-2 bg-green-50 rounded-md" role="alert">
-              {success}
-            </div>
-          )}
-
-          <div className="actions flex flex-row justify-end gap-2">
-            <button
-              type="button"
-              onClick={closeModal}
-              className="button button--secondary mt-4 text-white"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="button mt-4 text-white"
-              disabled={isSubmitting || noChange}
-            >
-              {isSubmitting ? 'Saving...' : (pointData ? 'Update' : 'Submit')}
-            </button>
+        {validationError && (
+          <div className="text-red-500 text-sm p-2 bg-red-50 rounded-md" role="alert">
+            {validationError}
           </div>
-          <div className="report-issue text-sm">
-            <a href="" className="flex items-center justify-end gap-1 text-gray-500" target="_blank"><MessageCircleWarning size={15}/><span>Report an issue</span></a>
+        )}
+
+        {error && (
+          <div className="text-red-500 text-sm p-2 bg-red-50 rounded-md" role="alert">
+            {error}
           </div>
-        </form>
-      </div>
-    </Modal>
+        )}
+
+        {success && (
+          <div className="text-green-500 text-sm p-2 bg-green-50 rounded-md" role="alert">
+            {success}
+          </div>
+        )}
+
+        <div className="actions flex flex-row justify-end gap-2">
+          <button
+            type="button"
+            onClick={closeModal}
+            className="button button--secondary mt-4 text-white"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="button mt-4 text-white"
+            disabled={isSubmitting || noChange}
+          >
+            {isSubmitting ? 'Saving...' : (pointData ? 'Update' : 'Submit')}
+          </button>
+        </div>
+        <div className="report-issue text-sm">
+          <a href="" className="flex items-center justify-end gap-1 text-gray-500" target="_blank"><MessageCircleWarning size={15}/><span>Report an issue</span></a>
+        </div>
+      </form>
+    </div>
   );
 };
-
-export default AddLock;

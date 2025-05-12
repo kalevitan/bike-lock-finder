@@ -1,7 +1,9 @@
+'use client';
+
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { MarkerContextProps, MarkerProps } from '@/interfaces/markers';
 
-const MarkerContext = createContext<MarkerContextProps | undefined>(undefined);
+const MarkerProviderContext = createContext<MarkerContextProps | undefined>(undefined);
 
 export const MarkerProvider = ({ children }: { children: ReactNode }) => {
   const [markers, setMarkers] = useState<MarkerProps[]>([]);
@@ -25,14 +27,14 @@ export const MarkerProvider = ({ children }: { children: ReactNode }) => {
   }, [refreshMarkers]);
 
   return (
-    <MarkerContext.Provider value={{ markers, setMarkers, isLoading, refreshMarkers }}>
+    <MarkerProviderContext.Provider value={{ markers, setMarkers, isLoading, refreshMarkers }}>
       {children}
-    </MarkerContext.Provider>
+    </MarkerProviderContext.Provider>
   );
 };
 
 export const useMarkerContext = () => {
-  const context = useContext(MarkerContext);
+  const context = useContext(MarkerProviderContext);
   if (!context) {
     throw new Error('useMarkerContext must be used within a MarkerProvider');
   }

@@ -4,14 +4,9 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import classes from "./modal.module.css";
 import { X } from "lucide-react";
+import { ModalProps } from "@/interfaces/modal";
 
-interface ModalProps {
-  title: string;
-  children: React.ReactNode;
-  closeModal: () => void;
-}
-
-const Modal: React.FC<ModalProps> = ({ title, children, closeModal }) => {
+export function Modal({ title, children, closeModal }: ModalProps) {
   const router = useRouter();
 
   const closeHandler = () => {
@@ -33,7 +28,6 @@ const Modal: React.FC<ModalProps> = ({ title, children, closeModal }) => {
       </dialog>
     </>
   );
-
-};
+}
 
 export default Modal;

@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import { Viewport } from 'next';
-import { MapProvider } from '../contexts/MapContext';
+import { MapProvider } from '../contexts/MapProvider';
+import { ModalProvider } from '../contexts/ModalProvider';
+import { MarkerProvider } from '../contexts/MarkerProvider';
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import './global.css';
@@ -12,8 +14,10 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   width: 'device-width',
-  initialScale: 1.0
-}
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
 
 export default function RouteLayout({
   children,
@@ -23,7 +27,13 @@ export default function RouteLayout({
   return (
     <html lang="en" className="overflow-hidden">
       <body>
-        <MapProvider>{children}</MapProvider>
+        <MapProvider>
+          <MarkerProvider>
+            <ModalProvider>
+              {children}
+            </ModalProvider>
+          </MarkerProvider>
+        </MapProvider>
         <Analytics />
         <SpeedInsights />
       </body>

@@ -151,3 +151,40 @@ header {
     background-color: #f9f9f9;
   }
 }
+
+/* Modal Styles */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100dvw;
+  height: 100dvh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+  padding: 20px;
+  width: 100dvw;
+  max-height: calc(100dvh - 80px);
+  overflow-y: auto;
+  position: relative;
+  top: 60px;
+  z-index: 20;
+  padding-bottom: calc(32px + env(safe-area-inset-bottom));
+  margin-bottom: env(safe-area-inset-bottom);
+}
+
+@media (min-width: 640px) {
+  .modal-content {
+    width: 30rem;
+    padding: 20px;
+    margin-bottom: 0;
+  }
+}

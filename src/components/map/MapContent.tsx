@@ -1,17 +1,18 @@
-import React, { use, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useMap } from "@vis.gl/react-google-maps";
-import { useMarkerContext } from "@/contexts/MarkerContext";
+import { useMarkerContext } from "@/contexts/MarkerProvider";
 import { MapContentProps } from "@/interfaces/map";
 import MarkerList from "@/components/marker/MarkerList";
+import Loading from "@/app/loading";
 
-export const MapContent: React.FC<MapContentProps> = ({
+export default function MapContent({
   location,
   place,
   openMarkerId,
   onEditPoint,
   onMarkerClick,
   onMarkerClose,
-}) => {
+}: MapContentProps) {
   const map = useMap();
   const { markers, isLoading } = useMarkerContext();
 
@@ -92,12 +93,7 @@ export const MapContent: React.FC<MapContentProps> = ({
 
   return (
     <>
-      {isLoading && (
-        <div className="absolute top-0 left-0 inset-0 flex items-center justify-center bg-gray-50">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[var(--primary-purple)]"></div>
-          <p className="sr-only">Loading...</p>
-        </div>
-      )}
+      {isLoading && <Loading />}
       <MarkerList
         markerData={markers}
         openMarkerId={openMarkerId}
@@ -108,5 +104,3 @@ export const MapContent: React.FC<MapContentProps> = ({
     </>
   );
 }
-
-export default MapContent;

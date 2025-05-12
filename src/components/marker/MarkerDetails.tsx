@@ -8,7 +8,7 @@ interface MarkerDetailsProps {
   onEdit: (pointData: MarkerProps) => void;
 }
 
-export const MarkerDetails: React.FC<MarkerDetailsProps> = ({ details, onEdit }) => {
+export default function MarkerDetails({ details, onEdit }: MarkerDetailsProps) {
   const loggedIn = useAuth();
 
   const handleEditClick = (e: React.MouseEvent) => {
@@ -66,5 +66,3 @@ export const MarkerDetails: React.FC<MarkerDetailsProps> = ({ details, onEdit })
     </article>
   );
 };
-
-export default MarkerDetails;

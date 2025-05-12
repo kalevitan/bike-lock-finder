@@ -2,19 +2,15 @@
 
 import React, { useState } from "react";
 import { usePathname } from 'next/navigation';
-import NavLink from "./NavLink";
+import { NavLink } from "./NavLink";
 import SearchForm from "@/components/searchform/SearchForm";
 import { CircleX, Target, Map } from "lucide-react";
-import { BikeLockIcon } from '@/components/icons/bike-lock-icon';
+import BikeLockIcon from '@/components/icons/bike-lock-icon';
 import { Search as SearchIcon } from "lucide-react";
 import classes from "./header.module.css";
+import { HeaderProps } from "@/interfaces/header";
 
-interface HeaderProps {
-  onSearch?: (query: google.maps.places.PlaceResult | null) => void;
-  onRecenter?: () => void;
-}
-
-const Header: React.FC<HeaderProps>= ({ onSearch, onRecenter }) => {
+export default function Header({ onSearch, onRecenter }: HeaderProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pathname = usePathname();
 
@@ -66,5 +62,3 @@ const Header: React.FC<HeaderProps>= ({ onSearch, onRecenter }) => {
     </header>
   )
 }
-
-export default Header;

@@ -5,7 +5,7 @@ export interface MarkerContextProps {
   refreshMarkers: () => Promise<void>;
 }
 
-export interface MarkerProps {
+export interface MarkerData {
   id: string;
   title: string;
   latitude: string;
@@ -14,4 +14,19 @@ export interface MarkerProps {
   rating: number;
   file: File | string | null;
   isOpen?: boolean;
+}
+
+export interface MarkerProps extends MarkerData {
+  isOpen: boolean;
+  onClick: () => void;
+  onClose: () => void;
+  onEditPoint: (pointData: MarkerData) => void;
+}
+
+export interface MarkerListProps {
+  markerData: MarkerProps[];
+  openMarkerId: string | null;
+  onMarkerClick: (id: string) => void;
+  onMarkerClose: (id: string) => void;
+  onEditPoint: (pointData: MarkerProps) => void;
 }

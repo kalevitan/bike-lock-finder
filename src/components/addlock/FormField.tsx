@@ -1,17 +1,17 @@
 import React from "react";
 import { FormFieldProps } from "@/interfaces/forms";
 
-const FormField: React.FC<FormFieldProps> = ({
+export default function FormField({
   label,
   name,
+  type = 'text',
   value,
   onChange,
-  onFileChange,
-  type = 'text',
   required = false,
   hidden = false,
-  disabled = false
-}) => {
+  disabled = false,
+  onFileChange
+}: FormFieldProps) {
   return (
     <div className={`flex flex-col text-left ${hidden ? 'hidden' : 'visible'}`}>
       <label htmlFor={name} className="mb-2">
@@ -55,7 +55,5 @@ const FormField: React.FC<FormFieldProps> = ({
         />
       )}
     </div>
-  )
-}
-
-export default FormField;
+  );
+};

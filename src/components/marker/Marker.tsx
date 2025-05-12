@@ -1,26 +1,19 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { AdvancedMarker, useAdvancedMarkerRef } from '@vis.gl/react-google-maps';
-import { MarkerDetails } from './MarkerDetails';
-import { MarkerProps as MarkerData } from '@/interfaces/markers';
+import MarkerDetails from './MarkerDetails';
+import { MarkerProps } from '@/interfaces/markers';
 import classNames from 'classnames';
-import { BikeLockIcon } from '@/components/icons/bike-lock-icon';
+import BikeLockIcon from '@/components/icons/bike-lock-icon';
 import './marker.css';
 
-interface MarkerProps extends MarkerData {
-  isOpen: boolean;
-  onClick: () => void;
-  onClose: () => void;
-  onEditPoint: (pointData: MarkerData) => void;
-}
-
-const Marker: React.FC<MarkerProps> = ({
+export function Marker({
   isOpen,
   onClick,
   onClose,
   onEditPoint,
   ...markerData
-}) => {
+}: MarkerProps) {
   const [markerRef, marker] = useAdvancedMarkerRef();
   const [hovered, setHovered] = useState(false);
   const position = { lat: parseFloat(markerData.latitude), lng: parseFloat(markerData.longitude) };
@@ -81,7 +74,7 @@ const Marker: React.FC<MarkerProps> = ({
         </div>
 
         <MarkerDetails
-          details={markerData}
+          details={markerData as MarkerProps}
           onEdit={(onEditPoint)}
         />
 
@@ -90,5 +83,3 @@ const Marker: React.FC<MarkerProps> = ({
     </AdvancedMarker>
   );
 };
-
-export default Marker;

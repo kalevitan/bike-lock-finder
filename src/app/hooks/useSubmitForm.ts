@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { MarkerProps } from '@/interfaces/markers';
 import xss from 'xss';
-import { useMarkerContext } from '@/contexts/MarkerContext';
+import { useMarkerContext } from '@/contexts/MarkerProvider';
 import { uploadImage } from '@/lib/storage';
 
 interface UseSubmitFormProps {

@@ -1,24 +1,16 @@
 import { useMemo } from "react";
-import Marker from "./Marker";
-import { MarkerProps } from "@/interfaces/markers";
+import { Marker } from "./Marker";
+import { MarkerListProps, MarkerProps } from "@/interfaces/markers";
 
-interface MarkerListProps {
-  markerData: MarkerProps[];
-  openMarkerId: string | null;
-  onMarkerClick: (id: string) => void;
-  onMarkerClose: (id: string) => void;
-  onEditPoint: (pointData: MarkerProps) => void;
-}
-
-const MarkerList: React.FC<MarkerListProps> = ({
+export default function MarkerList({
   markerData,
   openMarkerId,
   onMarkerClick,
   onMarkerClose,
   onEditPoint
-}) => {
+}: MarkerListProps) {
   const markers = useMemo(() => (
-    markerData.map((marker) => (
+    markerData.map((marker: MarkerProps) => (
       <Marker
         key={marker.id}
         {...marker}
@@ -32,5 +24,3 @@ const MarkerList: React.FC<MarkerListProps> = ({
 
   return <>{markers}</>;
 }
-
-export default MarkerList;

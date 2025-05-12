@@ -3,17 +3,24 @@ import { MarkerProps } from "@/interfaces/markers";
 import useAuth from "@/app/hooks/useAuth";
 import { CircleUserRound, LocateFixed, MapPinPlusInside, Info } from "lucide-react";
 import Link from "next/link";
+import { useModal } from "@/contexts/ModalProvider";
+import AddLock from "@/components/addlock/AddLock";
+
 interface SidebarProps {
-  openModal: (editPointData?: MarkerProps | null) => void;
   updateLocation: () => void;
+  onAddLock?: (pointData?: MarkerProps | null) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ openModal, updateLocation }) => {
+export default function Sidebar({ updateLocation, onAddLock }: SidebarProps) {
   const loggedIn = useAuth();
+  const { openModal } = useModal();
+
+  const handleAddLock = () => {
+    openModal(<AddLock />, 'Add Lock');
+  };
 
   return (
     <aside className={classes.sidebar}>
-
       <div className="sidebar-layout-wrapper flex flex-col sm:px-4 justify-between h-full">
         <div className="flex flex-col gap-0 sm:gap-4">
           <div className="hidden md:block intro pt-4">
@@ -26,18 +33,18 @@ const Sidebar: React.FC<SidebarProps> = ({ openModal, updateLocation }) => {
                 <Link href="/about" className="button button--icon">
                   <Info />
                 </Link>
-                  <span className="text-sm">About</span>
+                <span className="text-sm">About</span>
               </li>
               <li className="flex flex-col items-center gap-1">
                 <button onClick={updateLocation} className="button button--icon">
                   <LocateFixed />
                 </button>
-                  <span className="text-sm">Locate Me</span>
+                <span className="text-sm">Locate Me</span>
               </li>
               {loggedIn ? (
                 <>
                   <li className="flex flex-col items-center gap-1">
-                    <button onClick={() => openModal(null)} className="button button--icon">
+                    <button onClick={handleAddLock} className="button button--icon">
                       <MapPinPlusInside />
                     </button>
                     <span className="text-sm">Add Lock</span>
@@ -71,9 +78,6 @@ const Sidebar: React.FC<SidebarProps> = ({ openModal, updateLocation }) => {
           </div>
         )}
       </div>
-
     </aside>
-  )
-}
-
-export default Sidebar;
+  );
+};

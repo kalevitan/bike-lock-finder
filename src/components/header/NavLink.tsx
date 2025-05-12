@@ -2,14 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { NavLinkProps } from "@/interfaces/header";
 
-interface NavLinkProps {
-  href: string;
-  children: React.ReactNode;
-  classes?: string;
-}
-
-export const NavLink = ({ href, children, classes }: NavLinkProps) => {
+export function NavLink({ href, children, classes }: NavLinkProps) {
   const pathname = usePathname();
   const isActive = href === '/' ? pathname === href : pathname.startsWith(href);
   return (
@@ -18,5 +13,3 @@ export const NavLink = ({ href, children, classes }: NavLinkProps) => {
     </Link>
   );
 }
-
-export default NavLink;

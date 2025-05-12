@@ -7,7 +7,7 @@ interface RatingProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const Rating: React.FC<RatingProps> = ({ rating, onChange }) => {
+export default function Rating({ rating, onChange }: RatingProps) {
   return (
     <div className="flex flex-col text-left">
       <label className="mb-2">How would you rate this lock?</label>
@@ -34,5 +34,3 @@ const Rating: React.FC<RatingProps> = ({ rating, onChange }) => {
     </div>
   );
 }
-
-export default Rating;
