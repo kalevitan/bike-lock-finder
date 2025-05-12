@@ -27,8 +27,8 @@ export default function Sidebar({ updateLocation, onAddLock }: SidebarProps) {
             <p>Find or add lock stations on the map to safely and conveniently lock your bike.</p>
           </div>
 
-          <nav className={classes.actions}>
-            <ul className="grid col-auto grid-flow-col justify-evenly">
+          <nav className={classes.nav}>
+            <ul className="flex justify-between w-full">
               <li className="flex flex-col items-center gap-1">
                 <Link href="/about" className="button button--icon">
                   <Info />

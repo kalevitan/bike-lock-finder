@@ -10,10 +10,12 @@
     bottom: 0;
   }
 }
-.actions {
-  margin-top: 1rem;
+.nav {
+  display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 1rem;
+  padding: 0 1rem;
 
   @media (max-width: 768px) {
     margin-bottom: 1rem;
