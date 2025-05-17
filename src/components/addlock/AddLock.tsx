@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { getLocation } from '@/utils/locationutils';
 import { useMarkerContext } from '@/contexts/MarkerProvider';
 import { MarkerProps } from '@/interfaces/markers';
-import { Locate, UserPen, ImagePlus, MessageCircleWarning } from 'lucide-react';
+import { Locate, UserPen, ImagePlus, MessageCircleWarning, Save, X } from 'lucide-react';
 import FormField from './FormField';
 import SearchForm from '@/components/searchform/SearchForm';
 import useSubmitForm from '@/app/hooks/useSubmitForm';
@@ -15,6 +15,7 @@ import Rating from './Rating';
 
 interface AddLockProps {
   pointData?: MarkerProps | null;
+  formMode?: 'add' | 'edit';
 }
 
 interface FormData {
@@ -26,7 +27,7 @@ interface FormData {
   file: File | string | null;
 }
 
-export default function AddLock({ pointData }: AddLockProps) {
+export default function AddLock({ pointData, formMode }: AddLockProps) {
   const initialFormData: FormData = {
     title: pointData?.title || '',
     latitude: pointData?.latitude || '',
@@ -35,23 +36,62 @@ export default function AddLock({ pointData }: AddLockProps) {
     rating: pointData?.rating || 0,
     file: pointData?.file || null,
   };
+
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [fileUrl, setFileUrl] = useState<string | null>(typeof pointData?.file === 'string' ? pointData.file : null);
   const [expandGeometry, setExpandGeometry] = useState(!pointData);
   const [noChange, setNoChange] = useState(true);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [searchInput, setSearchInput] = useState('');
+  const [notCustomLocation, setNotCustomLocation] = useState(true);
 
   const { setMarkers } = useMarkerContext();
   const { closeModal } = useModal();
 
   // Check if form data has changed from initial values
   useEffect(() => {
-    const hasChanges = Object.keys(initialFormData).some(
-      key => initialFormData[key as keyof FormData] !== formData[key as keyof FormData]
-    ) || fileUrl !== (pointData?.file || '');
-    setNoChange(!hasChanges);
-  }, [formData, fileUrl]);
+    console.log('Comparing form data:', { initialFormData, formData });
+
+    // If we're in edit mode, check for actual changes
+    if (formMode === 'edit') {
+      const hasChanges = Object.keys(initialFormData).some(
+        key => {
+          const initialValue = initialFormData[key as keyof FormData];
+          const currentValue = formData[key as keyof FormData];
+
+          // Skip file field comparison if both are null
+          if (key === 'file' && !initialValue && !currentValue) {
+            return false;
+          }
+
+          // Convert numeric fields to numbers for comparison
+          if (key === 'rating') {
+            const initialNum = Number(initialValue);
+            const currentNum = Number(currentValue);
+            const hasChanged = initialNum !== currentNum;
+            if (hasChanged) {
+              console.log('Rating changed:', { initialNum, currentNum });
+            }
+            return hasChanged;
+          }
+
+          // For all other fields, compare values
+          const hasChanged = initialValue !== currentValue;
+          if (hasChanged) {
+            console.log('Field changed:', { key, initialValue, currentValue });
+          }
+          return hasChanged;
+        }
+      );
+      console.log('Form changes detected:', hasChanges);
+      setNoChange(!hasChanges);
+      return;
+    }
+
+    // For non-edit mode, always allow saving
+    setNoChange(false);
+  }, [formData, initialFormData, formMode]);
 
   const { handleSubmit: submitForm, isSubmitting, error, success } = useSubmitForm({
     pointData,
@@ -112,7 +152,8 @@ export default function AddLock({ pointData }: AddLockProps) {
       longitude: lng.toString(),
     }));
 
-    setExpandGeometry(false);
+    setSearchInput(place.name ?? '');
+    setExpandGeometry(true);
   };
 
   const handleExpandGeometry = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -130,6 +171,7 @@ export default function AddLock({ pointData }: AddLockProps) {
           longitude: position.lng.toString(),
         }));
         setExpandGeometry(false);
+        setNotCustomLocation(false);
       })
       .catch((error) => {
         console.error('Error getting location:', error);
@@ -159,6 +201,15 @@ export default function AddLock({ pointData }: AddLockProps) {
     await submitForm(e);
   };
 
+  const handleFormSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (formMode === 'edit') {
+      handleExpandGeometry(e);
+    } else {
+      onSubmit(e as unknown as React.FormEvent<HTMLFormElement>);
+    }
+  };
+
   return (
     <div className="add-point">
       <form method="post" className="space-y-4 text-black" onSubmit={onSubmit}>
@@ -170,40 +221,52 @@ export default function AddLock({ pointData }: AddLockProps) {
             value={formData.title}
             onChange={handleChange}
             required={true}
+            disabled={formMode == 'edit' && !expandGeometry}
           />
+
+          {expandGeometry && (
           <div className="flex flex-col text-left">
             <label htmlFor="search" className="mb-2">Location<span className="text-red-500">*</span></label>
-            <div className="grid grid-cols-[3fr_1fr] gap-4">
-              <SearchForm onSearch={handleOnSearch}/>
-              <button className="button text-white flex gap-1" onClick={handleExpandGeometry}>
-                <UserPen/><span className="">{expandGeometry ? 'Edit' : 'Collapse'}</span>
-              </button>
+            <div className="grid grid-cols-[3fr_50px] gap-4 items-center">
+              <SearchForm
+                onSearch={handleOnSearch}
+                searchInput={searchInput}
+                setSearchInput={setSearchInput}
+                onRecenter={() => {}}
+                shouldFocus={true}
+              />
+              <div className="text-left">
+                <button onClick={locateMe} className="button button--icon flex gap-1">
+                  <Locate color="white" />
+                </button>
+                <span className="sr-only">Locate me</span>
+              </div>
             </div>
           </div>
-          <div className={`grid grid-cols-2 gap-4 ${expandGeometry ? 'hidden' : 'visible'}`}>
-            <FormField
-              label="Latitude"
-              type="text"
-              name="latitude"
-              value={formData.latitude}
-              onChange={handleChange}
-              required={true}
-              hidden={expandGeometry}
-            />
-            <FormField
-              label="Longitude"
-              type="text"
-              name="longitude"
-              value={formData.longitude}
-              onChange={handleChange}
-              required={true}
-              hidden={expandGeometry}
-            />
-          </div>
-          <div className="text-left">
-            <button onClick={locateMe} className="button button--link flex gap-1">
-              <span><Locate /></span>Locate me...</button>
-          </div>
+          )}
+
+          {!notCustomLocation && (
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                label="Latitude"
+                type="text"
+                name="latitude"
+                value={formData.latitude}
+                onChange={handleChange}
+                required={true}
+                hidden={notCustomLocation}
+              />
+              <FormField
+                label="Longitude"
+                type="text"
+                name="longitude"
+                value={formData.longitude}
+                onChange={handleChange}
+                required={true}
+                hidden={notCustomLocation}
+              />
+            </div>
+          )}
           <FormField
             label="Image"
             type="file"
@@ -218,7 +281,7 @@ export default function AddLock({ pointData }: AddLockProps) {
             <div className="text-sm text-gray-500">Uploading image...</div>
           )}
           {fileUrl ? (
-            <div className="relative mt-2">
+            <div className={`relative mt-2 ${expandGeometry ? 'cursor-pointer hover:opacity-70 transition-opacity duration-300' : 'cursor-not-allowed'}`}>
               {fileUrl.startsWith('http') ? (
                 <Image
                   src={fileUrl}
@@ -226,21 +289,29 @@ export default function AddLock({ pointData }: AddLockProps) {
                   width={300}
                   height={300}
                   className="w-full object-contain rounded-md border border-[#6b7280]"
-                  onClick={() => document.getElementById('file-image')?.click()}
+                  onClick={() => {
+                    if (expandGeometry) {
+                      document.getElementById('file-image')?.click();
+                    }
+                  }}
                 />
               ) : (
                 <div className="text-red-500">Invalid image URL</div>
               )}
             </div>
           ) : (
-            <div className="relative mt-2">
-              <button
-                type="button"
-                onClick={() => document.getElementById('file-image')?.click()}
-                className="w-full p-8 border border-[#6b7280] rounded-md flex items-center justify-center"
-              >
-                <ImagePlus />
-              </button>
+            <div className="flex flex-col text-left">
+              <label htmlFor="file-image" className="mb-2">Image</label>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => document.getElementById('file-image')?.click()}
+                  className="w-full p-8 border border-[#6b7280] rounded-md flex items-center justify-center"
+                  disabled={formMode === 'edit' && !expandGeometry}
+                >
+                  <ImagePlus />
+                </button>
+              </div>
             </div>
           )}
           <FormField
@@ -250,8 +321,9 @@ export default function AddLock({ pointData }: AddLockProps) {
             value={formData.description}
             onChange={handleChange}
             required={false}
+            disabled={formMode == 'edit' && !expandGeometry}
           />
-          <Rating rating={formData.rating} onChange={handleRatingChange} />
+          <Rating rating={formData.rating} onChange={handleRatingChange} disabled={formMode == 'edit' && !expandGeometry} />
         </div>
 
         {validationError && (
@@ -283,13 +355,14 @@ export default function AddLock({ pointData }: AddLockProps) {
           <button
             type="submit"
             className="button mt-4 text-white"
-            disabled={isSubmitting || noChange}
+            disabled={isSubmitting || (formMode !== 'edit' && noChange)}
+            onClick={handleFormSubmit}
           >
-            {isSubmitting ? 'Saving...' : (pointData ? 'Update' : 'Submit')}
+            {isSubmitting ? 'Saving...' : (formMode === 'edit' ? (noChange ? 'Edit' : 'Save') : 'Save')}
           </button>
         </div>
         <div className="report-issue text-sm">
-          <a href="" className="flex items-center justify-end gap-1 text-gray-500" target="_blank"><MessageCircleWarning size={15}/><span>Report an issue</span></a>
+          <a href="https://github.com/kalevitan/bike-lock-finder/issues" className="flex items-center justify-end gap-1 text-gray-500" target="_blank"><MessageCircleWarning size={15}/><span>Report an issue</span></a>
         </div>
       </form>
     </div>

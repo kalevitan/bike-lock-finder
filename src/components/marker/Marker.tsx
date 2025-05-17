@@ -57,17 +57,25 @@ export function Marker({
       className={classNames('bike-lock-marker', {clicked: isOpen, hovered})}>
       <div className="custom-pin">
         <div className="image-container">
-          <div className="w-full h-full relative">
-            <Image
-              src={markerData.file instanceof File ? URL.createObjectURL(markerData.file) : (markerData.file || '/images/bike-lock.jpeg')}
-              width={300}
-              height={300}
-              sizes="50vw"
-              className="image"
-              alt={`Bike lock location: ${markerData.title}`}
-              priority={isOpen}
-            />
-          </div>
+          {markerData.file && (typeof markerData.file === 'string' || markerData.file instanceof File) && (
+            <div className="w-full h-full relative">
+              <Image
+                src={markerData.file instanceof File
+                  ? URL.createObjectURL(markerData.file)
+                  : (markerData.file.startsWith('http') ? markerData.file : '/images/bike-lock.jpeg')}
+                width={300}
+                height={300}
+                sizes="50vw"
+                className="image"
+                alt={`Bike lock location: ${markerData.title}`}
+                priority={isOpen}
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = '/images/bike-lock.jpeg';
+                }}
+              />
+            </div>
+          )}
           <span className="icon">
             <BikeLockIcon />
           </span>

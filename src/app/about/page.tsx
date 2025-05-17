@@ -7,7 +7,7 @@ const About: React.FC = () => {
   return (
     <>
       <Header />
-      <main className="grid md:grid-cols-2 items-stretch gap-8 px-6 md:py-16 h-[calc(100vh-8rem)] overflow-y-auto">
+      <main className="grid md:grid-cols-2 items-stretch gap-8 px-6 pt-[60px] md:py-16 h-[calc(100vh-8rem)] overflow-y-auto">
         <section className="space-y-6 px-4 md:px-12">
           <h2 className="text-5xl md:text-6xl font-extrabold tracking-tight sr-only">About us</h2>
           <p className="text-lg text-neutral-300 font-light leading-relaxed">

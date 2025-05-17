@@ -35,7 +35,7 @@ export default function AccountPage() {
   return (
     <>
       <Header />
-      <main className="grid md:grid-cols-2 items-stretch gap-8 px-6 md:py-16">
+      <main className="grid md:grid-cols-2 items-stretch gap-8 px-6 pt-[60px] md:py-16">
         <h1>Hi, {user.email}</h1>
         <button className="button" onClick={signOut}>Sign Out</button>
       </main>

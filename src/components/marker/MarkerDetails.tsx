@@ -36,8 +36,9 @@ export default function MarkerDetails({ details, onEdit }: MarkerDetailsProps) {
               <Navigation size={15} className="min-w-fit" />
             </h2>
           </a>
-          <p className="description text-sm mb-0">{details.description}</p>
         </div>
+
+        <p className="description text-sm mb-0">{details.description}</p>
 
         <div className="details flex justify-between gap-4">
           <div className="detail_item flex items-center gap-1">
@@ -54,13 +55,13 @@ export default function MarkerDetails({ details, onEdit }: MarkerDetailsProps) {
             </div>
           </div>
           {loggedIn && (
-              <button
-                className="button button--icon"
-                onClick={handleEditClick}
-              >
-                <LocationEdit size="20" color="var(--primary-white)" />
-              </button>
-            )}
+            <button
+              className="button button--icon"
+              onClick={handleEditClick}
+            >
+              <LocationEdit size="20" color="var(--primary-white)" />
+            </button>
+          )}
         </div>
       </div>
     </article>

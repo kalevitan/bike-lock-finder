@@ -10,7 +10,7 @@ export default function FormField({
   required = false,
   hidden = false,
   disabled = false,
-  onFileChange
+  onFileChange,
 }: FormFieldProps) {
   return (
     <div className={`flex flex-col text-left ${hidden ? 'hidden' : 'visible'}`}>
@@ -24,7 +24,7 @@ export default function FormField({
           name={name}
           value={value || ''}
           onChange={onChange}
-          className="p-2 border rounded"
+          className={`p-2 border rounded ${disabled ? 'cursor-not-allowed' : 'cursor-text'}`}
           required={required}
           hidden={hidden}
           disabled={disabled}
@@ -36,7 +36,7 @@ export default function FormField({
           name={name}
           accept="image/*"
           onChange={onFileChange || onChange}
-          className="p-2 border rounded"
+          className={`p-2 border rounded ${disabled ? 'cursor-not-allowed' : 'cursor-text'}`}
           required={required}
           hidden={hidden}
           disabled={disabled}
@@ -48,7 +48,7 @@ export default function FormField({
           name={name}
           value={typeof value === 'string' ? value : ''}
           onChange={onChange}
-          className="p-2 border rounded"
+          className={`p-2 border rounded ${disabled ? 'cursor-not-allowed' : 'cursor-text'}`}
           required={required}
           hidden={hidden}
           disabled={disabled}

@@ -53,7 +53,7 @@ const Login: React.FC = () => {
   return (
     <>
       <Header />
-      <main>
+      <main className="pt-[60px]">
         <div className="w-fit m-auto">
           <div className="grid justify-center pt-8 px-4">
             {!loggedIn ? (

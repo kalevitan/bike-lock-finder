@@ -10,6 +10,7 @@ import AddLock from "@/components/addlock/AddLock";
 import MapContent from "@/components/map/MapContent";
 import { MarkerProps } from '@/interfaces/markers';
 import { useModal } from '@/contexts/ModalProvider';
+import { useIsMobile } from './hooks/useIsMobile';
 
 export default function Points() {
   const { apiKey, libraries, version, mapId, mapTypeId, defaultCenter, defaultZoom } = useMapContext();
@@ -20,7 +21,7 @@ export default function Points() {
   const [editPointData, setEditPointData] = useState<MarkerProps | null>(null);
   const [openMarkerId, setOpenMarkerId] = useState<string | null>(null);
   const { openModal } = useModal();
-
+  const isMobile = useIsMobile();
   const updateLocation = useCallback(() => {
     getLocation()
       .then(setLocation)
@@ -39,7 +40,7 @@ export default function Points() {
   const handleEditPoint = useCallback((pointData: MarkerProps) => {
     if (!pointData.id) throw new Error("Point data must include an ID for editing.");
     setEditPointData(pointData);
-    openModal(<AddLock pointData={pointData} />, 'Edit Lock');
+    openModal(<AddLock pointData={pointData} formMode="edit" />, 'Edit Lock');
   }, [openModal]);
 
   const handleMarkerClick = useCallback((id: string) => {
@@ -52,15 +53,19 @@ export default function Points() {
 
   const handleAddLock = useCallback(() => {
     setEditPointData(null);
-    openModal(<AddLock />, 'Add Lock');
+    openModal(<AddLock formMode="add" />, 'Add Lock');
   }, [openModal]);
 
   return (
     <APIProvider apiKey={apiKey} libraries={libraries} version={version}>
-      <div className="grid-layout">
-        <Header onSearch={handleSearch} onRecenter={handleRecenter}/>
-        <Sidebar updateLocation={updateLocation} onAddLock={handleAddLock}/>
-        <main className="relative">
+      <div className="">
+
+        {isMobile && (
+          <Header onSearch={handleSearch} onRecenter={handleRecenter}/>
+        )}
+
+        <Sidebar updateLocation={updateLocation} onAddLock={handleAddLock} onSearch={handleSearch} onRecenter={handleRecenter}/>
+        <main role="main" className="">
           <div className="absolute w-full h-full">
             {error && <div className="error fixed bg-red-50 mb-8 p-4">{error}</div>}
             <div id="map" className="w-full h-full">

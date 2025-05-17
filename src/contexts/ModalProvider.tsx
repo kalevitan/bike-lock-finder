@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { ModalContextProps } from '@/interfaces/modal';
 import Modal from '@/components/modal/Modal';
+import { APIProvider } from '@vis.gl/react-google-maps';
 
 const ModalContext = createContext<ModalContextProps | undefined>(undefined);
 
@@ -28,7 +29,9 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       {children}
       {isOpen && content && (
         <Modal title={title} closeModal={closeModal}>
-          {content}
+          <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
+            {content}
+          </APIProvider>
         </Modal>
       )}
     </ModalContext.Provider>
