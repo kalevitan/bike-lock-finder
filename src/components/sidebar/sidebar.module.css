@@ -17,10 +17,11 @@
   @media (min-width: 768px) {
     position: fixed;
     width: 20rem;
-    height: 95%;
+    height: 90%;
     bottom: 0;
-    margin: 1rem;
-    margin-top: 2rem;
+    margin: 2rem;
+    margin-top: 3rem;
+    margin-bottom: 3rem;
     padding: 0;
     padding-top: 2rem;
     border-bottom-left-radius: 0.5rem;

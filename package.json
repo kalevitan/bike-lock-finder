@@ -14,6 +14,7 @@
     "@vercel/analytics": "1.5.0",
     "@vercel/speed-insights": "1.2.0",
     "@vis.gl/react-google-maps": "latest",
+    "browser-image-compression": "2.0.2",
     "classnames": "2.5.1",
     "firebase": "10.13.1",
     "lucide-react": "0.509.0",

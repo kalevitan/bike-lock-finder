@@ -59,7 +59,6 @@ export default function Points() {
   return (
     <APIProvider apiKey={apiKey} libraries={libraries} version={version}>
       <div className="">
-
         {isMobile && (
           <Header onSearch={handleSearch} onRecenter={handleRecenter}/>
         )}

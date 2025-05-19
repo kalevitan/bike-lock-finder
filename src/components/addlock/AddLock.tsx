@@ -12,6 +12,7 @@ import useSubmitForm from '@/app/hooks/useSubmitForm';
 import { uploadImage } from '@/lib/storage';
 import { useModal } from '@/contexts/ModalProvider';
 import Rating from './Rating';
+import imageCompression from 'browser-image-compression';
 
 interface AddLockProps {
   pointData?: MarkerProps | null;
@@ -45,6 +46,7 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [searchInput, setSearchInput] = useState('');
   const [notCustomLocation, setNotCustomLocation] = useState(true);
+  const [contentChanged, setContentChanged] = useState(false);
 
   const { setMarkers } = useMarkerContext();
   const { closeModal } = useModal();
@@ -105,6 +107,7 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
       ...formData,
       [e.target.name]: e.target.value,
     });
+    setContentChanged(true);
   }
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -115,10 +118,22 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
 
     setIsUploading(true);
     try {
-      const downloadURL = await uploadImage(file);
+      // Compress the image
+      const options = {
+        maxSizeMB: 0.5, // Max file size of 500KB
+        maxWidthOrHeight: 800, // Max width/height of 800px
+        useWebWorker: true, // Use web worker for better performance
+        initialQuality: 0.8, // Slightly reduce quality for better compression
+      };
+
+      console.log('Original file size:', file.size / 1024 / 1024, 'MB');
+      const compressedFile = await imageCompression(file, options);
+      console.log('Compressed file size:', compressedFile.size / 1024 / 1024, 'MB');
+
+      const downloadURL = await uploadImage(compressedFile);
       setFormData({
         ...formData,
-        file,
+        file: compressedFile,
       });
       setFileUrl(downloadURL);
     } catch (error) {
@@ -203,7 +218,7 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
 
   const handleFormSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (formMode === 'edit') {
+    if (formMode === 'edit' && !contentChanged) {
       handleExpandGeometry(e);
     } else {
       onSubmit(e as unknown as React.FormEvent<HTMLFormElement>);

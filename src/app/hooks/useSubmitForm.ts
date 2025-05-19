@@ -3,6 +3,7 @@ import { MarkerProps } from '@/interfaces/markers';
 import xss from 'xss';
 import { useMarkerContext } from '@/contexts/MarkerProvider';
 import { uploadImage } from '@/lib/storage';
+import useAuth from './useAuth';
 
 interface UseSubmitFormProps {
   pointData?: MarkerProps | null;
@@ -23,6 +24,7 @@ const useSubmitForm = ({ pointData, setMarkers, closeModal, formData }: UseSubmi
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const user = useAuth();
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
@@ -55,6 +57,7 @@ const useSubmitForm = ({ pointData, setMarkers, closeModal, formData }: UseSubmi
           body: JSON.stringify({
             ...sanitizedData,
             id: pointData?.id,
+            uid: user?.uid,
           }),
           headers: { 'Content-Type': 'application/json' },
         });
