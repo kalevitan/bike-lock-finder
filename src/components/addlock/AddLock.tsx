@@ -46,7 +46,6 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [searchInput, setSearchInput] = useState('');
   const [notCustomLocation, setNotCustomLocation] = useState(true);
-  const [contentChanged, setContentChanged] = useState(false);
 
   const { setMarkers } = useMarkerContext();
   const { closeModal } = useModal();
@@ -107,7 +106,6 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
       ...formData,
       [e.target.name]: e.target.value,
     });
-    setContentChanged(true);
   }
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,6 +115,7 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
     if (!file) return;
 
     setIsUploading(true);
+    setValidationError(null);
     try {
       // Compress the image
       const options = {
@@ -130,11 +129,19 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
       const compressedFile = await imageCompression(file, options);
       console.log('Compressed file size:', compressedFile.size / 1024 / 1024, 'MB');
 
-      const downloadURL = await uploadImage(compressedFile);
-      setFormData({
-        ...formData,
-        file: compressedFile,
+      // Create a new File object from the compressed blob
+      const compressedImageFile = new File([compressedFile], file.name, {
+        type: file.type,
+        lastModified: file.lastModified,
       });
+
+      const downloadURL = await uploadImage(compressedImageFile);
+      console.log('Upload successful, URL:', downloadURL);
+
+      setFormData(prev => ({
+        ...prev,
+        file: downloadURL,
+      }));
       setFileUrl(downloadURL);
     } catch (error) {
       console.error('Error uploading image:', error);
@@ -218,7 +225,8 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
 
   const handleFormSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (formMode === 'edit' && !contentChanged) {
+
+    if (formMode === 'edit' && noChange) {
       handleExpandGeometry(e);
     } else {
       onSubmit(e as unknown as React.FormEvent<HTMLFormElement>);
@@ -295,24 +303,20 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
           {isUploading && (
             <div className="text-sm text-gray-500">Uploading image...</div>
           )}
-          {fileUrl ? (
+          {fileUrl && fileUrl.startsWith('http') ? (
             <div className={`relative mt-2 ${expandGeometry ? 'cursor-pointer hover:opacity-70 transition-opacity duration-300' : 'cursor-not-allowed'}`}>
-              {fileUrl.startsWith('http') ? (
-                <Image
-                  src={fileUrl}
-                  alt="Preview"
-                  width={300}
-                  height={300}
-                  className="w-full object-contain rounded-md border border-[#6b7280]"
-                  onClick={() => {
-                    if (expandGeometry) {
-                      document.getElementById('file-image')?.click();
-                    }
-                  }}
-                />
-              ) : (
-                <div className="text-red-500">Invalid image URL</div>
-              )}
+              <Image
+                src={fileUrl}
+                alt="Preview"
+                width={300}
+                height={300}
+                className="w-full object-contain rounded-md border border-[#6b7280]"
+                onClick={() => {
+                  if (expandGeometry) {
+                    document.getElementById('file-image')?.click();
+                  }
+                }}
+              />
             </div>
           ) : (
             <div className="flex flex-col text-left">
@@ -321,7 +325,7 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
                 <button
                   type="button"
                   onClick={() => document.getElementById('file-image')?.click()}
-                  className="w-full p-8 border border-[#6b7280] rounded-md flex items-center justify-center"
+                  className={`w-full p-8 border border-[#6b7280] rounded-md flex items-center justify-center ${expandGeometry ? 'cursor-pointer hover:opacity-70 transition-opacity duration-300' : 'cursor-not-allowed'}`}
                   disabled={formMode === 'edit' && !expandGeometry}
                 >
                   <ImagePlus />
@@ -368,7 +372,7 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
             Cancel
           </button>
           <button
-            type="submit"
+            type="button"
             className="button mt-4 text-white"
             disabled={isSubmitting || (formMode !== 'edit' && noChange)}
             onClick={handleFormSubmit}

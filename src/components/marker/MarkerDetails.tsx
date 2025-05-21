@@ -45,8 +45,13 @@ export default function MarkerDetails({ details, onEdit }: MarkerDetailsProps) {
             <div className="ratings">
               <h4 className="text-sm pb-2 sr-only">Rating</h4>
               <span className="flex gap-1 items-center">
-                {Array.from({ length: details.rating }).map((_, index) => (
-                  <Star key={index} size="20" color="var(--primary-gold)" fill="var(--primary-gold)" />
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <Star
+                    key={index}
+                    size="20"
+                    color="var(--primary-gold)"
+                    fill={index < details.rating ? "var(--primary-gold)" : "none"}
+                  />
                 ))}
                 <span className="border m-2 p-1">
                   {details.rating}.0
