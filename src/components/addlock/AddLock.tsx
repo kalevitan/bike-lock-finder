@@ -52,8 +52,6 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
 
   // Check if form data has changed from initial values
   useEffect(() => {
-    console.log('Comparing form data:', { initialFormData, formData });
-
     // If we're in edit mode, check for actual changes
     if (formMode === 'edit') {
       const hasChanges = Object.keys(initialFormData).some(
@@ -70,22 +68,13 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
           if (key === 'rating') {
             const initialNum = Number(initialValue);
             const currentNum = Number(currentValue);
-            const hasChanged = initialNum !== currentNum;
-            if (hasChanged) {
-              console.log('Rating changed:', { initialNum, currentNum });
-            }
-            return hasChanged;
+            return initialNum !== currentNum;
           }
 
           // For all other fields, compare values
-          const hasChanged = initialValue !== currentValue;
-          if (hasChanged) {
-            console.log('Field changed:', { key, initialValue, currentValue });
-          }
-          return hasChanged;
+          return initialValue !== currentValue;
         }
       );
-      console.log('Form changes detected:', hasChanges);
       setNoChange(!hasChanges);
       return;
     }
@@ -139,9 +128,7 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
         initialQuality: 0.8, // Slightly reduce quality for better compression
       };
 
-      console.log('Original file size:', file.size / 1024 / 1024, 'MB');
       const compressedFile = await imageCompression(file, options);
-      console.log('Compressed file size:', compressedFile.size / 1024 / 1024, 'MB');
 
       // Sanitize filename
       const sanitizedFilename = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
@@ -153,8 +140,6 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
       });
 
       const downloadURL = await uploadImage(compressedImageFile);
-      console.log('Upload successful, URL:', downloadURL);
-
       setFormData(prev => ({
         ...prev,
         file: downloadURL,

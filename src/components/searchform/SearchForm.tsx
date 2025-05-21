@@ -27,19 +27,10 @@ export const SearchForm = ({ onSearch, onRecenter, searchInput, setSearchInput, 
   }, [placesLibrary]);
 
   useEffect(() => {
-    console.log('Places library status:', {
-      hasLibrary: !!placesLibrary,
-      hasInput: !!inputRef.current,
-      libraryType: placesLibrary ? typeof placesLibrary : 'undefined',
-      isLibraryLoaded
-    });
-
     if (!isLibraryLoaded || !placesLibrary || !inputRef.current) {
-      console.log('Places library or input not ready:', { placesLibrary, inputRef: !!inputRef.current, isLibraryLoaded });
       return;
     }
 
-    console.log('Initializing autocomplete with library:', placesLibrary);
     const options = {
       fields: ['geometry', 'name', 'formatted_address'],
       bounds: new google.maps.LatLngBounds(
@@ -52,7 +43,6 @@ export const SearchForm = ({ onSearch, onRecenter, searchInput, setSearchInput, 
 
     try {
       const autocomplete = new placesLibrary.Autocomplete(inputRef.current, options);
-      console.log('Autocomplete initialized successfully:', autocomplete);
       setPlaceAutocomplete(autocomplete);
     } catch (error) {
       console.error('Error initializing autocomplete:', error);
@@ -60,19 +50,12 @@ export const SearchForm = ({ onSearch, onRecenter, searchInput, setSearchInput, 
   }, [placesLibrary, isLibraryLoaded]);
 
   useEffect(() => {
-    console.log('placeAutocomplete state changed:', !!placeAutocomplete);
-  }, [placeAutocomplete]);
-
-  useEffect(() => {
     if (!placeAutocomplete) {
-      console.log('No autocomplete instance available');
       return;
     }
 
-    console.log('Adding place_changed listener');
     const listener = placeAutocomplete.addListener('place_changed', () => {
       const place = placeAutocomplete.getPlace();
-      console.log('Place changed:', place);
       if (place && place.geometry) {
         onSearch?.(place);
       }
