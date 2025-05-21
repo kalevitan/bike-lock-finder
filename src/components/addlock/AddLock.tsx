@@ -114,6 +114,20 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
     const file = e.target.files[0];
     if (!file) return;
 
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      setValidationError('Please upload a valid image file (JPEG, PNG, or WebP)');
+      return;
+    }
+
+    // Validate file size (10MB max before compression)
+    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+    if (file.size > maxSize) {
+      setValidationError('Image size must be less than 10MB');
+      return;
+    }
+
     setIsUploading(true);
     setValidationError(null);
     try {
@@ -129,8 +143,11 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
       const compressedFile = await imageCompression(file, options);
       console.log('Compressed file size:', compressedFile.size / 1024 / 1024, 'MB');
 
+      // Sanitize filename
+      const sanitizedFilename = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+
       // Create a new File object from the compressed blob
-      const compressedImageFile = new File([compressedFile], file.name, {
+      const compressedImageFile = new File([compressedFile], sanitizedFilename, {
         type: file.type,
         lastModified: file.lastModified,
       });
@@ -201,14 +218,33 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
   };
 
   const validateForm = () => {
-    if (!formData.title.trim()) {
+    // Sanitize and validate title
+    const sanitizedTitle = formData.title.trim().replace(/[<>]/g, '');
+    if (!sanitizedTitle) {
       setValidationError('Title is required');
       return false;
     }
-    if (!formData.latitude || !formData.longitude) {
-      setValidationError('Location coordinates are required');
+
+    // Validate coordinates
+    const lat = parseFloat(formData.latitude);
+    const lng = parseFloat(formData.longitude);
+    if (isNaN(lat) || isNaN(lng) ||
+        lat < -90 || lat > 90 ||
+        lng < -180 || lng > 180) {
+      setValidationError('Invalid location coordinates');
       return false;
     }
+
+    // Sanitize description
+    const sanitizedDescription = formData.description.trim().replace(/[<>]/g, '');
+
+    // Update form data with sanitized values
+    setFormData(prev => ({
+      ...prev,
+      title: sanitizedTitle,
+      description: sanitizedDescription,
+    }));
+
     setValidationError(null);
     return true;
   };
@@ -325,10 +361,14 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
                 <button
                   type="button"
                   onClick={() => document.getElementById('file-image')?.click()}
-                  className={`w-full p-8 border border-[#6b7280] rounded-md flex items-center justify-center ${expandGeometry ? 'cursor-pointer hover:opacity-70 transition-opacity duration-300' : 'cursor-not-allowed'}`}
+                  className={`w-full p-8 border rounded-md flex items-center justify-center ${
+                    expandGeometry
+                      ? 'cursor-pointer border-[#6b7280] hover:opacity-70 transition-opacity duration-300'
+                      : 'cursor-not-allowed border-[#d1d5db]'
+                  }`}
                   disabled={formMode === 'edit' && !expandGeometry}
                 >
-                  <ImagePlus />
+                  <ImagePlus color={expandGeometry ? '#d1d5db' : '#6b7280'}/>
                 </button>
               </div>
             </div>
