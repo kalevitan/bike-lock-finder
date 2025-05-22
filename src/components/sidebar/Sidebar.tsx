@@ -100,7 +100,7 @@ export default function Sidebar({ updateLocation, onAddLock, onSearch, onRecente
         </div>
 
         {loggedIn && (
-          <div className="hidden md:flex gap-3 py-2 md:py-6 border-t border-gray-700">
+          <div className="hidden md:flex gap-3 pt-2 md:pt-6 border-t border-gray-700">
             <div className="user-info flex gap-3">
               <Link href="/account" className="flex gap-2">
                 <CircleUserRound />

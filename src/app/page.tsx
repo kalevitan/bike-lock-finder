@@ -58,38 +58,36 @@ export default function Points() {
 
   return (
     <APIProvider apiKey={apiKey} libraries={libraries} version={version}>
-      <div className="">
-        {isMobile && (
-          <Header onSearch={handleSearch} onRecenter={handleRecenter}/>
-        )}
+      {isMobile && (
+        <Header onSearch={handleSearch} onRecenter={handleRecenter}/>
+      )}
 
-        <Sidebar updateLocation={updateLocation} onAddLock={handleAddLock} onSearch={handleSearch} onRecenter={handleRecenter}/>
-        <main role="main" className="">
-          <div className="absolute w-full h-full">
-            {error && <div className="error fixed bg-red-50 mb-8 p-4">{error}</div>}
-            <div id="map" className="w-full h-full">
-              <Map
-                mapId={mapId}
-                mapTypeId={mapTypeId}
-                defaultCenter={defaultCenter}
-                defaultZoom={defaultZoom}
-                gestureHandling={'greedy'}
-                disableDefaultUI={true}
-                fullscreenControl={true}
-                onClick={() => setOpenMarkerId(null)}>
-                <MapContent
-                  location={location}
-                  place={selectedPlace}
-                  onEditPoint={handleEditPoint}
-                  openMarkerId={openMarkerId}
-                  onMarkerClick={handleMarkerClick}
-                  onMarkerClose={handleMarkerClose}
-                />
-              </Map>
-            </div>
+      <Sidebar updateLocation={updateLocation} onAddLock={handleAddLock} onSearch={handleSearch} onRecenter={handleRecenter}/>
+      <main role="main">
+        <div className="absolute w-full h-full">
+          {error && <div className="error fixed bg-red-50 mb-8 p-4">{error}</div>}
+          <div id="map" className="w-full h-full">
+            <Map
+              mapId={mapId}
+              mapTypeId={mapTypeId}
+              defaultCenter={defaultCenter}
+              defaultZoom={defaultZoom}
+              gestureHandling={'greedy'}
+              disableDefaultUI={true}
+              fullscreenControl={true}
+              onClick={() => setOpenMarkerId(null)}>
+              <MapContent
+                location={location}
+                place={selectedPlace}
+                onEditPoint={handleEditPoint}
+                openMarkerId={openMarkerId}
+                onMarkerClick={handleMarkerClick}
+                onMarkerClose={handleMarkerClose}
+              />
+            </Map>
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
     </APIProvider>
   )
 }

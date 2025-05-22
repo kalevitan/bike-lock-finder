@@ -35,9 +35,16 @@ export default function AccountPage() {
   return (
     <>
       <Header />
-      <main className="grid md:grid-cols-2 items-stretch gap-8 px-6 pt-[60px] md:py-16">
+      <main className="grid items-stretch gap-8 px-6 pt-[60px] md:py-16">
         <h1>Hi, {user.email}</h1>
-        <button className="button" onClick={signOut}>Sign Out</button>
+        <form className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="email">User Name</label>
+            <input type="email" id="username" name="username" value={user.email || ''} disabled />
+          </div>
+          <div className="flex flex-col gap-2"></div>
+          <button type="button" className="button button--secondary" onClick={signOut}>Sign Out</button>
+        </form>
       </main>
     </>
   );

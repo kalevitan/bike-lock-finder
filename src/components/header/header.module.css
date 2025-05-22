@@ -27,6 +27,7 @@
 
 .search_form.open {
   @media (max-width: 640px) {
+    backdrop-filter: blur(5px);
     display: flex;
     position: absolute;
     z-index: 999;

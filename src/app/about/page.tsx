@@ -1,13 +1,14 @@
 import Link from "next/link";
 import Header from "@/components/header/Header";
 import Image from "next/image";
+import { MessageCircleWarning } from "lucide-react";
 const About: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   return (
     <>
       <Header />
-      <main className="grid md:grid-cols-2 items-stretch gap-8 px-6 pt-[60px] md:py-16 h-[calc(100vh-8rem)] overflow-y-auto">
+      <main className="grid md:grid-cols-2 items-stretch gap-8 px-6 pt-[60px] md:py-16 h-[calc(100vh-6rem)] overflow-y-auto">
         <section className="space-y-6 px-4 md:px-12">
           <h2 className="text-5xl md:text-6xl font-extrabold tracking-tight sr-only">About us</h2>
           <p className="text-lg text-neutral-300 font-light leading-relaxed">
@@ -17,7 +18,13 @@ const About: React.FC = () => {
           <p className="text-lg text-neutral-300 font-light leading-relaxed">
             In addition to finding stations, users can contribute to the map by adding new locations they've discovered, making BikeLock Finder a growing resource built by cyclists, for cyclists.
           </p>
-          <Link href="/login" className="button text-white inline-block">Join the Community</Link>
+          <div className="flex flex-col md:flex-row gap-3">
+            <Link href="/login" className="button text-white text-center">Join the Community</Link>
+            <Link href="https://github.com/kalevitan/bike-lock-finder/issues" rel="noopener noreferrer" className="button button--secondary flex items-center gap-1 text-white justify-center" target="_blank">
+              <MessageCircleWarning size={15}/>
+              <span>Suggest a Feature</span>
+            </Link>
+          </div>
         </section>
 
         <div className="relative w-full h-[500px] md:h-auto">
