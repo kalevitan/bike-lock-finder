@@ -49,7 +49,7 @@ export default function MarkerDetails({ details, onEdit }: MarkerDetailsProps) {
                   <Star
                     key={index}
                     size="20"
-                    color="var(--primary-gold)"
+                    color={index < details.rating ? "var(--primary-gold)" : "lightgray"}
                     fill={index < details.rating ? "var(--primary-gold)" : "none"}
                   />
                 ))}
