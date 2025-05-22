@@ -1,35 +1,40 @@
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { app } from './firebase';
 
 const storage = getStorage(app);
 
 export const uploadImage = async (file: File): Promise<string> => {
-  try {
+  return new Promise((resolve, reject) => {
+    try {
     if (!file) {
       throw new Error('No file provided');
     }
 
-    // Create a unique filename using timestamp and original filename
-    const timestamp = Date.now();
-    const filename = `${timestamp}-${file.name}`;
+      const timestamp = Date.now();
+      const filename = `${timestamp}-${file.name}`;
+      const storageRef = ref(storage, `images/${filename}`);
 
-    // Create a reference to the file location
-    const storageRef = ref(storage, `images/${filename}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
 
-    // Upload the file
-    const snapshot = await uploadBytes(storageRef, file);
-
-    // Get the download URL
-    const downloadURL = await getDownloadURL(snapshot.ref);
-
-    // Validate URL
-    if (!downloadURL.startsWith('http')) {
-      throw new Error('Invalid download URL received from Firebase');
+      uploadTask.on(
+        'state_changed',
+        null, // optional progress function
+        (error) => {
+          console.error('Upload failed:', error);
+          reject(error);
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          if (!downloadURL.startsWith('http')) {
+            reject(new Error('Invalid download URL'));
+          } else {
+            resolve(downloadURL);
+          }
+        }
+      );
+    } catch (err) {
+      console.error('Unexpected upload error:', err);
+      reject(err);
     }
-
-    return downloadURL;
-  } catch (error) {
-    console.error('Error uploading image:', error);
-    throw error;
-  }
+  });
 };
