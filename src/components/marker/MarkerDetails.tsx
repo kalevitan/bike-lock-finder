@@ -31,7 +31,7 @@ export default function MarkerDetails({ details, onEdit }: MarkerDetailsProps) {
             target="_blank"
             rel="noreferrer"
           >
-            <h2 className="text-lg flex gap-1 items-center">
+            <h2 className="text-xl flex gap-1 items-center">
               {details.title}
               <Navigation size={15} className="min-w-fit" />
             </h2>
