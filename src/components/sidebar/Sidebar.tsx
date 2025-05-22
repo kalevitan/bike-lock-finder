@@ -2,7 +2,7 @@ import { useState } from "react";
 import classes from "./sidebar.module.css";
 import { MarkerProps } from "@/interfaces/markers";
 import useAuth from "@/app/hooks/useAuth";
-import { CircleUserRound, LocateFixed, MapPinPlusInside, Info, ArrowUp, ChevronUp, ChevronsUp, Minus } from "lucide-react";
+import { CircleUserRound, LocateFixed, MapPinPlusInside, Info } from "lucide-react";
 import BikeLockIcon from '@/components/icons/bike-lock-icon';
 import Link from "next/link";
 import { useModal } from "@/contexts/ModalProvider";

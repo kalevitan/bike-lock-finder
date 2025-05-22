@@ -33,7 +33,7 @@ export default function MarkerDetails({ details, onEdit }: MarkerDetailsProps) {
           >
             <h2 className="text-xl flex gap-1 items-center">
               {details.title}
-              <Navigation size={15} className="min-w-fit" />
+              <Navigation size={20} className="min-w-fit" />
             </h2>
           </a>
         </div>

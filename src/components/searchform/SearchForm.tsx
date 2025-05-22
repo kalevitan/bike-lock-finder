@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import { useMapsLibrary } from '@vis.gl/react-google-maps';
-import { RotateCcw, X } from 'lucide-react';
+import { X } from 'lucide-react';
 
 interface Props {
   onSearch?: (place: google.maps.places.PlaceResult | null) => void;

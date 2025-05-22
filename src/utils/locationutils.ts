@@ -3,8 +3,7 @@ export const getLocation = (): Promise<{ lat: number; lng: number }> => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          const { latitude, longitude, accuracy } = position.coords;
-          console.log(`Location: ${latitude}, ${longitude}, Accuracy: ${accuracy}`);
+          const { latitude, longitude } = position.coords;
           resolve({ lat: latitude, lng: longitude });
         },
         (error) => {

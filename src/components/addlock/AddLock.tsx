@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { getLocation } from '@/utils/locationutils';
 import { useMarkerContext } from '@/contexts/MarkerProvider';
 import { MarkerProps } from '@/interfaces/markers';
-import { Locate, UserPen, ImagePlus, MessageCircleWarning, Save, X } from 'lucide-react';
+import { Locate, ImagePlus, MessageCircleWarning } from 'lucide-react';
 import FormField from './FormField';
 import SearchForm from '@/components/searchform/SearchForm';
 import useSubmitForm from '@/app/hooks/useSubmitForm';
