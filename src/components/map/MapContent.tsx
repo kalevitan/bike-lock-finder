@@ -100,8 +100,10 @@ export default function MapContent({
       lng: parseFloat(openMarker.longitude)
     };
 
-    // Calculate offset position (slightly down from center)
-    const offsetLat = markerPosition.lat + 0.0025; // Adjust this value to control offset distance
+    // Calculate dynamic offset based on zoom level
+    const currentZoom = map.getZoom() || 14;
+    const zoomFactor = Math.pow(2, 14 - currentZoom); // Adjust offset based on zoom level
+    const offsetLat = markerPosition.lat + (0.0025 * zoomFactor);
     const offsetPosition = {
       lat: offsetLat,
       lng: markerPosition.lng
