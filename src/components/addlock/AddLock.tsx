@@ -9,10 +9,9 @@ import { Locate, ImagePlus, MessageCircleWarning } from 'lucide-react';
 import FormField from './FormField';
 import SearchForm from '@/components/searchform/SearchForm';
 import useSubmitForm from '@/app/hooks/useSubmitForm';
-import { uploadImage } from '@/lib/storage';
+import { uploadAndCompressImage } from '@/lib/storage';
 import { useModal } from '@/contexts/ModalProvider';
 import Rating from './Rating';
-import imageCompression from 'browser-image-compression';
 
 interface AddLockProps {
   pointData?: MarkerProps | null;
@@ -103,43 +102,10 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-    if (!allowedTypes.includes(file.type)) {
-      setValidationError('Please upload a valid image file (JPEG, PNG, or WebP)');
-      return;
-    }
-
-    // Validate file size (10MB max before compression)
-    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
-    if (file.size > maxSize) {
-      setValidationError('Image size must be less than 10MB');
-      return;
-    }
-
     setIsUploading(true);
     setValidationError(null);
     try {
-      // Compress the image
-      const options = {
-        maxSizeMB: 0.5, // Max file size of 500KB
-        maxWidthOrHeight: 800, // Max width/height of 800px
-        useWebWorker: true, // Use web worker for better performance
-        initialQuality: 0.8, // Slightly reduce quality for better compression
-      };
-
-      const compressedFile = await imageCompression(file, options);
-
-      // Sanitize filename
-      const sanitizedFilename = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-
-      // Create a new File object from the compressed blob
-      const compressedImageFile = new File([compressedFile], sanitizedFilename, {
-        type: file.type,
-        lastModified: file.lastModified,
-      });
-
-      const downloadURL = await uploadImage(compressedImageFile);
+      const downloadURL = await uploadAndCompressImage(file, 'images');
       setFormData(prev => ({
         ...prev,
         file: downloadURL,
@@ -147,7 +113,7 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
       setFileUrl(downloadURL);
     } catch (error) {
       console.error('Error uploading image:', error);
-      setValidationError('Failed to upload image. Please try again.');
+      setValidationError(error instanceof Error ? error.message : 'Failed to upload image. Please try again.');
     } finally {
       setIsUploading(false);
     }

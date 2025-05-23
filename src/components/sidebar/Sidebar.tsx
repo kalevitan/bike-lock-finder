@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 import classes from "./sidebar.module.css";
 import { MarkerProps } from "@/interfaces/markers";
 import useAuth from "@/app/hooks/useAuth";
@@ -10,6 +10,9 @@ import AddLock from "@/components/addlock/AddLock";
 import { NavLink } from "../header/NavLink";
 import SearchWrapper from "../searchform/SearchWrapper";
 import { useIsMobile } from "@/app/hooks/useIsMobile";
+import { useUserDocument } from '@/lib/users';
+import Image from 'next/image';
+
 interface SidebarProps {
   updateLocation: () => void;
   onAddLock?: (pointData?: MarkerProps | null) => void;
@@ -18,13 +21,20 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ updateLocation, onAddLock, onSearch, onRecenter }: SidebarProps) {
-  const loggedIn = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const isMobile = useIsMobile();
   const { openModal } = useModal();
   const [searchInput, setSearchInput] = useState('');
+  const { userData, isLoading: userLoading } = useUserDocument(user?.uid || null);
+
   const handleAddLock = () => {
     openModal(<AddLock formMode="add" />, 'Add Lock');
   };
+
+  // Show loading state while auth is initializing
+  if (authLoading) {
+    return null;
+  }
 
   return (
     <aside className={classes.sidebar}>
@@ -71,7 +81,7 @@ export default function Sidebar({ updateLocation, onAddLock, onSearch, onRecente
                   </button>
                   <span className="text-sm">Locate Me</span>
                 </li>
-                {loggedIn ? (
+                {user ? (
                   <>
                     <li className="flex flex-col items-center gap-1">
                       <button onClick={handleAddLock} className="button button--icon">
@@ -99,12 +109,29 @@ export default function Sidebar({ updateLocation, onAddLock, onSearch, onRecente
           </div>
         </div>
 
-        {loggedIn && (
-          <div className="hidden md:flex gap-3 pt-2 md:pt-6 border-t border-gray-700">
-            <div className="user-info flex gap-3">
-              <Link href="/account" className="flex gap-2">
-                <CircleUserRound />
-                <span>{loggedIn?.email}</span>
+        {user && !userLoading && (
+          <div className="hidden md:flex pt-2 md:pt-6 border-t border-gray-700">
+            <div className="user-info">
+              <Link href="/account" className="flex items-center gap-2">
+                {userData?.photoURL && typeof userData.photoURL === 'string' && (() => {
+                  try {
+                    new URL(userData.photoURL);
+                    return (
+                      <Image
+                        src={userData.photoURL}
+                        width={30}
+                        height={30}
+                        className="rounded-full object-cover w-[30px] h-[30px]"
+                        alt='User profile photo'
+                        priority={true}
+                      />
+                    );
+                  } catch {
+                    return null;
+                  }
+                })()}
+                {(!userData?.photoURL || typeof userData.photoURL !== 'string') && <CircleUserRound />}
+                <span>{userData?.displayName || userData?.email}</span>
               </Link>
             </div>
           </div>

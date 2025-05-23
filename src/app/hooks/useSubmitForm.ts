@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { MarkerProps } from '@/interfaces/markers';
 import xss from 'xss';
 import { useMarkerContext } from '@/contexts/MarkerProvider';
-import { uploadImage } from '@/lib/storage';
+import { uploadAndCompressImage } from '@/lib/storage';
 import useAuth from './useAuth';
 
 interface UseSubmitFormProps {
@@ -24,7 +24,7 @@ const useSubmitForm = ({ pointData, setMarkers, closeModal, formData }: UseSubmi
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const user = useAuth();
+  const { user } = useAuth();
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
@@ -40,7 +40,7 @@ const useSubmitForm = ({ pointData, setMarkers, closeModal, formData }: UseSubmi
         // Upload file first if it exists
         let downloadURL = null;
         if (formData.file instanceof File) {
-          downloadURL = await uploadImage(formData.file);
+          downloadURL = await uploadAndCompressImage(formData.file, 'images');
         } else if (typeof formData.file === 'string') {
           downloadURL = formData.file;
         }
@@ -57,7 +57,8 @@ const useSubmitForm = ({ pointData, setMarkers, closeModal, formData }: UseSubmi
           body: JSON.stringify({
             ...sanitizedData,
             id: pointData?.id,
-            uid: user?.uid,
+            author: method === 'POST' ? user?.uid : pointData?.author,
+            updatedBy: user?.uid,
           }),
           headers: { 'Content-Type': 'application/json' },
         });

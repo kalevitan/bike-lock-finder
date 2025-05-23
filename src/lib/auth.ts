@@ -21,7 +21,11 @@ export const signIn = async (email: string, password: string) => {
 export const signOut = async () => {
   try {
     await auth.signOut();
+    // Wait a moment to ensure the auth state is updated
+    await new Promise(resolve => setTimeout(resolve, 100));
+    return true;
   } catch (error) {
-    console.error(error);
+    console.error('Error signing out:', error);
+    return false;
   }
 }

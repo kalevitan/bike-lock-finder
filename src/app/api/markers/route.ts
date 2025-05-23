@@ -19,7 +19,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const data = await req.json();
-  const { title, latitude, longitude, description, rating, file } = data;
+  const { title, latitude, longitude, description, rating, file, author, updatedBy } = data;
 
   try {
     const docRef = await addDoc(collection(db, 'locations'), {
@@ -28,7 +28,11 @@ export async function POST(req: Request) {
       longitude,
       description,
       rating,
-      file
+      file,
+      author,
+      updatedBy,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     });
     console.log('Document written with ID:', docRef.id);
     return NextResponse.json({ id: docRef.id });
@@ -40,7 +44,7 @@ export async function POST(req: Request) {
 
 export async function PUT(req: Request) {
   const data = await req.json();
-  const { id, title, latitude, longitude, description, rating, file } = data;
+  const { id, title, latitude, longitude, description, rating, file, author, updatedBy } = data;
 
   if (!id) {
     return NextResponse.error();
@@ -54,7 +58,10 @@ export async function PUT(req: Request) {
       longitude,
       description,
       rating,
-      file
+      file,
+      author,
+      updatedBy,
+      updatedAt: new Date().toISOString(),
     });
 
     console.log('Document updated with ID:', id);

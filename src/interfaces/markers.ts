@@ -14,6 +14,10 @@ export interface MarkerData {
   rating: number;
   file: File | string | null;
   isOpen?: boolean;
+  author?: string;
+  updatedBy?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface MarkerProps extends MarkerData {
