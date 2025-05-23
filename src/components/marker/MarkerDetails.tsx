@@ -9,7 +9,7 @@ interface MarkerDetailsProps {
 }
 
 export default function MarkerDetails({ details, onEdit }: MarkerDetailsProps) {
-  const loggedIn = useAuth();
+  const { user} = useAuth();
 
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -59,7 +59,7 @@ export default function MarkerDetails({ details, onEdit }: MarkerDetailsProps) {
               </span>
             </div>
           </div>
-          {loggedIn && (
+          {user && (
             <button
               className="button button--icon"
               onClick={handleEditClick}
