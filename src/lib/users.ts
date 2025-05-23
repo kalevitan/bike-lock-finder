@@ -1,42 +1,37 @@
+import { useState, useEffect } from 'react';
 import { UserData } from '@/interfaces/user';
-import useSWR from 'swr';
 
-const fetcher = async (url: string) => {
-  const response = await fetch(url);
-  if (!response.ok) {
-    if (response.status === 404) {
-      return null;
-    }
-    throw new Error('Failed to fetch data');
-  }
-  return response.json();
-};
+// Simple in-memory cache
+const cache = new Map<string, UserData>();
 
-export const useUserDocument = (uid: string | null) => {
-  const { data, error, mutate } = useSWR<UserData | null>(
-    uid ? `/api/users?uid=${uid}` : null,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      dedupingInterval: 5000, // Dedupe requests within 5 seconds
-    }
-  );
-
-  return {
-    userData: data,
-    isLoading: uid ? !error && !data : false, // Only show loading state if we have a uid
-    isError: error,
-    mutate,
-  };
-};
-
-export const createUserDocument = async (userData: UserData) => {
+export async function getUserDocument(uid: string): Promise<UserData | null> {
   try {
-    if (!userData.uid) {
-      throw new Error('User ID is required');
+    // Check cache first
+    if (cache.has(uid)) {
+      return cache.get(uid) || null;
     }
 
+    const response = await fetch(`/api/users?uid=${uid}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch user document');
+    }
+    const data = await response.json();
+
+    // Store in cache
+    cache.set(uid, data);
+    return data;
+  } catch (error) {
+    console.error('Error fetching user document:', error);
+    return null;
+  }
+}
+
+export async function createUserDocument(userData: UserData): Promise<boolean> {
+  if (!userData.uid) {
+    throw new Error('User ID is required');
+  }
+
+  try {
     const response = await fetch('/api/users', {
       method: 'POST',
       headers: {
@@ -46,48 +41,38 @@ export const createUserDocument = async (userData: UserData) => {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to create user document');
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to create user document');
     }
 
+    // Update cache
+    cache.set(userData.uid, userData);
     return true;
   } catch (error) {
     console.error('Error creating user document:', error);
     return false;
   }
-};
+}
 
-export const getUserDocument = async (uid: string): Promise<UserData | null> => {
-  try {
-    const response = await fetch(`/api/users?uid=${uid}`);
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        return null;
-      }
-      throw new Error('Failed to get user document');
-    }
-
-    return response.json();
-  } catch (error) {
-    console.error('Error getting user document:', error);
-    return null;
-  }
-};
-
-export const updateUserDocument = async (uid: string, data: Partial<UserData>) => {
+export async function updateUserDocument(uid: string, userData: Partial<UserData>): Promise<boolean> {
   try {
     const response = await fetch(`/api/users?uid=${uid}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(userData),
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to update user document');
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to update user document');
+    }
+
+    // Update cache
+    const existingData = cache.get(uid);
+    if (existingData) {
+      cache.set(uid, { ...existingData, ...userData });
     }
 
     return true;
@@ -95,4 +80,57 @@ export const updateUserDocument = async (uid: string, data: Partial<UserData>) =
     console.error('Error updating user document:', error);
     return false;
   }
-};
+}
+
+export function useUserDocument(uid: string | null) {
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+
+  useEffect(() => {
+    if (!uid) {
+      setUserData(null);
+      setIsLoading(false);
+      return;
+    }
+
+    const fetchData = async () => {
+      try {
+        const data = await getUserDocument(uid);
+        if (data) {
+          setUserData(data);
+        } else {
+          setIsError(true);
+        }
+      } catch (error) {
+        console.error('Error in useUserDocument:', error);
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [uid]);
+
+  const mutate = async () => {
+    if (!uid) return;
+
+    setIsLoading(true);
+    try {
+      const data = await getUserDocument(uid);
+      if (data) {
+        setUserData(data);
+      } else {
+        setIsError(true);
+      }
+    } catch (error) {
+      console.error('Error in mutate:', error);
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return { userData, isLoading, isError, mutate };
+}
