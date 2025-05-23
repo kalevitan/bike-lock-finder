@@ -11,13 +11,20 @@ import classes from "../header/header.module.css";
 export default function SearchWrapper({ onSearch, onRecenter, searchInput, setSearchInput }: HeaderProps) {
   const pathname = usePathname();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [place, setPlace] = useState(null);
 
   return (
     <div className="search-wrapper flex gap-4 items-center">
       {pathname === '/' ? (
         <>
           {isSearchOpen ? (
-            <CircleX className="sm:hidden cursor-pointer" onClick={() => { setIsSearchOpen(false); }}>
+            <CircleX
+              className="sm:hidden cursor-pointer"
+              onClick={() => {
+                setIsSearchOpen(false);
+                setPlace(null);
+              }}
+            >
               <span className="sr-only">Close</span>
             </CircleX>
           ) : (

@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useMap } from "@vis.gl/react-google-maps";
 import { useMarkerContext } from "@/contexts/MarkerProvider";
 import { MapContentProps } from "@/interfaces/map";
 import MarkerList from "@/components/marker/MarkerList";
 import Loading from "@/app/loading";
+import { LocationMarker } from "../marker/LocationMarker";
 
 export default function MapContent({
   location,
@@ -15,6 +16,7 @@ export default function MapContent({
 }: MapContentProps) {
   const map = useMap();
   const { markers, isLoading } = useMarkerContext();
+  const searchMarkerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
 
   useEffect(() => {
     if (map) {
@@ -46,32 +48,45 @@ export default function MapContent({
   }, [map, location]);
 
   useEffect(() => {
-    if (!map || (!place)) return;
+    if (!map || (!place)) {
+      // Clear marker when place is null
+      if (searchMarkerRef.current) {
+        searchMarkerRef.current.map = null;
+        searchMarkerRef.current = null;
+      }
+      return;
+    }
+
+    let marker: google.maps.marker.AdvancedMarkerElement | null = null;
 
     if (place?.geometry?.viewport) {
       map.fitBounds(place.geometry.viewport);
-      // const infoContent = `
-      //   <div class="text-black">
-      //     <h3>${place.name}</h3>
-      //     <p>${place.geometry.location?.lat()}, ${place.geometry.location?.lng()}</p>
-      //   </div>`
-      // const infoWindow = new google.maps.InfoWindow({
-      //   content: infoContent,
-      //   ariaLabel: "Info window",
-      // });
-      // const marker = new google.maps.marker.AdvancedMarkerElement({
-      //   position: place.geometry.location,
-      //   map,
-      //   title: place.name,
-      // });
-      // infoWindow.open({
-      //   anchor: marker,
-      //   map,
-      // });
+      marker = new google.maps.marker.AdvancedMarkerElement({
+        position: place.geometry.location,
+        map,
+        title: place.name,
+        content: LocationMarker(),
+      });
     } else if (place?.geometry?.location) {
       map.setCenter(place.geometry.location);
       map.setZoom(14);
+      marker = new google.maps.marker.AdvancedMarkerElement({
+        position: place.geometry.location,
+        map,
+        title: place.name,
+        content: LocationMarker(),
+      });
     }
+
+    // Store the marker reference
+    searchMarkerRef.current = marker;
+
+    // Cleanup function to remove marker when place changes or component unmounts
+    return () => {
+      if (marker) {
+        marker.map = null;
+      }
+    };
   }, [map, place]);
 
   useEffect(() => {
@@ -85,10 +100,15 @@ export default function MapContent({
       lng: parseFloat(openMarker.longitude)
     };
 
-    const bounds = new google.maps.LatLngBounds();
-    bounds.extend(markerPosition);
+    // Calculate offset position (slightly down from center)
+    const offsetLat = markerPosition.lat + 0.0025; // Adjust this value to control offset distance
+    const offsetPosition = {
+      lat: offsetLat,
+      lng: markerPosition.lng
+    };
 
-    map.panTo(bounds.getCenter());
+    // Pan to the offset position
+    map.panTo(offsetPosition);
   }, [map, openMarkerId, markers]);
 
   return (
