@@ -287,9 +287,6 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
             disabled={isUploading}
             hidden={true}
           />
-          {isUploading && (
-            <div className="text-sm text-gray-500">Uploading image...</div>
-          )}
           {fileUrl && fileUrl.startsWith('http') ? (
             <div className={`relative mt-2 ${expandGeometry ? 'cursor-pointer hover:opacity-70 transition-opacity duration-300' : 'cursor-not-allowed'}`}>
               <Image
@@ -304,6 +301,11 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
                   }
                 }}
               />
+              {isUploading && (
+                <div className="absolute inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center rounded-md">
+                  <div className="text-white">Uploading...</div>
+                </div>
+              )}
             </div>
           ) : (
             <div className="flex flex-col text-left">
@@ -319,7 +321,7 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
                   }`}
                   disabled={formMode === 'edit' && !expandGeometry}
                 >
-                  <ImagePlus color={expandGeometry ? '#d1d5db' : '#6b7280'}/>
+                  <ImagePlus color={expandGeometry ? '#6b7280' : '#d1d5db'} size={32}/>
                 </button>
               </div>
             </div>

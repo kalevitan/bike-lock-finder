@@ -40,7 +40,7 @@ const Login: React.FC = () => {
       if (result.user) {
         // Need to authenticate user on the client-side as well
         await signInWithEmailAndPassword(auth, email, password);
-        router.push('/account');
+        router.push('/');
       } else {
         console.error('Login failed:', result.message);
       }
@@ -49,21 +49,6 @@ const Login: React.FC = () => {
       setError(err.message);
     }
   }
-
-  const handleSignOut = async () => {
-    setIsSigningOut(true);
-    setError(null);
-    try {
-      const success = await signOut();
-      if (!success) {
-        throw new Error('Failed to sign out');
-      }
-    } catch (error) {
-      console.error('Error signing out:', error);
-      setError(error instanceof Error ? error.message : 'Failed to sign out');
-      setIsSigningOut(false);
-    }
-  };
 
   useEffect(() => {
     setError(null);

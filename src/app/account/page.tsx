@@ -13,7 +13,7 @@ import { ImagePlus } from "lucide-react";
 
 export default function AccountPage() {
   const { user, loading: authLoading } = useAuth();
-  const { userData, isLoading: userLoading, isError, mutate } = useUserDocument(user?.uid || null);
+  const { userData, isLoading: userLoading, mutate } = useUserDocument(user?.uid || null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -22,11 +22,8 @@ export default function AccountPage() {
 
   // Redirect if not authenticated
   useEffect(() => {
-    console.log('Account page auth state:', { authLoading, userLoading, userId: user?.uid });
-
     // Only redirect if auth is done loading and there's no user
     if (!authLoading && !user) {
-      console.log('Redirecting to login - no user');
       // Use setTimeout to ensure the redirect happens after the current render cycle
       setTimeout(() => {
         redirect('/login');
@@ -65,7 +62,6 @@ export default function AccountPage() {
         setIsUploadingImage(true);
         try {
           photoURL = await uploadAndCompressImage(file, 'profiles');
-          console.log('Image uploaded:', photoURL);
         } finally {
           setIsUploadingImage(false);
         }
@@ -78,12 +74,8 @@ export default function AccountPage() {
         updatedAt: new Date().toISOString()
       };
 
-      console.log('Updating user data:', updateData);
       const success = await updateUserDocument(user.uid, updateData);
-
       if (success) {
-        console.log('User data updated successfully');
-        // Revalidate the user data
         await mutate();
       } else {
         throw new Error('Failed to update profile');
@@ -99,29 +91,24 @@ export default function AccountPage() {
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Revoke any existing preview URL to prevent memory leaks
       if (previewUrl) {
         URL.revokeObjectURL(previewUrl);
       }
       const url = URL.createObjectURL(file);
-      console.log('Created preview URL:', url);
       setPreviewUrl(url);
     }
   };
 
   useEffect(() => {
     return () => {
-      // Clean up preview URL when component unmounts
       if (previewUrl) {
-        console.log('Cleaning up preview URL');
         URL.revokeObjectURL(previewUrl);
       }
     };
   }, [previewUrl]);
 
-  // Show loading state while auth is initializing
-  if (authLoading) {
-    console.log('Showing loading state - auth loading');
+  // Show loading state while auth or user data is loading
+  if (authLoading || userLoading) {
     return (
       <>
         <Header />
@@ -130,35 +117,9 @@ export default function AccountPage() {
     );
   }
 
-  // Show loading state while user data is loading
-  if (userLoading) {
-    console.log('Showing loading state - user data loading');
-    return (
-      <>
-        <Header />
-        <Loading />
-      </>
-    );
-  }
-
-  // Show error state if user data failed to load
-  if (isError || !userData) {
-    return (
-      <>
-        <Header />
-        <main className="grid items-stretch gap-8 px-6 pt-[60px] md:py-16">
-          <div className="text-red-500">Failed to load user data. Please try again.</div>
-          <button
-            type="button"
-            className="button button--secondary"
-            onClick={handleSignOut}
-            disabled={isSigningOut}
-          >
-            {isSigningOut ? 'Signing out...' : 'Sign Out'}
-          </button>
-        </main>
-      </>
-    );
+  // Don't render anything if we're not authenticated (will redirect)
+  if (!user || !userData) {
+    return null;
   }
 
   return (
@@ -178,7 +139,7 @@ export default function AccountPage() {
               }}
             />
             {isUploadingImage && (
-              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-md">
+              <div className="absolute inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center rounded-full">
                 <div className="text-white">Uploading...</div>
               </div>
             )}
@@ -190,7 +151,7 @@ export default function AccountPage() {
               <button
                 type="button"
                 onClick={() => document.getElementById('photoURL')?.click()}
-                className="w-[150px] h-[150px] border rounded-md flex items-center justify-center cursor-pointer border-[#6b7280] hover:opacity-70 transition-opacity duration-300"
+                className="w-[150px] h-[150px] border rounded-full flex items-center justify-center cursor-pointer border-[#6b7280] hover:opacity-70 transition-opacity duration-300"
               >
                 <ImagePlus color="#6b7280" size={32}/>
               </button>
