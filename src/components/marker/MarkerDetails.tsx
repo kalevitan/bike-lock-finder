@@ -17,7 +17,7 @@ export default function MarkerDetails({ details, onEdit }: MarkerDetailsProps) {
   };
 
   const googleMapsUrl = useMemo(() =>
-    `https://maps.google.com/?q=${details.latitude},${details.longitude}`,
+    `https://maps.google.com/?q=${details.latitude},${details.longitude}&mode=bicycling`,
     [details.latitude, details.longitude]
   );
 
