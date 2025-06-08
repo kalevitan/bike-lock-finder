@@ -6,7 +6,7 @@ export default function About() {
   return (
     <div className="flex flex-col md:flex-row gap-8">
       <section className="space-y-6 md:px-12">
-        <h2 className="text-5xl md:text-6xl font-extrabold tracking-tight">Our Mission</h2>
+        <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight">Our Mission</h1>
         <p className="text-lg text-neutral-300 font-light leading-relaxed">
           BikeLock Finder is a community-driven tool designed to help cyclists locate safe and reliable bike lock stations around town.
           Whether you're commuting or exploring, our interactive map provides the information you need to secure your bike with confidence.
