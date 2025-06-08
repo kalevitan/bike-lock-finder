@@ -105,11 +105,11 @@ export const SearchForm = ({ onSearch, onRecenter, searchInput, setSearchInput, 
         name="search"
         value={searchInput}
         onChange={(e) => setSearchInput?.(e.target.value)}
-        className="w-full rounded-[4px] h-[45px] focus:outline-none"
+        className="w-full rounded-[0.25rem] h-[45px] focus:outline-none"
         placeholder='Search locations...'
       />
       {searchInput && (
-        <X className="absolute right-[10px] top-[10px] cursor-pointer" color="var(--primary-gray)" onClick={clearSearch} />
+        <X className="absolute right-[.625rem] top-[.625rem] cursor-pointer" color="var(--primary-gray)" onClick={clearSearch} />
       )}
     </div>
   );

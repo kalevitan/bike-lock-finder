@@ -69,39 +69,49 @@ export default function Sidebar({ updateLocation, onAddLock, onSearch, onRecente
 
             <nav className={classes.nav}>
               <ul className="flex justify-between w-full">
-                <li className="flex flex-col items-center gap-1">
-                  <Link href="/about" className="button button--icon">
-                    <Info />
+                <li>
+                  <Link href="/about" className={classes.button}>
+                    <span className={classes.button__icon}>
+                      <Info />
+                    </span>
+                    <span className="text-sm">About</span>
                   </Link>
-                  <span className="text-sm">About</span>
                 </li>
-                <li className="flex flex-col items-center gap-1">
-                  <button onClick={updateLocation} className="button button--icon">
-                    <LocateFixed />
+                <li>
+                  <button onClick={updateLocation} className={classes.button}>
+                    <span className={classes.button__icon}>
+                      <LocateFixed />
+                    </span>
+                    <span className="text-sm">Locate Me</span>
                   </button>
-                  <span className="text-sm">Locate Me</span>
                 </li>
                 {user ? (
                   <>
-                    <li className="flex flex-col items-center gap-1">
-                      <button onClick={handleAddLock} className="button button--icon">
-                        <MapPinPlusInside />
+                    <li>
+                      <button onClick={handleAddLock} className={classes.button}>
+                        <span className={classes.button__icon}>
+                          <MapPinPlusInside />
+                        </span>
+                        <span className="text-sm">Add Lock</span>
                       </button>
-                      <span className="text-sm">Add Lock</span>
                     </li>
                     <li className="flex md:hidden flex-col items-center gap-1">
-                      <Link href="/account" className="button button--icon">
-                        <CircleUserRound />
+                      <Link href="/account" className={classes.button}>
+                        <span className={classes.button__icon}>
+                          <CircleUserRound />
+                        </span>
+                        <span className="text-sm">Account</span>
                       </Link>
-                      <span className="text-sm">Account</span>
                     </li>
                   </>
                 ) : (
-                  <li className="flex flex-col items-center gap-1">
-                    <Link href="/login" className="button button--icon">
-                      <CircleUserRound />
+                  <li>
+                    <Link href="/login" className={classes.button}>
+                      <span className={classes.button__icon}>
+                        <CircleUserRound />
+                      </span>
+                      <span className="text-sm">Login</span>
                     </Link>
-                    <span className="text-sm">Login</span>
                   </li>
                 )}
               </ul>
@@ -131,7 +141,7 @@ export default function Sidebar({ updateLocation, onAddLock, onSearch, onRecente
                   }
                 })()}
                 {(!userData?.photoURL || typeof userData.photoURL !== 'string') && <CircleUserRound />}
-                <span>{userData?.displayName || userData?.email}</span>
+                <span className="text-[var(--primary-white)]">{userData?.displayName || userData?.email}</span>
               </Link>
             </div>
           </div>

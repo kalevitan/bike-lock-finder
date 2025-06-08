@@ -237,7 +237,7 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
           {expandGeometry && (
           <div className="flex flex-col text-left">
             <label htmlFor="search" className="mb-2">Location<span className="text-red-500">*</span></label>
-            <div className="grid grid-cols-[3fr_50px] gap-4 items-center">
+            <div className="grid grid-cols-[3fr_50px] gap-3 items-center">
               <SearchForm
                 onSearch={handleOnSearch}
                 searchInput={searchInput}
@@ -245,9 +245,9 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
                 onRecenter={() => {}}
                 shouldFocus={true}
               />
-              <div className="text-left">
-                <button onClick={locateMe} className="button button--icon flex gap-1">
-                  <Locate color="white" />
+              <div className="text-left h-full">
+                <button onClick={locateMe} className="w-full h-full flex items-center justify-center rounded-[0.25rem] border border-[#6b7280]">
+                  <Locate color="#6b7280" />
                 </button>
                 <span className="sr-only">Locate me</span>
               </div>
@@ -360,13 +360,13 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
           <button
             type="button"
             onClick={closeModal}
-            className="button button--secondary mt-4 text-white"
+            className="button button--secondary mt-4 text-[var(--primary-white)]"
           >
             Cancel
           </button>
           <button
             type="button"
-            className="button mt-4 text-white"
+            className="button mt-4 text-[var(--primary-white)]"
             disabled={isSubmitting || (formMode !== 'edit' && noChange)}
             onClick={handleFormSubmit}
           >

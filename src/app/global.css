@@ -4,7 +4,8 @@
 
 :root {
   --primary-gray: #242424;
-  --primary-light-gray: #333333;
+  --primary-light-gray: #414141;
+  --primary-lightest-gray: #a7a7a8;
   --primary-white: #f9f9f9;
   --primary-purple: #646cff;
   --primary-gold: #ffd700;
@@ -13,22 +14,11 @@
   font-size: 1rem;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
   background-color: var(--primary-gray);
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-a:not(.button):hover,
-a:not(.button):not(.logo).active {
-  text-decoration-line: underline;
-  text-decoration-color: var(--primary-purple);
-  text-decoration-thickness: 2px;
-  text-underline-offset: 2px;
 }
 
 h1 {
@@ -50,6 +40,10 @@ h4 {
   font-weight: 600;
 }
 
+h1, h2, h3, h4 {
+  color: var(--primary-white);
+}
+
 body {
   display: flex;
   min-height: 100vh;
@@ -57,16 +51,18 @@ body {
 }
 
 p {
+  color: var(--primary-white);
   margin-bottom: 1rem;
 }
 
 input {
-  @apply text-black;
+  color: var(--primary-gray);
+  border-radius: 0.25rem;
 }
 
 .button {
-  border-radius: 4px;
-  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  border: 0.0625rem solid transparent;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
@@ -94,6 +90,7 @@ input {
 
 .button--icon {
   border-radius: 100%;
+  color: var(--primary-white);
   padding: 0.75rem;
 }
 
@@ -102,7 +99,7 @@ input {
 }
 .button:focus,
 .button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: 0.5rem auto -webkit-focus-ring-color;
 }
 
 .container {
@@ -139,19 +136,6 @@ header {
   }
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  .button {
-    background-color: #f9f9f9;
-  }
-}
-
 /* Modal Styles */
 .modal-backdrop {
   position: fixed;
@@ -167,10 +151,10 @@ header {
 }
 
 .modal-content {
-  background: white;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
-  padding: 20px;
+  background: var(--primary-white);
+  border-radius: 0.25rem;
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.26);
+  padding: 2rem;
   width: 100dvw;
   max-height: calc(100dvh - 80px);
   overflow-y: auto;
@@ -184,7 +168,7 @@ header {
 @media (min-width: 640px) {
   .modal-content {
     width: 30rem;
-    padding: 20px;
+    padding: 2rem;
     margin-bottom: 0;
   }
 }

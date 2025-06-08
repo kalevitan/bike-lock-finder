@@ -31,8 +31,8 @@ const About: React.FC = () => {
         </section>
 
         <div className="relative w-full h-[500px] md:h-auto">
-          <div className="absolute inset-0 bg-black opacity-30 rounded-2xl z-10" />
-          <Image src="/images/bike-lock-about.jpg" alt="About" fill className="rounded-2xl shadow-lg object-cover absolute inset-0 z-0" />
+          <div className="absolute inset-0 bg-black opacity-30 rounded-[0.25rem] z-10" />
+          <Image src="/images/bike-lock-about.jpg" alt="About" fill className="rounded-[0.25rem] shadow-lg object-cover absolute inset-0 z-0" />
         </div>
       </main>
 

@@ -21,7 +21,7 @@
   stroke: lightgray;
 }
 
-.star_shape:hover {
+.star:not(:disabled) + .star_label .star_shape:hover {
   stroke: var(--primary-gold);
 }
 

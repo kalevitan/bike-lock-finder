@@ -140,13 +140,13 @@ export default function AccountPage() {
             />
             {isUploadingImage && (
               <div className="absolute inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center rounded-full">
-                <div className="text-white">Uploading...</div>
+                <div className="text-[var(--primary-white)]">Uploading...</div>
               </div>
             )}
           </div>
         ) : (
           <div className="flex flex-col text-left">
-            <label htmlFor="photoURL" className="mb-2">Profile Picture</label>
+            <label htmlFor="photoURL" className="mb-2 text-[var(--primary-white)]">Profile Picture</label>
             <div className="relative">
               <button
                 type="button"
@@ -161,20 +161,22 @@ export default function AccountPage() {
         <h1 className="text-center">Hi, {userData.displayName || userData.email} 👋</h1>
         <form className="flex flex-col gap-4" onSubmit={handleUserUpdate}>
           <div className="flex flex-col gap-2">
-            <label htmlFor="displayName">Display Name</label>
+            <label htmlFor="displayName" className="text-[var(--primary-white)]">Display Name</label>
             <input
               type="text"
               id="displayName"
               name="displayName"
               defaultValue={userData.displayName}
+              className="rounded-[0.25rem]"
             />
           </div>
           <div className="flex flex-col gap-2">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email" className="text-[var(--primary-white)]">Email</label>
             <input
               type="email"
               id="email"
               name="email"
+              className="rounded-[0.25rem]"
               defaultValue={userData.email}
             />
           </div>
@@ -196,14 +198,14 @@ export default function AccountPage() {
           <div className="grid sm:grid-cols-2 gap-3">
             <button
               type="submit"
-              className="button button"
+              className="button text-[var(--primary-white)]"
               disabled={isUpdating}
             >
               {isUpdating ? 'Saving...' : 'Save'}
             </button>
             <button
               type="button"
-              className="button button--secondary"
+              className="button button--secondary text-[var(--primary-white)]"
               onClick={handleSignOut}
               disabled={isUpdating || isSigningOut}
             >

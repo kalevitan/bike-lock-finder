@@ -95,7 +95,7 @@ const Login: React.FC = () => {
             <form className="min-w-80" method="post" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 gap-4 max-w-96">
                 <div className="flex flex-col text-left gap-2">
-                  <label htmlFor="email">Email</label>
+                  <label htmlFor="email" className="text-[var(--primary-white)]">Email</label>
                   <input
                     type="email"
                     name="email"
@@ -107,7 +107,7 @@ const Login: React.FC = () => {
                   />
                 </div>
                 <div className="flex flex-col text-left gap-2">
-                  <label htmlFor="password">Password</label>
+                  <label htmlFor="password" className="text-[var(--primary-white)]">Password</label>
                   <input
                     type="password"
                     name="password"
@@ -117,7 +117,7 @@ const Login: React.FC = () => {
                     required
                   />
                 </div>
-                <button className="button mt-6" type="submit">
+                <button className="button mt-6 text-[var(--primary-white)]" type="submit">
                   {formMode == 'login' ? (
                     "Login"
                   ) : (
@@ -125,7 +125,7 @@ const Login: React.FC = () => {
                   )}
                 </button>
               </div>
-              <div className="pt-6 pb-4 text-center">
+              <div className="pt-6 pb-4 text-center text-[var(--primary-white)]">
                 {formMode == 'login' ? (
                   <button onClick={() => setFormMode('register')}>Don't have an account? Register here.</button>
                 ) : (

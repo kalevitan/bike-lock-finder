@@ -49,11 +49,11 @@ export default function MarkerDetails({ details, onEdit }: MarkerDetailsProps) {
                   <Star
                     key={index}
                     size="20"
-                    color={index < details.rating ? "var(--primary-gold)" : "lightgray"}
+                    color={index < details.rating ? "var(--primary-gold)" : "var(--primary-lightest-gray)"}
                     fill={index < details.rating ? "var(--primary-gold)" : "none"}
                   />
                 ))}
-                <span className="border m-2 p-1">
+                <span className="border m-2 p-1 text-[var(--primary-white)]">
                   {details.rating}.0
                 </span>
               </span>
