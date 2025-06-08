@@ -294,10 +294,12 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
                 alt="Preview"
                 width={300}
                 height={300}
-                className="w-full object-contain rounded-md border border-[#6b7280]"
+                className="w-full h-[300px] object-cover object-center rounded-[0.25rem] border border-[#6b7280]"
                 onClick={() => {
                   if (expandGeometry) {
                     document.getElementById('file-image')?.click();
+                  } else {
+                    window.open(fileUrl, '_blank');
                   }
                 }}
               />

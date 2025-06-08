@@ -156,7 +156,7 @@ header {
   box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.26);
   padding: 2rem;
   width: 100dvw;
-  max-height: calc(100dvh - 80px);
+  /* max-height: calc(100dvh - env(safe-area-inset-bottom)); */
   overflow-y: auto;
   position: relative;
   top: 60px;

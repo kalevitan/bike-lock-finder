@@ -1,6 +1,5 @@
 'use client';
 
-import Header from "@/components/header/Header";
 import useAuth from "@/app/hooks/useAuth";
 import { redirect } from "next/navigation";
 import { signOut } from "@/lib/auth";
@@ -109,12 +108,7 @@ export default function AccountPage() {
 
   // Show loading state while auth or user data is loading
   if (authLoading || userLoading) {
-    return (
-      <>
-        <Header />
-        <Loading />
-      </>
-    );
+    return <Loading />;
   }
 
   // Don't render anything if we're not authenticated (will redirect)
@@ -123,97 +117,98 @@ export default function AccountPage() {
   }
 
   return (
-    <>
-      <Header />
-      <main className="grid max-w-screen-md md:mx-auto gap-4 px-6 pt-[80px] md:py-16">
-        {(previewUrl || userData.photoURL) ? (
-          <div className="relative m-auto overflow-hidden cursor-pointer hover:opacity-70 transition-opacity duration-300">
-            <Image
-              src={previewUrl || userData.photoURL || ''}
-              alt="Preview"
-              width={150}
-              height={150}
-              className="w-[150px] h-[150px] object-cover rounded-full border border-[#6b7280]"
-              onClick={() => {
-                document.getElementById('photoURL')?.click();
-              }}
-            />
-            {isUploadingImage && (
-              <div className="absolute inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center rounded-full">
-                <div className="text-[var(--primary-white)]">Uploading...</div>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="flex flex-col text-left">
-            <label htmlFor="photoURL" className="mb-2 text-[var(--primary-white)]">Profile Picture</label>
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => document.getElementById('photoURL')?.click()}
-                className="w-[150px] h-[150px] border rounded-full flex items-center justify-center cursor-pointer border-[#6b7280] hover:opacity-70 transition-opacity duration-300"
-              >
-                <ImagePlus color="#6b7280" size={32}/>
-              </button>
-            </div>
-          </div>
-        )}
-        <h1 className="text-center">Hi, {userData.displayName || userData.email} 👋</h1>
-        <form className="flex flex-col gap-4" onSubmit={handleUserUpdate}>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="displayName" className="text-[var(--primary-white)]">Display Name</label>
-            <input
-              type="text"
-              id="displayName"
-              name="displayName"
-              defaultValue={userData.displayName}
-              className="rounded-[0.25rem]"
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="email" className="text-[var(--primary-white)]">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              className="rounded-[0.25rem]"
-              defaultValue={userData.email}
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <input
-              type="file"
-              id="photoURL"
-              name="photoURL"
-              accept="image/*"
-              hidden={true}
-              onChange={handleFileSelect}
-            />
-          </div>
-          {error && (
-            <div className="text-red-500 text-sm p-2 bg-red-50 rounded-md" role="alert">
-              {error}
+    <div className="grid max-w-[30rem] md:mx-auto gap-4">
+      {(previewUrl || userData.photoURL) ? (
+        <div className="relative m-auto overflow-hidden cursor-pointer hover:opacity-70 transition-opacity duration-300">
+          <Image
+            src={previewUrl || userData.photoURL || ''}
+            alt="Preview"
+            width={150}
+            height={150}
+            className="w-[150px] h-[150px] object-cover rounded-full border border-[#6b7280]"
+            onClick={() => {
+              document.getElementById('photoURL')?.click();
+            }}
+          />
+          {isUploadingImage && (
+            <div className="absolute inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center rounded-full">
+              <div className="text-[var(--primary-white)]">Uploading...</div>
             </div>
           )}
-          <div className="grid sm:grid-cols-2 gap-3">
-            <button
-              type="submit"
-              className="button text-[var(--primary-white)]"
-              disabled={isUpdating}
-            >
-              {isUpdating ? 'Saving...' : 'Save'}
-            </button>
+        </div>
+      ) : (
+        <div className="flex flex-col text-left">
+          <label htmlFor="photoURL" className="mb-2 text-[var(--primary-white)]">Profile Picture</label>
+          <div className="relative">
             <button
               type="button"
-              className="button button--secondary text-[var(--primary-white)]"
-              onClick={handleSignOut}
-              disabled={isUpdating || isSigningOut}
+              onClick={() => document.getElementById('photoURL')?.click()}
+              className="w-[150px] h-[150px] border rounded-full flex items-center justify-center cursor-pointer border-[#6b7280] hover:opacity-70 transition-opacity duration-300"
             >
-              {isSigningOut ? 'Signing out...' : 'Sign Out'}
+              <ImagePlus color="#6b7280" size={32}/>
             </button>
           </div>
-        </form>
-      </main>
-    </>
+        </div>
+      )}
+      <h1 className="text-center">Hi, {userData.displayName || userData.email} 👋</h1>
+      <div className="flex gap-2 items-center justify-center text-center text-sm text-[var(--primary-light-gray)]">
+        <span className="text-[var(--primary-gold)]">🏆</span>
+        <p className="m-0">45 locations contributed</p>
+      </div>
+      <form className="flex flex-col gap-4" onSubmit={handleUserUpdate}>
+        <div className="flex flex-col gap-2">
+          <label htmlFor="displayName" className="text-[var(--primary-white)]">Display Name</label>
+          <input
+            type="text"
+            id="displayName"
+            name="displayName"
+            defaultValue={userData.displayName}
+            className="rounded-[0.25rem]"
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <label htmlFor="email" className="text-[var(--primary-white)]">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            className="rounded-[0.25rem]"
+            defaultValue={userData.email}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <input
+            type="file"
+            id="photoURL"
+            name="photoURL"
+            accept="image/*"
+            hidden={true}
+            onChange={handleFileSelect}
+          />
+        </div>
+        {error && (
+          <div className="text-red-500 text-sm p-2 bg-red-50 rounded-md" role="alert">
+            {error}
+          </div>
+        )}
+        <div className="flex gap-4">
+          <button
+            type="submit"
+            className="button flex-1 text-[var(--primary-white)]"
+            disabled={isUpdating}
+          >
+            {isUpdating ? 'Updating...' : 'Update Profile'}
+          </button>
+          <button
+            type="button"
+            className="button button--secondary flex-1 text-[var(--primary-white)]"
+            onClick={handleSignOut}
+            disabled={isSigningOut}
+          >
+            {isSigningOut ? 'Signing out...' : 'Sign Out'}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }

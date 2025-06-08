@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
 import { AdvancedMarker, useAdvancedMarkerRef } from '@vis.gl/react-google-maps';
-import MarkerDetails from './MarkerDetails';
 import { MarkerProps } from '@/interfaces/markers';
 import classNames from 'classnames';
-import BikeLockIcon from '@/components/icons/bike-lock-icon';
 import './marker.css';
+import MarkerPin from './MarkerPin';
 
 export function Marker({
   isOpen,
@@ -55,40 +53,7 @@ export function Marker({
       position={position}
       title={markerData.title}
       className={classNames('bike-lock-marker', {clicked: isOpen, hovered})}>
-      <div className="custom-pin">
-        <div className="image-container">
-          {markerData.file && typeof markerData.file === 'string' && (() => {
-            try {
-              new URL(markerData.file);
-              return (
-                <div className="w-full h-full relative">
-                  <Image
-                    src={markerData.file}
-                    width={300}
-                    height={300}
-                    sizes="50vw"
-                    className="image"
-                    alt={`Bike lock location: ${markerData.title}`}
-                    priority={isOpen}
-                  />
-                </div>
-              );
-            } catch {
-              return null;
-            }
-          })()}
-          <span className="icon">
-            <BikeLockIcon />
-          </span>
-        </div>
-
-        <MarkerDetails
-          details={markerData as MarkerProps}
-          onEdit={(onEditPoint)}
-        />
-
-        <div className="triangle" />
-      </div>
+      <MarkerPin isOpen={isOpen} markerData={markerData as MarkerProps} onEditPoint={onEditPoint} />
     </AdvancedMarker>
   );
 };

@@ -12,8 +12,6 @@ export default function useAuth() {
     if (mountedRef.current) return;
     mountedRef.current = true;
 
-    console.log('Setting up auth listener');
-
     // Get the current user immediately
     const currentUser = auth.currentUser;
     if (currentUser) {
@@ -23,8 +21,6 @@ export default function useAuth() {
     }
 
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      console.log('Auth state changed:', user?.uid);
-
       if (user) {
         try {
           // Check if user document exists
@@ -32,7 +28,6 @@ export default function useAuth() {
 
           // Only create if it doesn't exist
           if (!existingUser) {
-            console.log('Creating new user document');
             const success = await createUserDocument({
               uid: user.uid,
               email: user.email || '',
@@ -41,9 +36,6 @@ export default function useAuth() {
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString()
             });
-            console.log('User document created:', success);
-          } else {
-            console.log('User document already exists');
           }
         } catch (error) {
           console.error('Error handling user document:', error);
@@ -56,11 +48,10 @@ export default function useAuth() {
 
     // Cleanup subscription
     return () => {
-      console.log('Cleaning up auth listener');
       mountedRef.current = false;
       unsubscribe();
     };
-  }, []); // Empty dependency array to ensure the effect runs only once
+  }, []);
 
   return { user, loading };
 }

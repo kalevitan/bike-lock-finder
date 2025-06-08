@@ -25,7 +25,7 @@ export default function RouteLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="overflow-hidden">
+    <html lang="en">
       <body>
         <MapProvider>
           <MarkerProvider>

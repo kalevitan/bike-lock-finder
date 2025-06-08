@@ -63,7 +63,7 @@ export default function Points() {
       )}
 
       <Sidebar updateLocation={updateLocation} onAddLock={handleAddLock} onSearch={handleSearch} onRecenter={handleRecenter}/>
-      <main role="main">
+      <main className="h-screen overflow-hidden">
         <div className="absolute w-full h-full">
           {error && <div className="error fixed bg-red-50 mb-8 p-4">{error}</div>}
           <div id="map" className="w-full h-full">
