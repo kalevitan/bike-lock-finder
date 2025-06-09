@@ -28,7 +28,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     <ModalContext.Provider value={{ isOpen, content, title, openModal, closeModal }}>
       {children}
       {isOpen && content && (
-        <Modal title={title} closeModal={closeModal}>
+        <Modal isOpen={isOpen} title={title} closeModal={closeModal}>
           <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
             {content}
           </APIProvider>

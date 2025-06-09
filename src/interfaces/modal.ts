@@ -9,6 +9,7 @@ export interface ModalContextProps {
 }
 
 export interface ModalProps {
+  isOpen: boolean;
   title: string;
   children: React.ReactNode;
   closeModal: () => void;

@@ -50,6 +50,11 @@ body {
   flex-direction: column;
 }
 
+header {
+  grid-column: 1 / -1;
+  height: 60px;
+}
+
 p {
   color: var(--primary-white);
   margin-bottom: 1rem;
@@ -116,11 +121,6 @@ input {
   height: 100dvh;
 }
 
-header {
-  grid-column: 1 / -1;
-  height: 60px;
-}
-
 .gm-title {
   color: #333;
 }
@@ -133,42 +133,5 @@ header {
 
   .header {
     grid-row: 1;
-  }
-}
-
-/* Modal Styles */
-.modal-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100dvw;
-  height: 100dvh;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-content {
-  background: var(--primary-white);
-  border-radius: 0.25rem;
-  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.26);
-  padding: 2rem;
-  width: 100dvw;
-  /* max-height: calc(100dvh - env(safe-area-inset-bottom)); */
-  overflow-y: auto;
-  position: relative;
-  top: 60px;
-  z-index: 20;
-  padding-bottom: calc(32px + env(safe-area-inset-bottom));
-  margin-bottom: env(safe-area-inset-bottom);
-}
-
-@media (min-width: 640px) {
-  .modal-content {
-    width: 30rem;
-    padding: 2rem;
-    margin-bottom: 0;
   }
 }

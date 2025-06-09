@@ -16,7 +16,9 @@
   padding: 20px 20px 32px 20px;
   overflow: hidden;
   overflow-y: auto;
-  max-height: calc(100dvh - 80px);
+  max-height: calc(100dvh - 120px);
+  position: fixed;
+  bottom: 0;
   width: 100dvw;
   top: 60px;
   z-index: 20;
@@ -26,6 +28,8 @@
   @media (min-width: 640px) {
     padding: 20px;
     margin-bottom: 0;
+    bottom: auto;
+    max-height: calc(100dvh - 120px);
   }
 }
 
