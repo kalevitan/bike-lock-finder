@@ -175,6 +175,10 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
       setValidationError('Title is required');
       return false;
     }
+    if (sanitizedTitle.length > 65) {
+      setValidationError('Title must be less than 65 characters');
+      return false;
+    }
 
     // Validate coordinates
     const lat = parseFloat(formData.latitude);
@@ -186,8 +190,12 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
       return false;
     }
 
-    // Sanitize description
+    // Sanitize and validate description
     const sanitizedDescription = formData.description.trim().replace(/[<>]/g, '');
+    if (sanitizedDescription.length > 200) {
+      setValidationError('Description must be less than 200 characters');
+      return false;
+    }
 
     // Update form data with sanitized values
     setFormData(prev => ({
