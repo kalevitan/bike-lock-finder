@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { MarkerProps } from '@/interfaces/markers';
 import MarkerDetails from './MarkerDetails';
 import BikeLockIcon from '@/components/icons/bike-lock-icon';
+import { useAuth } from '@/contexts/AuthProvider';
 
 interface MarkerPinProps {
   markerData: MarkerProps;
@@ -10,6 +11,8 @@ interface MarkerPinProps {
 }
 
 export default function MarkerPin({ markerData, isOpen, onEditPoint }: MarkerPinProps) {
+  const { user } = useAuth();
+
   return (
     <div className="custom-pin">
       <div className="image-container">
@@ -40,7 +43,8 @@ export default function MarkerPin({ markerData, isOpen, onEditPoint }: MarkerPin
 
       <MarkerDetails
         details={markerData as MarkerProps}
-        onEdit={(onEditPoint)}
+        onEdit={onEditPoint}
+        isAuthenticated={!!user}
       />
 
       <div className="triangle" />

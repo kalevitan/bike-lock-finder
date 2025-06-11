@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from '@/lib/firebase';
-import useAuth from "@/app/hooks/useAuth";
+import { useAuth } from '@/contexts/AuthProvider';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -12,7 +12,7 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null);
   const [formMode, setFormMode] = useState('login');
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
 
   // Redirect if already authenticated
   useEffect(() => {

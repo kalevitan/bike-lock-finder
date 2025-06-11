@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import classes from "./sidebar.module.css";
 import { MarkerProps } from "@/interfaces/markers";
-import useAuth from "@/app/hooks/useAuth";
+import { useAuth } from "@/contexts/AuthProvider";
 import { CircleUserRound, LocateFixed, MapPinPlusInside, Info } from "lucide-react";
 import BikeLockIcon from '@/components/icons/bike-lock-icon';
 import Link from "next/link";
@@ -21,7 +21,7 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ updateLocation, onAddLock, onSearch, onRecenter }: SidebarProps) {
-  const { user, loading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const isMobile = useIsMobile();
   const { openModal } = useModal();
   const [searchInput, setSearchInput] = useState('');
@@ -95,14 +95,17 @@ export default function Sidebar({ updateLocation, onAddLock, onSearch, onRecente
                         <span className="text-sm">Add Lock</span>
                       </button>
                     </li>
-                    <li className="flex md:hidden flex-col items-center gap-1">
-                      <Link href="/account" className={classes.button}>
-                        <span className={classes.button__icon}>
-                          <CircleUserRound />
-                        </span>
-                        <span className="text-sm">Account</span>
-                      </Link>
-                    </li>
+
+                    {isMobile && (
+                      <li>
+                        <Link href="/account" className={classes.button}>
+                          <span className={classes.button__icon}>
+                            <CircleUserRound />
+                          </span>
+                          <span className="text-sm">Account</span>
+                        </Link>
+                      </li>
+                    )}
                   </>
                 ) : (
                   <li>

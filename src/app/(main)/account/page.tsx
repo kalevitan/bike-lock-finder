@@ -1,6 +1,6 @@
 'use client';
 
-import useAuth from "@/app/hooks/useAuth";
+import { useAuth } from '@/contexts/AuthProvider';
 import { redirect } from "next/navigation";
 import { signOut } from "@/lib/auth";
 import { useState, useEffect } from "react";
@@ -11,7 +11,7 @@ import Image from "next/image";
 import { ImagePlus } from "lucide-react";
 
 export default function AccountPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const { userData, isLoading: userLoading, mutate } = useUserDocument(user?.uid || null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);

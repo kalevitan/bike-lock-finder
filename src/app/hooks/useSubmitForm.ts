@@ -3,7 +3,7 @@ import { MarkerProps } from '@/interfaces/markers';
 import xss from 'xss';
 import { useMarkerContext } from '@/contexts/MarkerProvider';
 import { uploadAndCompressImage } from '@/lib/storage';
-import useAuth from './useAuth';
+import { useAuth } from '@/contexts/AuthProvider';
 
 interface UseSubmitFormProps {
   pointData?: MarkerProps | null;

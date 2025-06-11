@@ -1,16 +1,14 @@
 import React, { useMemo } from "react";
 import { Star, Navigation, LocationEdit } from "lucide-react";
 import { MarkerProps } from "@/interfaces/markers";
-import useAuth from "@/app/hooks/useAuth";
 
 interface MarkerDetailsProps {
   details: MarkerProps;
   onEdit: (pointData: MarkerProps) => void;
+  isAuthenticated: boolean;
 }
 
-export default function MarkerDetails({ details, onEdit }: MarkerDetailsProps) {
-  const { user} = useAuth();
-
+export default function MarkerDetails({ details, onEdit, isAuthenticated }: MarkerDetailsProps) {
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onEdit(details);
@@ -59,7 +57,7 @@ export default function MarkerDetails({ details, onEdit }: MarkerDetailsProps) {
               </span>
             </div>
           </div>
-          {user && (
+          {isAuthenticated && (
             <button
               className="button button--icon"
               onClick={handleEditClick}
@@ -71,4 +69,4 @@ export default function MarkerDetails({ details, onEdit }: MarkerDetailsProps) {
       </div>
     </article>
   );
-};
+}
