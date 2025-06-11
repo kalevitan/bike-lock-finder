@@ -8,7 +8,7 @@ import Loading from "@/app/loading";
 import { useUserDocument, updateUserDocument } from "@/lib/users";
 import { uploadAndCompressImage } from "@/lib/storage";
 import Image from "next/image";
-import { ImagePlus } from "lucide-react";
+import { ImagePlus, Trophy } from "lucide-react";
 
 export default function AccountPage() {
   const { user, isLoading: authLoading } = useAuth();
@@ -153,8 +153,7 @@ export default function AccountPage() {
         )}
         <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-center">Hi, {userData.displayName || userData.email} 👋</h1>
         <div className="flex gap-2 items-center justify-center text-center text-sm text-[var(--primary-light-gray)]">
-          <span className="text-[var(--primary-gold)]">🏆</span>
-          <p className="m-0">45 locations contributed</p>
+          <span className="flex items-center gap-2 text-sm text-gray-400 font-light bg-[var(--primary-light-gray)] px-2 py-1 rounded-md"><Trophy size={12} color={"var(--primary-gold)"}/>{25} contributions</span>
         </div>
         <form className="flex flex-col gap-4" onSubmit={handleUserUpdate}>
           <div className="flex flex-col gap-2">
