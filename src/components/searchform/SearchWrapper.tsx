@@ -1,4 +1,4 @@
-import { SearchIcon, Target, Map } from "lucide-react";
+import { SearchIcon, Map } from "lucide-react";
 
 import { CircleX } from "lucide-react";
 import SearchForm from "./SearchForm";

@@ -5,13 +5,15 @@ import { MapContextProps } from '@/interfaces/map';
 
 const MapProviderContext = createContext<MapContextProps | undefined>(undefined);
 
+const defaultCenter = { lat: 35.5946, lng: -82.5540 };
+
 export const MapProvider = ({ children }: { children: ReactNode }) => {
   const mapConfig = useMemo<MapContextProps>(() => ({
     apiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY || '',
     libraries: ['marker', 'places'],
     mapId: process.env.NEXT_PUBLIC_GOOGLE_MAPS_ID || '',
     mapTypeId: 'roadmap',
-    defaultCenter: { lat: 35.5946, lng: -82.5540 },
+    defaultCenter,
     defaultZoom: 14,
     version: "beta",
   }), []);

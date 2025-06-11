@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, memo } from 'react';
 import { useMapsLibrary } from '@vis.gl/react-google-maps';
-import { X } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 
 interface Props {
   onSearch?: (place: google.maps.places.PlaceResult | null) => void;
@@ -13,7 +13,7 @@ interface Props {
   setSearchInput?: (input: string) => void;
 }
 
-export const SearchForm = ({ onSearch, onRecenter, searchInput, setSearchInput, classes, shouldFocus }: Props) => {
+const SearchForm = memo(function SearchForm({ onSearch, onRecenter, searchInput, setSearchInput, classes, shouldFocus }: Props) {
   const [placeAutocomplete, setPlaceAutocomplete] =
     useState<google.maps.places.Autocomplete | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -31,12 +31,14 @@ export const SearchForm = ({ onSearch, onRecenter, searchInput, setSearchInput, 
       return;
     }
 
+    const bounds = new google.maps.LatLngBounds(
+      new google.maps.LatLng(35.4, -82.7),
+      new google.maps.LatLng(35.7, -82.4)
+    );
+
     const options = {
       fields: ['geometry', 'name', 'formatted_address'],
-      bounds: new google.maps.LatLngBounds(
-        new google.maps.LatLng(35.4, -82.7),
-        new google.maps.LatLng(35.7, -82.4)
-      ),
+      bounds,
       strictBounds: true,
       types: ['establishment']
     };
@@ -88,10 +90,11 @@ export const SearchForm = ({ onSearch, onRecenter, searchInput, setSearchInput, 
     setSearchInput?.('');
     if (placeAutocomplete) {
       placeAutocomplete.set('place', null);
-      placeAutocomplete.setBounds(new google.maps.LatLngBounds(
+      const bounds = new google.maps.LatLngBounds(
         new google.maps.LatLng(35.4, -82.7),
         new google.maps.LatLng(35.7, -82.4)
-      ));
+      );
+      placeAutocomplete.setBounds(bounds);
     }
   };
 
@@ -108,11 +111,13 @@ export const SearchForm = ({ onSearch, onRecenter, searchInput, setSearchInput, 
         className="w-full rounded-[0.25rem] h-[45px] focus:outline-none"
         placeholder='Search locations...'
       />
-      {searchInput && (
+      {searchInput ? (
         <X className="absolute right-[.625rem] top-[.625rem] cursor-pointer" color="var(--primary-gray)" onClick={clearSearch} />
+      ) : (
+        <Search className="w-6 h-6 absolute right-2 top-1/2 -translate-y-1/2" color="var(--primary-gray)" />
       )}
     </div>
   );
-};
+});
 
 export default SearchForm;

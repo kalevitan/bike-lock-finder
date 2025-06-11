@@ -288,10 +288,10 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
             hidden={true}
           />
           {fileUrl && fileUrl.startsWith('http') ? (
-            <div className={`relative mt-2 ${expandGeometry ? 'cursor-pointer hover:opacity-70 transition-opacity duration-300' : 'cursor-not-allowed'}`}>
+            <div className="relative mt-2 hover:opacity-70 transition-opacity duration-300 cursor-pointer">
               <Image
                 src={fileUrl}
-                alt="Preview"
+                alt="Bike lock image"
                 width={300}
                 height={300}
                 className="w-full h-[300px] object-cover object-center rounded-[0.25rem] border border-[#6b7280]"

@@ -20,7 +20,7 @@
 
   @media (min-width: 640px) {
     display: flex;
-    position: static;
+    position: relative;
     width: auto;
   }
 }
