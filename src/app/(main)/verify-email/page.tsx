@@ -7,6 +7,7 @@ import { sendEmailVerification, signOut, updateEmail } from "firebase/auth";
 import Loading from "@/app/loading";
 import { Mail, CheckCircle2, AlertCircle } from "lucide-react";
 import { auth } from "@/lib/firebase";
+import { updateUserDocument } from "@/lib/users";
 
 export default function VerifyEmail() {
   const { user, isLoading } = useAuth();
@@ -31,7 +32,7 @@ export default function VerifyEmail() {
       if (!user) return;
 
       try {
-        // Reload the user to get the latest verification status
+        // Force reload the user to get the latest verification status
         await user.reload();
         const currentUser = auth.currentUser;
 
@@ -56,9 +57,20 @@ export default function VerifyEmail() {
             }
           }
         }
-        // If the user is now verified, redirect to account
+        // If the user is now verified, update their document and redirect
         else if (currentUser.emailVerified) {
-          router.push("/account");
+          try {
+            // Update the user document with the verified status
+            await updateUserDocument(currentUser.uid, {
+              emailVerified: true,
+              updatedAt: new Date().toISOString(),
+            });
+            router.push("/account");
+          } catch (err) {
+            console.error("Failed to update user document:", err);
+            // Still redirect even if document update fails
+            router.push("/account");
+          }
         }
       } catch (err: any) {
         // Ignore token refresh errors as they don't affect functionality

@@ -94,7 +94,7 @@ export default function Login() {
                 email from your account page.
               </p>
             </div>
-            <div className="flex flex-col gap-3 w-full">
+            {/* <div className="flex flex-col gap-3 w-full">
               <button
                 className="button text-[var(--primary-white)] w-full"
                 onClick={() => router.push("/account")}
@@ -102,7 +102,7 @@ export default function Login() {
               >
                 Go to account page
               </button>
-            </div>
+            </div> */}
           </div>,
           ""
         );
