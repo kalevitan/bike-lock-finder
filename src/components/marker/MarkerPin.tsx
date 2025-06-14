@@ -1,8 +1,8 @@
-import Image from 'next/image';
-import { MarkerProps } from '@/interfaces/markers';
-import MarkerDetails from './MarkerDetails';
-import BikeLockIcon from '@/components/icons/bike-lock-icon';
-import { useAuth } from '@/contexts/AuthProvider';
+import Image from "next/image";
+import { MarkerProps } from "@/interfaces/markers";
+import MarkerDetails from "./MarkerDetails";
+import BikeLockIcon from "@/components/icons/bike-lock-icon";
+import { useAuth } from "@/contexts/AuthProvider";
 
 interface MarkerPinProps {
   markerData: MarkerProps;
@@ -10,32 +10,40 @@ interface MarkerPinProps {
   onEditPoint: (pointData: MarkerProps) => void;
 }
 
-export default function MarkerPin({ markerData, isOpen, onEditPoint }: MarkerPinProps) {
+export default function MarkerPin({
+  markerData,
+  isOpen,
+  onEditPoint,
+}: MarkerPinProps) {
   const { user } = useAuth();
+
+  console.log(user);
 
   return (
     <div className="custom-pin">
       <div className="image-container">
-        {markerData.file && typeof markerData.file === 'string' && (() => {
-          try {
-            new URL(markerData.file);
-            return (
-              <div className="w-full h-full relative">
-                <Image
-                  src={markerData.file}
-                  width={300}
-                  height={300}
-                  sizes="50vw"
-                  className="image"
-                  alt={`Bike lock location: ${markerData.title}`}
-                  priority={isOpen}
-                />
-              </div>
-            );
-          } catch {
-            return null;
-          }
-        })()}
+        {markerData.file &&
+          typeof markerData.file === "string" &&
+          (() => {
+            try {
+              new URL(markerData.file);
+              return (
+                <div className="w-full h-full relative">
+                  <Image
+                    src={markerData.file}
+                    width={300}
+                    height={300}
+                    sizes="50vw"
+                    className="image"
+                    alt={`Bike lock location: ${markerData.title}`}
+                    priority={isOpen}
+                  />
+                </div>
+              );
+            } catch {
+              return null;
+            }
+          })()}
         <span className="icon">
           <BikeLockIcon />
         </span>
@@ -44,10 +52,10 @@ export default function MarkerPin({ markerData, isOpen, onEditPoint }: MarkerPin
       <MarkerDetails
         details={markerData as MarkerProps}
         onEdit={onEditPoint}
-        isAuthenticated={!!user}
+        isAuthenticated={!!user?.emailVerified}
       />
 
       <div className="triangle" />
     </div>
-  )
+  );
 }
