@@ -57,3 +57,18 @@
 .autocomplete_container {
   min-width: 257px;
 }
+
+.search_form input {
+  @media (min-width: 768px) {
+    background-color: var(--primary-light-gray);
+    color: var(--primary-gray);
+  }
+
+  &::placeholder {
+    color: var(--primary-gray);
+
+    @media (min-width: 768px) {
+      color: var(--primary-white);
+    }
+  }
+}

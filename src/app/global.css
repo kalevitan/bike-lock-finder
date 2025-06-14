@@ -61,6 +61,9 @@ header {
 
 p {
   color: var(--primary-white);
+}
+
+.about-page p {
   margin-bottom: 1rem;
   font-family: "var(--font-work-sans)", sans-serif;
 }
