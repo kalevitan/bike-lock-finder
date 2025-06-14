@@ -7,13 +7,14 @@ import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
   updateProfile,
+  signOut,
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useAuth } from "@/contexts/AuthProvider";
 import { createUserDocument } from "@/lib/users";
 import Loading from "@/app/loading";
 import { useModal } from "@/contexts/ModalProvider";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, AlertCircle } from "lucide-react";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -101,13 +102,6 @@ export default function Login() {
               >
                 Go to account page
               </button>
-              <button
-                className="text-sm text-[var(--primary-gray)] hover:text-[var(--primary-white)] transition-colors"
-                onClick={() => router.push("/verify-email")}
-                type="button"
-              >
-                Go to verification page
-              </button>
             </div>
           </div>,
           ""
@@ -136,51 +130,45 @@ export default function Login() {
         password
       );
 
-      // Get the ID token
-      const idToken = await userCredential.user.getIdToken();
-
-      // Call the login API to set the session cookie
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ idToken }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to set session");
-      }
-
       // Check if user is verified
       if (!userCredential.user.emailVerified) {
         // Send verification email if not verified
         await sendEmailVerification(userCredential.user);
-        router.push("/verify-email");
-      } else {
-        router.push("/account");
+        // Sign out the user since they're not verified
+        await signOut(auth);
+        setError(
+          "Please verify your email before logging in. Check your inbox for the verification link."
+        );
+        return;
       }
+
+      router.push("/account");
     } catch (err: any) {
-      console.error("Login error:", err.message);
-      if (err.code === "auth/invalid-credential") {
-        setError("Invalid email or password. Please try again.");
-      } else if (err.code === "auth/user-not-found") {
-        setError(
-          "No account found with this email. Please check your email or sign up."
-        );
-      } else if (err.code === "auth/wrong-password") {
-        setError("Incorrect password. Please try again.");
-      } else if (err.code === "auth/too-many-requests") {
-        setError(
-          "Too many failed attempts. Please try again later or reset your password."
-        );
-      } else if (err.code === "auth/user-disabled") {
-        setError("This account has been disabled. Please contact support.");
-      } else if (err.code === "auth/invalid-email") {
-        setError("Please enter a valid email address.");
-      } else {
-        setError("An error occurred during login. Please try again.");
+      // Clear any existing error first
+      setError(null);
+
+      // Handle specific Firebase error codes
+      switch (err.code) {
+        case "auth/invalid-credential":
+        case "auth/wrong-password":
+        case "auth/user-not-found":
+          setError("Invalid email or password. Please try again.");
+          break;
+        case "auth/too-many-requests":
+          setError(
+            "Too many failed attempts. Please try again later or reset your password."
+          );
+          break;
+        case "auth/user-disabled":
+          setError("This account has been disabled. Please contact support.");
+          break;
+        case "auth/invalid-email":
+          setError("Please enter a valid email address.");
+          break;
+        default:
+          setError("An error occurred during login. Please try again.");
       }
+      return;
     }
   };
 
@@ -203,6 +191,13 @@ export default function Login() {
 
         <form method="post" onSubmit={handleSubmit} className="w-full">
           <div className="flex flex-col gap-4">
+            {error && (
+              <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                <p className="text-red-800">{error}</p>
+              </div>
+            )}
+
             {formMode === "register" && (
               <div className="flex flex-col text-left gap-2">
                 <label
@@ -262,21 +257,28 @@ export default function Login() {
           </div>
           <div className="pt-6 pb-4 text-center text-[var(--primary-white)]">
             {formMode === "login" ? (
-              <button type="button" onClick={() => setFormMode("register")}>
+              <button
+                type="button"
+                onClick={() => {
+                  setFormMode("register");
+                  setError(null);
+                }}
+              >
                 Don't have an account? Sign up here.
               </button>
             ) : (
-              <button type="button" onClick={() => setFormMode("login")}>
+              <button
+                type="button"
+                onClick={() => {
+                  setFormMode("login");
+                  setError(null);
+                }}
+              >
                 Already have an account? Login here.
               </button>
             )}
           </div>
         </form>
-      </div>
-      <div className="h-6 w-full">
-        {error && (
-          <p className="text-red-600 text-center break-words">{error}</p>
-        )}
       </div>
     </div>
   );
