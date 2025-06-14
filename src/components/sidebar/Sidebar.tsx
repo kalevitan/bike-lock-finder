@@ -159,8 +159,8 @@ export default function Sidebar({
           </div>
         </div>
 
-        <VerifyEmail>
-          {user && !userLoading && !isMobile && (
+        {user && !userLoading && !isMobile && (
+          <VerifyEmail>
             <div className="flex gap-y-4 pt-2 md:pt-8 border-t border-[var(--primary-light-gray)]">
               <div className="user-info w-full flex flex-col gap-4">
                 <Link href="/account" className="flex items-center gap-4">
@@ -203,8 +203,8 @@ export default function Sidebar({
                 </div> */}
               </div>
             </div>
-          )}
-        </VerifyEmail>
+          </VerifyEmail>
+        )}
       </div>
     </aside>
   );

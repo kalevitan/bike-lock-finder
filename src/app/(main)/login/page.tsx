@@ -12,6 +12,8 @@ import { auth } from "@/lib/firebase";
 import { useAuth } from "@/contexts/AuthProvider";
 import { createUserDocument } from "@/lib/users";
 import Loading from "@/app/loading";
+import { useModal } from "@/contexts/ModalProvider";
+import { CheckCircle2 } from "lucide-react";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -21,6 +23,7 @@ export default function Login() {
   const [formMode, setFormMode] = useState("login");
   const router = useRouter();
   const { user, isLoading: authLoading } = useAuth();
+  const { openModal } = useModal();
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -75,8 +78,39 @@ export default function Login() {
         setEmail("");
         setPassword("");
         setDisplayName("");
-        alert(
-          "Registration successful! Please check your email to verify your account. If you don't see the email, check your spam folder or request a new verification email from your account page."
+        openModal(
+          <div className="flex flex-col items-center gap-6 p-4">
+            <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+              <CheckCircle2 className="w-8 h-8 text-green-600" />
+            </div>
+            <div className="flex flex-col gap-3 text-center">
+              <h3 className="text-xl font-semibold text-[var(--primary-gray)]">
+                Registration Successful!
+              </h3>
+              <p className="text-[var(--primary-gray)]">
+                Please check your email to verify your account. If you don't see
+                the email, check your spam folder or request a new verification
+                email from your account page.
+              </p>
+            </div>
+            <div className="flex flex-col gap-3 w-full">
+              <button
+                className="button text-[var(--primary-white)] w-full"
+                onClick={() => router.push("/account")}
+                type="button"
+              >
+                Go to account page
+              </button>
+              <button
+                className="text-sm text-[var(--primary-gray)] hover:text-[var(--primary-white)] transition-colors"
+                onClick={() => router.push("/verify-email")}
+                type="button"
+              >
+                Go to verification page
+              </button>
+            </div>
+          </div>,
+          ""
         );
       } catch (err: any) {
         if (err.code === "auth/email-already-in-use") {
