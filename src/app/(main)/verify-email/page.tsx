@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthProvider";
 import { useRouter, useSearchParams } from "next/navigation";
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
 import { sendEmailVerification, updateEmail } from "firebase/auth";
 import Loading from "@/app/loading";
 import { Mail, CheckCircle2, AlertCircle } from "lucide-react";
@@ -98,8 +96,12 @@ export default function VerifyEmail() {
     }
   };
 
-  if (isLoading || !user) {
+  if (isLoading) {
     return <Loading />;
+  }
+
+  if (!user) {
+    return null;
   }
 
   return (
@@ -110,13 +112,15 @@ export default function VerifyEmail() {
         </h1>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
             <p className="text-red-800">{error}</p>
           </div>
         )}
 
         {success && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start gap-3">
+            <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
             <p className="text-green-800">{success}</p>
           </div>
         )}

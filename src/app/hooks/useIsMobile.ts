@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 
 enum TailwindBreakpoint {
-  SM = 'sm',
-  MD = 'md',
-  LG = 'lg',
-  XL = 'xl',
-  XXL = '2xl',
+  SM = "sm",
+  MD = "md",
+  LG = "lg",
+  XL = "xl",
+  XXL = "2xl",
 }
 export const useTailwindBreakpoint = (): TailwindBreakpoint => {
   const tailwindBreakpointFromWidth = (width: number): TailwindBreakpoint => {
@@ -24,7 +24,8 @@ export const useTailwindBreakpoint = (): TailwindBreakpoint => {
     return TailwindBreakpoint.XXL;
   };
 
-  const [tailwindBreakpoint, setTailwindBreakpoint] = useState<TailwindBreakpoint>(TailwindBreakpoint.MD);
+  const [tailwindBreakpoint, setTailwindBreakpoint] =
+    useState<TailwindBreakpoint>(TailwindBreakpoint.MD);
   useEffect(() => {
     const handleResize = () => {
       setTimeout(() => {
@@ -33,15 +34,28 @@ export const useTailwindBreakpoint = (): TailwindBreakpoint => {
     };
     handleResize();
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
-    return () => window.removeEventListener('resize', handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return tailwindBreakpoint;
 };
 
 export const useIsMobile = () => {
-  const twBreakpoint = useTailwindBreakpoint();
-  return twBreakpoint === TailwindBreakpoint.SM;
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Check immediately on mount
+    setIsMobile(window.innerWidth < 768);
+
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return isMobile;
 };
