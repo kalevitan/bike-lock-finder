@@ -10,15 +10,15 @@ export default function About() {
           Our Mission
         </h1>
         <p className="text-lg text-neutral-300 font-light leading-relaxed">
-          BikeLock Finder is a community-driven tool designed to help cyclists
-          locate safe and reliable bike lock stations around town. Whether
-          you're commuting or exploring, our interactive map provides the
-          information you need to secure your bike with confidence.
+          Dockly is a community-driven tool designed to help cyclists locate
+          safe and reliable bike lock stations around town. Whether you're
+          commuting or exploring, our interactive map provides the information
+          you need to secure your bike with confidence.
         </p>
         <p className="text-lg text-neutral-300 font-light leading-relaxed">
           In addition to finding stations, users can contribute to the map by
-          adding new locations they've discovered, making BikeLock Finder a
-          growing resource built by cyclists, for cyclists.
+          adding new locations they've discovered, making Dockly a growing
+          resource built by cyclists, for cyclists.
         </p>
         <div className="flex flex-col md:flex-row gap-3">
           <Link

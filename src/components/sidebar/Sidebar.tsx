@@ -88,7 +88,7 @@ export default function Sidebar({
               </p>
             </div>
 
-            {!isMobile && onSearch && onRecenter && (
+            {!isMobile && (
               <SearchWrapper
                 onSearch={onSearch}
                 onRecenter={onRecenter}

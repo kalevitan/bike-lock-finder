@@ -24,7 +24,7 @@ export default function MainLayout({
         )}
       </main>
       <footer className="text-center py-6 text-neutral-500 text-sm">
-        © {currentYear} BikeLock Finder. All rights reserved.
+        © {currentYear} Dockly. All rights reserved.
       </footer>
     </div>
   );

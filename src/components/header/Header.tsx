@@ -14,6 +14,7 @@ export default function Header({ onSearch, onRecenter }: HeaderProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const pathname = usePathname();
+  const isMapPage = pathname === "/";
 
   return (
     <header className="fixed top-0 z-10 w-full flex p-4 items-center text-white bg-[var(--primary-gray)]">
@@ -30,7 +31,7 @@ export default function Header({ onSearch, onRecenter }: HeaderProps) {
 
       <div className="flex w-full justify-end">
         <div className="search-wrapper flex gap-4 items-center">
-          {pathname === "/" ? (
+          {isMapPage ? (
             <>
               {isSearchOpen ? (
                 <CircleX
@@ -61,11 +62,12 @@ export default function Header({ onSearch, onRecenter }: HeaderProps) {
                 />
               </form>
 
-              <RotateCcw
-                className="md:hidden cursor-pointer"
-                onClick={onRecenter}
-              />
-              {/* <button className="button hidden md:inline-block" onClick={onRecenter}>Re-center</button> */}
+              {onRecenter && (
+                <RotateCcw
+                  className="md:hidden cursor-pointer"
+                  onClick={onRecenter}
+                />
+              )}
             </>
           ) : (
             <NavLink href="/">
