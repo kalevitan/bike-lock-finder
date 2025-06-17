@@ -5,17 +5,22 @@ import SearchForm from "./SearchForm";
 import { NavLink } from "../header/NavLink";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { HeaderProps } from "@/interfaces/header";
 import classes from "../header/header.module.css";
+import { SearchWrapperProps } from "@/interfaces/header";
 
-export default function SearchWrapper({ onSearch, onRecenter, searchInput, setSearchInput }: HeaderProps) {
+export default function SearchWrapper({
+  onSearch,
+  onRecenter,
+  searchInput,
+  setSearchInput,
+}: SearchWrapperProps) {
   const pathname = usePathname();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [place, setPlace] = useState(null);
 
   return (
     <div className="search-wrapper flex gap-4 items-center">
-      {pathname === '/' ? (
+      {pathname === "/" ? (
         <>
           {isSearchOpen ? (
             <CircleX
@@ -28,9 +33,16 @@ export default function SearchWrapper({ onSearch, onRecenter, searchInput, setSe
               <span className="sr-only">Close</span>
             </CircleX>
           ) : (
-            <SearchIcon className="sm:hidden cursor-pointer" onClick={() => setIsSearchOpen(true)} />
+            <SearchIcon
+              className="sm:hidden cursor-pointer"
+              onClick={() => setIsSearchOpen(true)}
+            />
           )}
-          <form className={`${classes.search_form} ${isSearchOpen ? classes.open : ''}`}>
+          <form
+            className={`${classes.search_form} ${
+              isSearchOpen ? classes.open : ""
+            }`}
+          >
             <SearchForm
               onSearch={onSearch}
               onRecenter={onRecenter}
@@ -48,5 +60,5 @@ export default function SearchWrapper({ onSearch, onRecenter, searchInput, setSe
         </NavLink>
       )}
     </div>
-  )
+  );
 }

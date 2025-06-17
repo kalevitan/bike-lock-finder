@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import classes from "./sidebar.module.css";
+import headerClasses from "../header/header.module.css";
 import { MarkerProps } from "@/interfaces/markers";
 import { useAuth } from "@/contexts/AuthProvider";
 import { CircleUserRound, LocateFixed, MapPinPlusInside, Info, Trophy } from "lucide-react";
@@ -40,30 +41,29 @@ export default function Sidebar({ updateLocation, onAddLock, onSearch, onRecente
     <aside className={classes.sidebar}>
       <div className="sidebar-layout-wrapper flex flex-col gap-8 justify-between md:px-8 h-full">
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-6">
           {!isMobile && (
             <div className="flex items-center justify-between px-4 md:px-0">
               <div className="logo md:min-w-72 max-w-72 min-w-fit">
-              <h1 className="font-bold text-[1.25rem]">
-                <span className="font-bold m-0">
-                  <NavLink href="/" classes="logo">
-                    <div className="flex items-center gap-2">
-                      <BikeLockIcon />BikeLock Finder
-                    </div>
-                  </NavLink>
-                </span>
-              </h1>
+                <h1 className="">
+                  <span className="m-0">
+                    <NavLink href="/" classes={headerClasses.logo}>
+                      {/* <BikeLockIcon /> */}
+                      <span className="font-display font-bold text-[3rem]">Dockly</span>
+                    </NavLink>
+                  </span>
+                </h1>
               </div>
             </div>
           )}
 
-          <div className="flex flex-col gap-4 sm:gap-4">
+          <div className="flex flex-col gap-6">
 
             <div className="hidden md:block intro">
-              <p>Find or add lock stations on the map to safely and conveniently lock your bike.</p>
+              <p className="italic">Find and share safe locking spots in your city.</p>
             </div>
 
-            {!isMobile && (
+            {!isMobile && onSearch && onRecenter && (
               <SearchWrapper onSearch={onSearch} onRecenter={onRecenter} searchInput={searchInput} setSearchInput={setSearchInput} />
             )}
 

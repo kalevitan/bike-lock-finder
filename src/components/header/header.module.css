@@ -1,3 +1,19 @@
+.logo svg {
+  width: 45px;
+  height: 45px;
+}
+
+.logo {
+  font-family: var(--font-urbanist);
+  font-weight: 700;
+  font-size: 1.875rem; /* text-3xl */
+  line-height: 2.25rem;
+  color: var(--primary-white);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .nav ul {
   display: none;
   justify-content: space-between;

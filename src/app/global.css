@@ -40,8 +40,12 @@ h4 {
   font-weight: 600;
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   color: var(--primary-white);
+  font-family: "var(--font-urbanist)", sans-serif;
 }
 
 body {
@@ -58,6 +62,7 @@ header {
 p {
   color: var(--primary-white);
   margin-bottom: 1rem;
+  font-family: "var(--font-work-sans)", sans-serif;
 }
 
 input {

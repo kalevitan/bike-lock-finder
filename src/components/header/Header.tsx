@@ -20,10 +20,9 @@ export default function Header({ onSearch, onRecenter }: HeaderProps) {
       <div className="logo md:min-w-72 max-w-72 min-w-fit">
         <h1 className="font-bold text-[1.25rem]">
           <span className="font-bold m-0">
-            <NavLink href="/" classes="logo">
-              <div className="flex items-center gap-2">
-                <BikeLockIcon />BikeLock Finder
-              </div>
+            <NavLink href="/" classes={classes.logo}>
+              {/* <BikeLockIcon /> */}
+              <span className="font-display font-bold text-3xl">Dockly</span>
             </NavLink>
           </span>
         </h1>
