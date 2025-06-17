@@ -7,6 +7,7 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { updateProfile, signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { uploadAndCompressImage } from "@/lib/storage";
 import Loading from "@/app/loading";
 import Image from "next/image";
 import { SquareUser, Trophy } from "lucide-react";
@@ -21,10 +22,20 @@ interface UserData {
   emailVerified: boolean;
 }
 
+function NameSkeleton() {
+  return (
+    <div className="animate-pulse">
+      <div className="h-12 bg-gray-200 rounded-lg w-3/4 mx-auto mb-2"></div>
+      <div className="h-6 bg-gray-200 rounded-lg w-1/2 mx-auto"></div>
+    </div>
+  );
+}
+
 export default function Account() {
   const { user, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -37,14 +48,10 @@ export default function Account() {
 
   // Redirect if not authenticated
   useEffect(() => {
-    // Only redirect if auth is done loading and there's no user
     if (!authLoading && !user) {
-      // Use setTimeout to ensure the redirect happens after the current render cycle
-      setTimeout(() => {
-        redirect("/login");
-      }, 0);
+      router.push("/login");
     }
-  }, [authLoading, user]);
+  }, [authLoading, user, router]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -62,10 +69,14 @@ export default function Account() {
       } catch (err) {
         console.error("Error fetching user data:", err);
         setError("Failed to load user data");
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchUserData();
+    if (user) {
+      fetchUserData();
+    }
   }, [user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -122,14 +133,37 @@ export default function Account() {
     }
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target || !e.target.files) return;
+
+    const file = e.target.files[0];
+    if (!file || !user) return;
+
+    setIsUploadingImage(true);
+    setError(null);
+    try {
+      const downloadURL = await uploadAndCompressImage(file, "users");
+
+      // Update the user's profile
+      await updateProfile(user, {
+        photoURL: downloadURL,
+      });
+
+      // Update Firestore
+      await updateDoc(doc(db, "users", user.uid), {
+        photoURL: downloadURL,
+        updatedAt: new Date().toISOString(),
+      });
+
+      // Update local state
+      setUserData((prev) => (prev ? { ...prev, photoURL: downloadURL } : null));
+      setPreviewUrl(downloadURL);
+      setSuccess("Profile picture updated successfully!");
+    } catch (err: any) {
+      console.error("Error uploading image:", err);
+      setError(err.message || "Failed to upload image");
+    } finally {
+      setIsUploadingImage(false);
     }
   };
 
@@ -141,7 +175,7 @@ export default function Account() {
     };
   }, [previewUrl]);
 
-  if (authLoading || !user) {
+  if (authLoading || isLoading || !user) {
     return <Loading />;
   }
 
@@ -169,8 +203,9 @@ export default function Account() {
               height={150}
               className="w-[150px] h-[150px] object-cover rounded-full border border-[#6b7280]"
               onClick={() => {
-                document.getElementById("photoURL")?.click();
+                document.getElementById("file-image")?.click();
               }}
+              priority
             />
             {isUploadingImage && (
               <div className="absolute inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center rounded-full">
@@ -183,28 +218,39 @@ export default function Account() {
             <div className="relative">
               <button
                 type="button"
-                onClick={() => document.getElementById("photoURL")?.click()}
-                className="w-[150px] h-[150px] border rounded-full flex items-center justify-center cursor-pointer border-[#6b7280] hover:opacity-70 transition-opacity duration-300"
+                onClick={() => document.getElementById("file-image")?.click()}
+                className={`w-[150px] h-[150px] border rounded-full flex items-center justify-center ${
+                  isEditing
+                    ? "cursor-pointer border-[#6b7280] hover:opacity-70 transition-opacity duration-300"
+                    : "border-[#d1d5db]"
+                }`}
+                disabled={!isEditing}
               >
                 <SquareUser color="#6b7280" size={60} />
               </button>
             </div>
-            <label htmlFor="photoURL" className="text-[var(--primary-white)]">
+            <label htmlFor="file-image" className="text-[var(--primary-white)]">
               Profile Picture
             </label>
           </div>
         )}
 
-        <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-center">
-          Hi, {userData?.displayName || userData?.email} 👋
-        </h1>
+        {isLoading ? (
+          <NameSkeleton />
+        ) : (
+          <>
+            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-center">
+              Hi, {userData?.displayName || userData?.email} 👋
+            </h1>
 
-        <div className="flex gap-2 items-center justify-center text-center text-sm text-[var(--primary-light-gray)]">
-          <span className="flex items-center gap-2 text-sm text-gray-400 font-light bg-[var(--primary-light-gray)] px-2 py-1 rounded-md">
-            <Trophy size={12} color={"var(--primary-gold)"} />
-            {25} contributions
-          </span>
-        </div>
+            <div className="flex gap-2 items-center justify-center text-center text-sm text-[var(--primary-light-gray)]">
+              <span className="flex items-center gap-2 text-sm text-gray-400 font-light bg-[var(--primary-light-gray)] px-2 py-1 rounded-md">
+                <Trophy size={12} color={"var(--primary-gold)"} />
+                {25} contributions
+              </span>
+            </div>
+          </>
+        )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
@@ -243,7 +289,7 @@ export default function Account() {
           <div className="flex flex-col gap-2">
             <input
               type="file"
-              id="photoURL"
+              id="file-image"
               name="photoURL"
               accept="image/*"
               hidden={true}

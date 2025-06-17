@@ -123,7 +123,7 @@ const SearchForm = memo(function SearchForm({
       />
       {searchInput ? (
         <X
-          className="absolute right-[.625rem] top-[.625rem] cursor-pointer text-[var(--primary-white)] md:text-[var(--primary-gray)]"
+          className="absolute right-[.625rem] top-[.625rem] cursor-pointer text-[var(--primary-gray)] md:text-[var(--primary-white)]"
           onClick={clearSearch}
         />
       ) : (
