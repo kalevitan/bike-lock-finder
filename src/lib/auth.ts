@@ -1,19 +1,25 @@
 import { NextResponse } from "next/server";
 import { auth } from "./firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { v4 as uuidv4 } from "uuid";
-import { db } from "./firebase";
 import {
-  collection,
   addDoc,
+  collection,
   query,
   where,
   getDocs,
-  updateDoc,
-  doc,
-  Timestamp,
   deleteDoc,
+  setDoc,
+  doc,
 } from "firebase/firestore";
+import { db } from "./firebase";
+
+interface UserDocument {
+  email: string;
+  displayName: string;
+  createdAt: string;
+  photoURL?: string;
+  emailVerified: boolean;
+}
 
 export const signIn = async (email: string, password: string) => {
   try {
@@ -35,92 +41,6 @@ export const signIn = async (email: string, password: string) => {
   }
 };
 
-interface PendingRegistration {
-  email: string;
-  token: string;
-  createdAt: string;
-  expiresAt: string;
-}
-
-interface UserDocument {
-  email: string;
-  displayName: string;
-  photoURL?: string;
-  createdAt: string;
-}
-
-export async function createPendingRegistration(
-  email: string
-): Promise<{ token: string; isReverification: boolean }> {
-  // Check if email already exists in pending registrations
-  const pendingQuery = query(
-    collection(db, "pendingRegistrations"),
-    where("email", "==", email)
-  );
-  const pendingSnapshot = await getDocs(pendingQuery);
-
-  let token: string;
-  let isReverification = false;
-
-  if (!pendingSnapshot.empty) {
-    console.log("Found existing pending registration, updating...");
-    // Update existing pending registration
-    const pendingDoc = pendingSnapshot.docs[0];
-    const pendingData = pendingDoc.data() as PendingRegistration;
-    token = pendingData.token;
-    isReverification = true;
-
-    // Update expiration time
-    await updateDoc(doc(db, "pendingRegistrations", pendingDoc.id), {
-      createdAt: new Date().toISOString(),
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours
-    });
-  } else {
-    console.log("Creating new pending registration...");
-    // Create new pending registration
-    token = uuidv4();
-    await addDoc(collection(db, "pendingRegistrations"), {
-      email,
-      token,
-      createdAt: new Date().toISOString(),
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours
-    });
-  }
-
-  return { token, isReverification };
-}
-
-export async function verifyPendingRegistration(
-  token: string
-): Promise<string> {
-  // Find the pending registration with the given token
-  const pendingQuery = query(
-    collection(db, "pendingRegistrations"),
-    where("token", "==", token)
-  );
-  const pendingSnapshot = await getDocs(pendingQuery);
-
-  if (pendingSnapshot.empty) {
-    throw new Error("Invalid or expired verification link");
-  }
-
-  const pendingDoc = pendingSnapshot.docs[0];
-  const pendingData = pendingDoc.data() as PendingRegistration;
-
-  // Check if the token has expired
-  const expiresAt = new Date(pendingData.expiresAt);
-  if (expiresAt < new Date()) {
-    // Delete expired registration
-    await deleteDoc(doc(db, "pendingRegistrations", pendingDoc.id));
-    throw new Error("Verification link has expired");
-  }
-
-  // Delete the pending registration
-  await deleteDoc(doc(db, "pendingRegistrations", pendingDoc.id));
-
-  return pendingData.email;
-}
-
 export const signOut = async () => {
   try {
     await auth.signOut();
@@ -138,12 +58,30 @@ export async function createUserDocument(
   userData: UserDocument
 ): Promise<void> {
   try {
-    await addDoc(collection(db, "users"), {
+    const userDoc: {
+      uid: string;
+      email: string;
+      displayName: string;
+      createdAt: string;
+      updatedAt: string;
+      emailVerified: boolean;
+      photoURL?: string;
+    } = {
       uid,
-      ...userData,
+      email: userData.email,
+      displayName: userData.displayName,
+      createdAt: userData.createdAt,
       updatedAt: new Date().toISOString(),
       emailVerified: true,
-    });
+    };
+
+    // Only add photoURL if it exists
+    if (userData.photoURL) {
+      userDoc.photoURL = userData.photoURL;
+    }
+
+    // Use setDoc with the user's UID as the document ID
+    await setDoc(doc(db, "users", uid), userDoc);
   } catch (error) {
     console.error("Error creating user document:", error);
     throw new Error("Failed to create user profile");

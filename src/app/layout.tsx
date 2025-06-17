@@ -7,6 +7,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { AuthProvider } from "@/contexts/AuthProvider";
 import "./global.css";
+import { Toaster } from "sonner";
 
 import { Urbanist, Work_Sans } from "next/font/google";
 
@@ -44,12 +45,16 @@ export default function RouteLayout({
 }>) {
   return (
     <html lang="en" className="overflow-hidden">
-      <body className={`${urbanist.variable} ${workSans.variable}`}>
+      <body
+        className={`${urbanist.variable} ${workSans.variable}`}
+        style={{ overscrollBehaviorX: "auto" }}
+      >
         <AuthProvider>
           <MapProvider>
             <MarkerProvider>
               <ModalProvider>{children}</ModalProvider>
             </MarkerProvider>
+            <Toaster richColors position="top-center" />
           </MapProvider>
         </AuthProvider>
         <Analytics />

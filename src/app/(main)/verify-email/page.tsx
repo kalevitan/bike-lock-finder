@@ -1,59 +1,55 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { verifyPendingRegistration } from "@/lib/auth";
-import Loading from "@/app/loading";
-import { Mail, CheckCircle2, AlertCircle } from "lucide-react";
+import { useAuth } from "@/contexts/AuthProvider";
+import { auth } from "@/lib/firebase";
+import { sendEmailVerification } from "firebase/auth";
+import { Mail, AlertCircle, CheckCircle2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-export default function VerifyEmail() {
+export default function VerifyEmailPage() {
+  const { user } = useAuth();
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [isVerifying, setIsVerifying] = useState(true);
 
-  useEffect(() => {
-    const verifyToken = async () => {
-      const token = searchParams.get("token");
-      if (!token) {
-        setError("Invalid verification link");
-        setIsVerifying(false);
-        return;
-      }
+  const handleResend = async () => {
+    if (!user) {
+      setError("You must be logged in to resend a verification email.");
+      return;
+    }
 
-      try {
-        const email = await verifyPendingRegistration(token);
-        setSuccess("Email verified successfully!");
-        // Redirect to complete registration after a short delay
-        setTimeout(() => {
-          router.push(
-            `/complete-registration?email=${encodeURIComponent(email)}`
-          );
-        }, 2000);
-      } catch (err: any) {
-        setError(err.message || "Failed to verify email");
-      } finally {
-        setIsVerifying(false);
-      }
-    };
+    setIsSubmitting(true);
+    setError(null);
+    setSuccess(null);
 
-    verifyToken();
-  }, [searchParams, router]);
-
-  if (isVerifying) {
-    return <Loading />;
-  }
+    try {
+      await sendEmailVerification(user);
+      setSuccess("A new verification email has been sent to your address.");
+    } catch (err: any) {
+      setError(err.message || "Failed to resend verification email.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="w-full md:max-w-[26rem] md:mx-auto">
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-8 text-center">
         <div className="flex flex-col gap-3">
+          <div className="w-20 h-20 mx-auto rounded-full bg-[var(--primary-gray)]/20 flex items-center justify-center">
+            <Mail className="w-10 h-10 text-[var(--primary-white)]" />
+          </div>
           <h1 className="text-3xl font-bold text-[var(--primary-white)]">
-            Verify your email
+            Verify Your Email
           </h1>
           <p className="text-[var(--primary-white)] text-lg">
-            Please wait while we verify your email address.
+            A verification link has been sent to your email address. Please
+            click the link to activate your account.
+          </p>
+          <p className="text-sm text-[var(--primary-gray)]">
+            (You may need to check your spam folder)
           </p>
         </div>
 
@@ -71,23 +67,21 @@ export default function VerifyEmail() {
           </div>
         )}
 
-        {!error && !success && (
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col items-center gap-6 p-8 bg-[var(--primary-light-gray)]/10 rounded-lg border border-[var(--primary-gray)]/20">
-              <div className="w-20 h-20 rounded-full bg-[var(--primary-gray)]/20 flex items-center justify-center">
-                <Mail className="w-10 h-10 text-[var(--primary-white)]" />
-              </div>
-              <div className="flex flex-col gap-3 text-center">
-                <h2 className="text-xl font-semibold text-[var(--primary-white)]">
-                  Verifying your email
-                </h2>
-                <p className="text-[var(--primary-gray)] text-lg">
-                  Please wait while we verify your email address...
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
+        <div className="flex flex-col gap-4">
+          <button
+            onClick={handleResend}
+            disabled={isSubmitting}
+            className="button button--secondary"
+          >
+            {isSubmitting ? "Sending..." : "Resend Verification Email"}
+          </button>
+          <button
+            onClick={() => router.push("/login")}
+            className="text-sm text-[var(--primary-gray)] hover:underline"
+          >
+            Back to Login
+          </button>
+        </div>
       </div>
     </div>
   );

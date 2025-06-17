@@ -1,84 +1,78 @@
-import { useState, useEffect } from 'react';
-import { UserData } from '@/interfaces/user';
+import { useState, useEffect } from "react";
+import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "./firebase";
+
+export interface UserData {
+  uid: string;
+  email: string;
+  displayName?: string;
+  photoURL?: string;
+  createdAt: string;
+  updatedAt: string;
+  emailVerified: boolean;
+}
 
 // Simple in-memory cache
 const cache = new Map<string, UserData>();
 
 export async function getUserDocument(uid: string): Promise<UserData | null> {
+  if (!uid) return null;
   try {
-    // Check cache first
-    if (cache.has(uid)) {
-      return cache.get(uid) || null;
+    const userDocRef = doc(db, "users", uid);
+    const userDocSnap = await getDoc(userDocRef);
+    if (userDocSnap.exists()) {
+      return userDocSnap.data() as UserData;
+    } else {
+      console.warn("No user document found for UID:", uid);
+      return null;
     }
-
-    const response = await fetch(`/api/users?uid=${uid}`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch user document');
-    }
-    const data = await response.json();
-
-    // Store in cache
-    cache.set(uid, data);
-    return data;
   } catch (error) {
-    console.error('Error fetching user document:', error);
+    console.error("Error fetching user document:", error);
     return null;
   }
 }
 
 export async function createUserDocument(userData: UserData): Promise<boolean> {
   if (!userData.uid) {
-    throw new Error('User ID is required');
+    throw new Error("User ID is required");
   }
 
   try {
-    const response = await fetch('/api/users', {
-      method: 'POST',
+    const response = await fetch("/api/users", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(userData),
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to create user document');
+      throw new Error(errorData.message || "Failed to create user document");
     }
 
     // Update cache
     cache.set(userData.uid, userData);
     return true;
   } catch (error) {
-    console.error('Error creating user document:', error);
+    console.error("Error creating user document:", error);
     return false;
   }
 }
 
-export async function updateUserDocument(uid: string, userData: Partial<UserData>): Promise<boolean> {
+export async function updateUserDocument(
+  uid: string,
+  data: Partial<UserData>
+): Promise<void> {
   try {
-    const response = await fetch(`/api/users?uid=${uid}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData),
+    const userDocRef = doc(db, "users", uid);
+    await updateDoc(userDocRef, {
+      ...data,
+      updatedAt: serverTimestamp(),
     });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to update user document');
-    }
-
-    // Update cache
-    const existingData = cache.get(uid);
-    if (existingData) {
-      cache.set(uid, { ...existingData, ...userData });
-    }
-
-    return true;
   } catch (error) {
-    console.error('Error updating user document:', error);
-    return false;
+    console.error("Error updating user document:", error);
+    throw new Error("Failed to update user profile");
   }
 }
 
@@ -103,7 +97,7 @@ export function useUserDocument(uid: string | null) {
           setIsError(true);
         }
       } catch (error) {
-        console.error('Error in useUserDocument:', error);
+        console.error("Error in useUserDocument:", error);
         setIsError(true);
       } finally {
         setIsLoading(false);
@@ -125,7 +119,7 @@ export function useUserDocument(uid: string | null) {
         setIsError(true);
       }
     } catch (error) {
-      console.error('Error in mutate:', error);
+      console.error("Error in mutate:", error);
       setIsError(true);
     } finally {
       setIsLoading(false);

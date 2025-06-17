@@ -73,6 +73,10 @@ input {
   border-radius: 0.25rem;
 }
 
+input::placeholder {
+  color: var(--primary-gray);
+}
+
 .button {
   border-radius: 0.25rem;
   border: 0.0625rem solid transparent;

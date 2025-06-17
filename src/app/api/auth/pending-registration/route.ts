@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createPendingRegistration } from "@/lib/auth";
 import { Resend } from "resend";
+import RegistrationEmail from "./_components/RegistrationEmail";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -34,30 +35,11 @@ export async function POST(request: Request) {
 
       // Send verification email using Resend
       try {
-        const verificationLink = `https://bike-lock-finder.vercel.app/verify-email?token=${token}`;
+        const verificationLink = `${process.env.NEXT_PUBLIC_BASE_URL}/verify-email?token=${token}`;
+        const emailConfig = RegistrationEmail({ verificationLink, email });
 
         console.log("Sending verification email...");
-        await resend.emails.send({
-          from: "Bike Lock Finder <noreply@bikelockfinder.com>",
-          to: email,
-          subject: "Verify your email address",
-          html: `
-            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-              <h1 style="color: #333;">Welcome to Bike Lock Finder!</h1>
-              <p>Please verify your email address by clicking the button below:</p>
-              <div style="text-align: center; margin: 30px 0;">
-                <a href="${verificationLink}"
-                   style="background-color: #4F46E5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">
-                  Verify Email Address
-                </a>
-              </div>
-              <p>Or copy and paste this link into your browser:</p>
-              <p style="color: #666; word-break: break-all;">${verificationLink}</p>
-              <p>This link will expire in 24 hours.</p>
-              <p>If you didn't request this email, you can safely ignore it.</p>
-            </div>
-          `,
-        });
+        await resend.emails.send(emailConfig);
         console.log("Verification email sent");
 
         return NextResponse.json({

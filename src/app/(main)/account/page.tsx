@@ -11,16 +11,10 @@ import { uploadAndCompressImage } from "@/lib/storage";
 import Loading from "@/app/loading";
 import Image from "next/image";
 import { SquareUser, Trophy } from "lucide-react";
-
-interface UserData {
-  uid: string;
-  email: string;
-  displayName?: string;
-  photoURL?: string;
-  createdAt: string;
-  updatedAt: string;
-  emailVerified: boolean;
-}
+import { getUserDocument, updateUserDocument } from "@/lib/users";
+import type { UserData } from "@/lib/users";
+import { Camera, Check, Edit, LogOut, ShieldCheck, X } from "lucide-react";
+import { AlertCircle, CheckCircle2 } from "lucide-react";
 
 function NameSkeleton() {
   return (
@@ -44,40 +38,53 @@ export default function Account() {
     displayName: "",
   });
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [displayName, setDisplayName] = useState("");
 
-  // Redirect if not authenticated
   useEffect(() => {
+    console.log("AccountPage: useEffect triggered.", {
+      authLoading,
+      user: {
+        uid: user?.uid,
+        emailVerified: user?.emailVerified,
+      },
+    });
+    // Redirect unauthenticated users
     if (!authLoading && !user) {
+      console.log("AccountPage: No user found, redirecting to /login.");
       router.push("/login");
+      return;
     }
-  }, [authLoading, user, router]);
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (!user) return;
-
-      try {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          const data = userDoc.data() as UserData;
-          setUserData(data);
-          setFormData({
-            displayName: data.displayName || "",
-          });
-        }
-      } catch (err) {
-        console.error("Error fetching user data:", err);
-        setError("Failed to load user data");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    // Redirect unverified users
+    if (user && !user.emailVerified) {
+      console.log(
+        "AccountPage: User not verified, redirecting to /verify-email."
+      );
+      router.push("/verify-email");
+      return;
+    }
 
     if (user) {
+      const fetchUserData = async () => {
+        setIsLoading(true);
+        try {
+          const data = await getUserDocument(user.uid);
+          setUserData(data);
+          setDisplayName(data?.displayName || "");
+          setFormData({
+            displayName: data?.displayName || "",
+          });
+        } catch (error) {
+          console.error("Failed to fetch user document:", error);
+          setError("Failed to load profile. Please try again.");
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
       fetchUserData();
     }
-  }, [user]);
+  }, [user, authLoading, router]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -87,8 +94,7 @@ export default function Account() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     if (!user || !userData) return;
 
     setIsSaving(true);
@@ -109,7 +115,7 @@ export default function Account() {
       }
 
       // Update Firestore
-      await updateDoc(doc(db, "users", user.uid), updates);
+      await updateUserDocument(user.uid, updates);
 
       // Update local state
       setUserData((prev) => (prev ? { ...prev, ...updates } : null));
@@ -124,46 +130,26 @@ export default function Account() {
   };
 
   const handleSignOut = async () => {
-    try {
-      await signOut(auth);
-      router.push("/login");
-    } catch (err) {
-      console.error("Error signing out:", err);
-      setError("Failed to sign out");
-    }
+    await signOut(auth);
+    router.push("/login");
   };
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target || !e.target.files) return;
-
-    const file = e.target.files[0];
-    if (!file || !user) return;
-
-    setIsUploadingImage(true);
-    setError(null);
-    try {
-      const downloadURL = await uploadAndCompressImage(file, "users");
-
-      // Update the user's profile
-      await updateProfile(user, {
-        photoURL: downloadURL,
-      });
-
-      // Update Firestore
-      await updateDoc(doc(db, "users", user.uid), {
-        photoURL: downloadURL,
-        updatedAt: new Date().toISOString(),
-      });
-
-      // Update local state
-      setUserData((prev) => (prev ? { ...prev, photoURL: downloadURL } : null));
-      setPreviewUrl(downloadURL);
-      setSuccess("Profile picture updated successfully!");
-    } catch (err: any) {
-      console.error("Error uploading image:", err);
-      setError(err.message || "Failed to upload image");
-    } finally {
-      setIsUploadingImage(false);
+    if (isEditing && e.target.files?.[0]) {
+      const file = e.target.files[0];
+      try {
+        const photoURL = await uploadAndCompressImage(
+          file,
+          `profile-images/${user?.uid}`
+        );
+        if (user && userData) {
+          await updateUserDocument(user.uid, { ...userData, photoURL });
+          setUserData({ ...userData, photoURL });
+          setSuccess("Profile picture updated!");
+        }
+      } catch (err) {
+        setError("Failed to upload image. Please try again.");
+      }
     }
   };
 
@@ -179,165 +165,120 @@ export default function Account() {
     return <Loading />;
   }
 
+  if (!userData) {
+    return (
+      <div className="text-center text-[var(--primary-white)]">
+        Could not load user profile.
+      </div>
+    );
+  }
+
   return (
     <div className="w-full md:max-w-[26rem] md:mx-auto">
       <div className="flex flex-col gap-6">
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-red-800">{error}</p>
+          <div className="flex items-start gap-3 p-4 bg-red-950/50 border border-red-800/50 rounded-lg">
+            <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+            <p className="text-red-200">{error}</p>
           </div>
         )}
 
         {success && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <p className="text-green-800">{success}</p>
+          <div className="flex items-start gap-3 p-4 bg-green-950/50 border border-green-800/50 rounded-lg">
+            <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+            <p className="text-green-200">{success}</p>
           </div>
         )}
 
-        {previewUrl || userData?.photoURL ? (
-          <div className="relative m-auto overflow-hidden cursor-pointer hover:opacity-70 transition-opacity duration-300">
-            <Image
-              src={previewUrl || userData?.photoURL || ""}
-              alt="Preview"
-              width={150}
-              height={150}
-              className="w-[150px] h-[150px] object-cover rounded-full border border-[#6b7280]"
-              onClick={() => {
-                document.getElementById("file-image")?.click();
-              }}
-              priority
-            />
-            {isUploadingImage && (
-              <div className="absolute inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center rounded-full">
-                <div className="text-[var(--primary-white)]">Uploading...</div>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="flex flex-col gap-2 justify-center items-center">
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => document.getElementById("file-image")?.click()}
-                className={`w-[150px] h-[150px] border rounded-full flex items-center justify-center ${
-                  isEditing
-                    ? "cursor-pointer border-[#6b7280] hover:opacity-70 transition-opacity duration-300"
-                    : "border-[#d1d5db]"
-                }`}
-                disabled={!isEditing}
-              >
-                <SquareUser color="#6b7280" size={60} />
-              </button>
-            </div>
-            <label htmlFor="file-image" className="text-[var(--primary-white)]">
-              Profile Picture
-            </label>
-          </div>
-        )}
-
-        {isLoading ? (
-          <NameSkeleton />
-        ) : (
-          <>
-            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-center">
-              Hi, {userData?.displayName || userData?.email} 👋
-            </h1>
-
-            <div className="flex gap-2 items-center justify-center text-center text-sm text-[var(--primary-light-gray)]">
-              <span className="flex items-center gap-2 text-sm text-gray-400 font-light bg-[var(--primary-light-gray)] px-2 py-1 rounded-md">
-                <Trophy size={12} color={"var(--primary-gold)"} />
-                {25} contributions
-              </span>
-            </div>
-          </>
-        )}
-
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <label
-              htmlFor="displayName"
-              className="text-[var(--primary-white)]"
-            >
-              Display Name
-            </label>
-            <input
-              type="text"
-              id="displayName"
-              name="displayName"
-              value={formData.displayName}
-              onChange={handleInputChange}
-              disabled={!isEditing}
-              className="rounded-[0.25rem]"
-            />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <label htmlFor="email" className="text-[var(--primary-white)]">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={userData?.email || user?.email || ""}
-              disabled
-              className={`rounded-[0.25rem] bg-gray-50 ${
-                isEditing ? "cursor-not-allowed" : ""
-              }`}
-            />
-          </div>
-
-          <div className="flex flex-col gap-2">
+        <div className="flex flex-col md:flex-row items-center gap-8 bg-[var(--primary-light-gray)]/10 p-8 rounded-lg border border-[var(--primary-gray)]/20">
+          <div className="relative">
             <input
               type="file"
               id="file-image"
-              name="photoURL"
               accept="image/*"
-              hidden={true}
+              className="hidden"
               onChange={handleFileSelect}
+              disabled={!isEditing}
             />
-          </div>
-
-          <div className="flex flex-col md:flex-row gap-4">
-            {!isEditing ? (
-              <button
-                type="button"
-                onClick={() => setIsEditing(true)}
-                className="button flex-1 text-[var(--primary-white)]"
+            <Image
+              src={userData.photoURL || "/images/user-placeholder.png"}
+              alt="Profile Picture"
+              width={150}
+              height={150}
+              className="w-[150px] h-[150px] object-cover rounded-full border border-[var(--primary-gray)]"
+            />
+            {isEditing && (
+              <label
+                htmlFor="file-image"
+                className="absolute bottom-0 right-0 bg-[var(--primary-white)] text-black p-2 rounded-full cursor-pointer hover:bg-gray-200"
               >
-                Edit Profile
-              </button>
+                <Camera size={20} />
+              </label>
+            )}
+          </div>
+          <div className="flex flex-col gap-3 text-center md:text-left">
+            {isEditing ? (
+              <input
+                type="text"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                className="text-3xl font-bold bg-transparent border-b-2 border-[var(--primary-gray)] focus:outline-none focus:border-[var(--primary-white)] text-[var(--primary-white)]"
+              />
             ) : (
+              <h1 className="text-3xl font-bold text-[var(--primary-white)]">
+                {userData.displayName}
+              </h1>
+            )}
+
+            <p className="text-lg text-[var(--primary-gray)]">
+              {userData.email}
+            </p>
+            <div className="flex items-center gap-2 justify-center md:justify-start text-[var(--primary-gray)]">
+              <ShieldCheck size={20} className="text-green-500" />
+              <span>Verified Member</span>
+            </div>
+            <div className="flex items-center gap-2 justify-center md:justify-start text-[var(--primary-gray)]">
+              <Trophy size={20} />
+              <span>0 Contributions</span>
+            </div>
+          </div>
+          <div className="md:ml-auto flex flex-col md:flex-row gap-4">
+            {isEditing ? (
               <>
                 <button
-                  type="submit"
+                  onClick={handleSubmit}
                   disabled={isSaving}
-                  className="button flex-1 text-[var(--primary-white)]"
+                  className="button button--secondary flex items-center gap-2"
                 >
+                  <Check size={20} />
                   {isSaving ? "Saving..." : "Save"}
                 </button>
                 <button
-                  type="button"
-                  onClick={() => {
-                    setIsEditing(false);
-                    setFormData({
-                      displayName: userData?.displayName || "",
-                    });
-                  }}
-                  className="button button--secondary flex-1 text-[var(--primary-white)]"
+                  onClick={() => setIsEditing(false)}
+                  className="button button--secondary flex items-center gap-2"
                 >
+                  <X size={20} />
                   Cancel
                 </button>
               </>
+            ) : (
+              <button
+                onClick={() => setIsEditing(true)}
+                className="button button--secondary flex items-center gap-2"
+              >
+                <Edit size={20} />
+                Edit Profile
+              </button>
             )}
             <button
-              type="button"
               onClick={handleSignOut}
-              className="button button--secondary flex-1 text-[var(--primary-white)]"
+              className="button button--secondary flex items-center gap-2"
             >
+              <LogOut size={20} />
               Sign Out
             </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

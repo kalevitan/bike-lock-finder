@@ -1,31 +1,45 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
   signInWithEmailAndPassword,
   signOut,
-  fetchSignInMethodsForEmail,
+  updateProfile,
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useAuth } from "@/contexts/AuthProvider";
 import Loading from "@/app/loading";
 import { useModal } from "@/contexts/ModalProvider";
 import { CheckCircle2, AlertCircle } from "lucide-react";
+import { createUserDocument } from "@/lib/auth";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [formMode, setFormMode] = useState("login");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, isLoading: authLoading } = useAuth();
   const { openModal } = useModal();
 
-  // Redirect if already authenticated
   useEffect(() => {
-    if (!authLoading && user) {
+    // Check for message in URL
+    const message = searchParams.get("message");
+    if (message) {
+      setError(decodeURIComponent(message));
+    }
+  }, [searchParams]);
+
+  // Redirect if already authenticated and verified
+  useEffect(() => {
+    if (!authLoading && user && user.emailVerified) {
       router.push("/account");
     }
   }, [authLoading, user, router]);
@@ -33,65 +47,51 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
+    setSuccess(null);
     setIsSubmitting(true);
 
     if (formMode === "register") {
       try {
-        // Check if email already exists in Firebase Auth
-        const methods = await fetchSignInMethodsForEmail(auth, email);
-        if (methods.length > 0) {
-          setError(
-            "An account with this email already exists. Please try logging in instead."
-          );
-          setFormMode("login");
-          return;
-        }
+        // 1. Create user with email and password
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        const newUser = userCredential.user;
 
-        // Create pending registration
-        const response = await fetch("/api/auth/pending-registration", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
+        // 2. Update user's profile with display name
+        await updateProfile(newUser, { displayName });
+
+        // 3. Send Firebase verification email
+        await sendEmailVerification(newUser);
+
+        // 4. Create user document in Firestore
+        await createUserDocument(newUser.uid, {
+          email,
+          displayName,
+          createdAt: new Date().toISOString(),
+          emailVerified: false, // Set to false initially
         });
 
-        if (!response.ok) {
-          const data = await response.json();
-          throw new Error(
-            data.message || "Failed to create pending registration"
-          );
-        }
+        // 5. Sign the user out to force them to verify
+        await signOut(auth);
 
-        const data = await response.json();
-
-        // Show success message
-        setError(null);
+        // 6. Show success message
         setFormMode("login");
         setEmail("");
         setPassword("");
-        openModal(
-          <div className="flex flex-col items-center gap-6 p-4">
-            <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
-              <CheckCircle2 className="w-8 h-8 text-green-600" />
-            </div>
-            <div className="flex flex-col gap-3 text-center">
-              <h3 className="text-xl font-semibold text-[var(--primary-gray)]">
-                {data.isReverification
-                  ? "Verification email resent!"
-                  : "Check your email!"}
-              </h3>
-              <p className="text-[var(--primary-gray)]">
-                We've sent a verification link to {email}. Click the link to
-                complete your registration. If you don't see the email, check
-                your spam folder.
-              </p>
-            </div>
-          </div>,
-          ""
+        setDisplayName("");
+        setSuccess(
+          "Registration successful! Please check your email to verify your account before logging in."
         );
       } catch (err: any) {
-        setError(err.message);
+        if (err.code === "auth/email-already-in-use") {
+          setError("An account with this email already exists. Please log in.");
+          setFormMode("login");
+        } else {
+          setError(err.message || "Failed to create account.");
+        }
       } finally {
         setIsSubmitting(false);
       }
@@ -108,60 +108,34 @@ export default function Login() {
 
       // Check if user is verified
       if (!userCredential.user.emailVerified) {
-        // Sign out the user since they're not verified
         await signOut(auth);
         setError(
-          "Please verify your email before logging in. Check your inbox for the verification link."
+          "Your email is not verified. Please check your inbox for the verification link."
         );
         return;
       }
 
       router.push("/account");
     } catch (err: any) {
-      // Clear any existing error first
-      setError(null);
-
-      // Handle specific Firebase error codes
-      switch (err.code) {
-        case "auth/invalid-credential":
-        case "auth/wrong-password":
-        case "auth/user-not-found":
-          setError("Invalid email or password. Please try again.");
-          break;
-        case "auth/too-many-requests":
-          setError(
-            "Too many failed attempts. Please try again later or reset your password."
-          );
-          break;
-        case "auth/user-disabled":
-          setError("This account has been disabled. Please contact support.");
-          break;
-        case "auth/invalid-email":
-          setError("Please enter a valid email address.");
-          break;
-        default:
-          setError("An error occurred during login. Please try again.");
-      }
+      setError("Invalid email or password. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Show loading state while auth is initializing
   if (authLoading) {
     return <Loading />;
   }
 
-  // Don't render anything if we're authenticated (will redirect)
-  if (user) {
-    return null;
+  if (user && user.emailVerified) {
+    return null; // Will be redirected by useEffect
   }
 
   return (
     <div className="w-full md:max-w-[26rem] md:mx-auto">
       <div className="flex flex-col text-center">
         <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight pb-6">
-          {formMode === "login" ? "Login" : "Sign up"}
+          {formMode === "login" ? "Login" : "Create an Account"}
         </h1>
 
         <form method="post" onSubmit={handleSubmit} className="w-full">
@@ -170,6 +144,33 @@ export default function Login() {
               <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
                 <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
                 <p className="text-red-800">{error}</p>
+              </div>
+            )}
+            {success && (
+              <div className="flex items-start gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <p className="text-green-800">{success}</p>
+              </div>
+            )}
+
+            {formMode === "register" && (
+              <div className="flex flex-col text-left gap-2">
+                <label
+                  htmlFor="displayName"
+                  className="text-[var(--primary-white)]"
+                >
+                  Display Name
+                </label>
+                <input
+                  type="text"
+                  name="displayName"
+                  id="displayName"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  className="rounded-[4px]"
+                  placeholder="Enter your display name"
+                  required
+                />
               </div>
             )}
 
@@ -189,26 +190,21 @@ export default function Login() {
               />
             </div>
 
-            {formMode === "login" && (
-              <div className="flex flex-col text-left gap-2">
-                <label
-                  htmlFor="password"
-                  className="text-[var(--primary-white)]"
-                >
-                  Password
-                </label>
-                <input
-                  type="password"
-                  name="password"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="rounded-[4px]"
-                  placeholder="Enter your password"
-                  required
-                />
-              </div>
-            )}
+            <div className="flex flex-col text-left gap-2">
+              <label htmlFor="password" className="text-[var(--primary-white)]">
+                Password
+              </label>
+              <input
+                type="password"
+                name="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="rounded-[4px]"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
 
             <button
               className="button mt-6 text-[var(--primary-white)]"
@@ -218,8 +214,8 @@ export default function Login() {
               {isSubmitting
                 ? "Please wait..."
                 : formMode === "login"
-                ? "Login"
-                : "Send verification email"}
+                  ? "Login"
+                  : "Create Account"}
             </button>
           </div>
           <div className="pt-6 pb-4 text-center text-[var(--primary-white)]">
@@ -229,6 +225,7 @@ export default function Login() {
                 onClick={() => {
                   setFormMode("register");
                   setError(null);
+                  setSuccess(null);
                 }}
               >
                 Don't have an account? Sign up here.
@@ -239,6 +236,7 @@ export default function Login() {
                 onClick={() => {
                   setFormMode("login");
                   setError(null);
+                  setSuccess(null);
                 }}
               >
                 Already have an account? Login here.
