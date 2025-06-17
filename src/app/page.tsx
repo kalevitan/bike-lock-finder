@@ -1,20 +1,32 @@
-'use client';
+"use client";
 
-import { useCallback, useState } from 'react';
-import { APIProvider, Map } from '@vis.gl/react-google-maps';
-import Header from '@/components/header/Header';
-import { useMapContext } from '@/contexts/MapProvider';
-import { getLocation } from '@/utils/locationutils';
+import { useCallback, useState } from "react";
+import { APIProvider, Map } from "@vis.gl/react-google-maps";
+import Header from "@/components/header/Header";
+import { useMapContext } from "@/contexts/MapProvider";
+import { getLocation } from "@/utils/locationutils";
 import Sidebar from "@/components/sidebar/Sidebar";
 import AddLock from "@/components/addlock/AddLock";
 import MapContent from "@/components/map/MapContent";
-import { MarkerProps } from '@/interfaces/markers';
-import { useModal } from '@/contexts/ModalProvider';
-import { useIsMobile } from './hooks/useIsMobile';
+import { MarkerProps } from "@/interfaces/markers";
+import { useModal } from "@/contexts/ModalProvider";
+import { useIsMobile } from "./hooks/useIsMobile";
 
 export default function Points() {
-  const { apiKey, libraries, version, mapId, mapTypeId, defaultCenter, defaultZoom } = useMapContext();
-  const [location, setLocation] = useState<{ lat: number; lng: number; zoom?: number } | null>(null);
+  const {
+    apiKey,
+    libraries,
+    version,
+    mapId,
+    mapTypeId,
+    defaultCenter,
+    defaultZoom,
+  } = useMapContext();
+  const [location, setLocation] = useState<{
+    lat: number;
+    lng: number;
+    zoom?: number;
+  } | null>(null);
   const [selectedPlace, setSelectedPlace] =
     useState<google.maps.places.PlaceResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -28,20 +40,27 @@ export default function Points() {
       .catch((error) => setError(error.message));
   }, []);
 
-  const handleSearch = useCallback((query: google.maps.places.PlaceResult | null) => {
-    setSelectedPlace(query);
-  }, []);
+  const handleSearch = useCallback(
+    (query: google.maps.places.PlaceResult | null) => {
+      setSelectedPlace(query);
+    },
+    []
+  );
 
   const handleRecenter = useCallback(() => {
     const cords = { ...defaultCenter, zoom: defaultZoom };
     setLocation(cords);
   }, [defaultCenter, defaultZoom]);
 
-  const handleEditPoint = useCallback((pointData: MarkerProps) => {
-    if (!pointData.id) throw new Error("Point data must include an ID for editing.");
-    setEditPointData(pointData);
-    openModal(<AddLock pointData={pointData} formMode="edit" />, 'Edit Lock');
-  }, [openModal]);
+  const handleEditPoint = useCallback(
+    (pointData: MarkerProps) => {
+      if (!pointData.id)
+        throw new Error("Point data must include an ID for editing.");
+      setEditPointData(pointData);
+      openModal(<AddLock pointData={pointData} formMode="edit" />, "Edit Lock");
+    },
+    [openModal]
+  );
 
   const handleMarkerClick = useCallback((id: string) => {
     setOpenMarkerId(id);
@@ -53,13 +72,13 @@ export default function Points() {
 
   const handleAddLock = useCallback(() => {
     setEditPointData(null);
-    openModal(<AddLock formMode="add" />, 'Add Lock');
+    openModal(<AddLock formMode="add" />, "Add Lock");
   }, [openModal]);
 
   return (
     <APIProvider apiKey={apiKey} libraries={libraries} version={version}>
       {isMobile && (
-        <Header onSearch={handleSearch} onRecenter={handleRecenter}/>
+        <Header onSearch={handleSearch} onRecenter={handleRecenter} />
       )}
 
       <Sidebar
@@ -70,17 +89,20 @@ export default function Points() {
       />
       <main className="h-screen overflow-hidden">
         <div className="absolute w-full h-full">
-          {error && <div className="error fixed bg-red-50 mb-8 p-4">{error}</div>}
+          {error && (
+            <div className="error fixed bg-red-50 mb-8 p-4">{error}</div>
+          )}
           <div id="map" className="w-full h-full">
             <Map
               mapId={mapId}
               mapTypeId={mapTypeId}
               defaultCenter={defaultCenter}
               defaultZoom={defaultZoom}
-              gestureHandling={'greedy'}
+              gestureHandling={"greedy"}
               disableDefaultUI={true}
               fullscreenControl={true}
-              onClick={() => setOpenMarkerId(null)}>
+              onClick={() => setOpenMarkerId(null)}
+            >
               <MapContent
                 location={location}
                 place={selectedPlace}
@@ -94,5 +116,5 @@ export default function Points() {
         </div>
       </main>
     </APIProvider>
-  )
+  );
 }

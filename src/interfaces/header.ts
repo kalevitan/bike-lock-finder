@@ -1,6 +1,6 @@
 export interface HeaderProps {
-  onSearch: (place: google.maps.places.PlaceResult | null) => void;
-  onRecenter: () => void;
+  onSearch?: (place: google.maps.places.PlaceResult | null) => void;
+  onRecenter?: () => void;
 }
 
 export interface NavLinkProps {
@@ -11,5 +11,5 @@ export interface NavLinkProps {
 
 export interface SearchWrapperProps extends HeaderProps {
   searchInput: string;
-  setSearchInput: React.Dispatch<React.SetStateAction<string>>;
+  setSearchInput: (input: string) => void;
 }

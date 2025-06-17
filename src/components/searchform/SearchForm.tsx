@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useRef, useEffect, useState, memo } from 'react';
-import { useMapsLibrary } from '@vis.gl/react-google-maps';
-import { Search, X } from 'lucide-react';
+import React, { useRef, useEffect, useState, memo } from "react";
+import { useMapsLibrary } from "@vis.gl/react-google-maps";
+import { Search, X } from "lucide-react";
 
 interface Props {
   onSearch?: (place: google.maps.places.PlaceResult | null) => void;
@@ -13,11 +13,18 @@ interface Props {
   setSearchInput?: (input: string) => void;
 }
 
-const SearchForm = memo(function SearchForm({ onSearch, onRecenter, searchInput, setSearchInput, classes, shouldFocus }: Props) {
+const SearchForm = memo(function SearchForm({
+  onSearch,
+  onRecenter,
+  searchInput,
+  setSearchInput,
+  classes,
+  shouldFocus,
+}: Props) {
   const [placeAutocomplete, setPlaceAutocomplete] =
     useState<google.maps.places.Autocomplete | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const placesLibrary = useMapsLibrary('places');
+  const placesLibrary = useMapsLibrary("places");
   const [isLibraryLoaded, setIsLibraryLoaded] = useState(false);
 
   useEffect(() => {
@@ -37,17 +44,20 @@ const SearchForm = memo(function SearchForm({ onSearch, onRecenter, searchInput,
     );
 
     const options = {
-      fields: ['geometry', 'name', 'formatted_address'],
+      fields: ["geometry", "name", "formatted_address"],
       bounds,
       strictBounds: true,
-      types: ['establishment']
+      types: ["establishment"],
     };
 
     try {
-      const autocomplete = new placesLibrary.Autocomplete(inputRef.current, options);
+      const autocomplete = new placesLibrary.Autocomplete(
+        inputRef.current,
+        options
+      );
       setPlaceAutocomplete(autocomplete);
     } catch (error) {
-      console.error('Error initializing autocomplete:', error);
+      console.error("Error initializing autocomplete:", error);
     }
   }, [placesLibrary, isLibraryLoaded]);
 
@@ -56,7 +66,7 @@ const SearchForm = memo(function SearchForm({ onSearch, onRecenter, searchInput,
       return;
     }
 
-    const listener = placeAutocomplete.addListener('place_changed', () => {
+    const listener = placeAutocomplete.addListener("place_changed", () => {
       const place = placeAutocomplete.getPlace();
       if (place && place.geometry) {
         onSearch?.(place);
@@ -71,8 +81,8 @@ const SearchForm = memo(function SearchForm({ onSearch, onRecenter, searchInput,
   }, [onSearch, placeAutocomplete]);
 
   useEffect(() => {
-    if (searchInput === '' && placeAutocomplete) {
-      placeAutocomplete.set('place', null);
+    if (searchInput === "" && placeAutocomplete) {
+      placeAutocomplete.set("place", null);
     }
   }, [searchInput, placeAutocomplete]);
 
@@ -87,9 +97,9 @@ const SearchForm = memo(function SearchForm({ onSearch, onRecenter, searchInput,
   };
 
   const clearSearch = () => {
-    setSearchInput?.('');
+    setSearchInput?.("");
     if (placeAutocomplete) {
-      placeAutocomplete.set('place', null);
+      placeAutocomplete.set("place", null);
       const bounds = new google.maps.LatLngBounds(
         new google.maps.LatLng(35.4, -82.7),
         new google.maps.LatLng(35.7, -82.4)
@@ -108,13 +118,16 @@ const SearchForm = memo(function SearchForm({ onSearch, onRecenter, searchInput,
         name="search"
         value={searchInput}
         onChange={(e) => setSearchInput?.(e.target.value)}
-        className="w-full rounded-[0.25rem] h-[45px] focus:outline-none"
-        placeholder='Search locations...'
+        className="w-full rounded-[0.25rem] h-[45px] focus:outline-none bg-white text-black placeholder:text-[var(--primary-gray)] sm:bg-[var(--primary-light-gray)] sm:text-[var(--primary-white)]"
+        placeholder="Search locations..."
       />
       {searchInput ? (
-        <X className="absolute right-[.625rem] top-[.625rem] cursor-pointer" color="var(--primary-gray)" onClick={clearSearch} />
+        <X
+          className="absolute right-[.625rem] top-[.625rem] cursor-pointer text-[var(--primary-gray)] md:text-[var(--primary-white)]"
+          onClick={clearSearch}
+        />
       ) : (
-        <Search className="w-6 h-6 absolute right-2 top-1/2 -translate-y-1/2" color="var(--primary-gray)" />
+        <Search className="w-6 h-6 absolute right-2 top-1/2 -translate-y-1/2 text-[var(--primary-gray)] md:text-[var(--primary-white)]" />
       )}
     </div>
   );

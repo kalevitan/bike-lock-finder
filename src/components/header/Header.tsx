@@ -1,19 +1,20 @@
-'use client';
+"use client";
 
 import React, { useState } from "react";
-import { usePathname } from 'next/navigation';
+import { usePathname } from "next/navigation";
 import { NavLink } from "./NavLink";
 import SearchForm from "@/components/searchform/SearchForm";
 import { CircleX, RotateCcw, Map } from "lucide-react";
-import BikeLockIcon from '@/components/icons/bike-lock-icon';
+import BikeLockIcon from "@/components/icons/bike-lock-icon";
 import { Search as SearchIcon } from "lucide-react";
 import classes from "./header.module.css";
 import { HeaderProps } from "@/interfaces/header";
 
 export default function Header({ onSearch, onRecenter }: HeaderProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchInput, setSearchInput] = useState('');
+  const [searchInput, setSearchInput] = useState("");
   const pathname = usePathname();
+  const isMapPage = pathname === "/";
 
   return (
     <header className="fixed top-0 z-10 w-full flex p-4 items-center text-white bg-[var(--primary-gray)]">
@@ -30,16 +31,27 @@ export default function Header({ onSearch, onRecenter }: HeaderProps) {
 
       <div className="flex w-full justify-end">
         <div className="search-wrapper flex gap-4 items-center">
-          {pathname === '/' ? (
+          {isMapPage ? (
             <>
               {isSearchOpen ? (
-                <CircleX className="sm:hidden cursor-pointer" onClick={() => { setIsSearchOpen(false); setSearchInput(''); }}>
+                <CircleX
+                  className="sm:hidden cursor-pointer"
+                  onClick={() => {
+                    setIsSearchOpen(false);
+                    setSearchInput("");
+                  }}
+                >
                   <span className="sr-only">Close</span>
                 </CircleX>
               ) : (
-                <SearchIcon className="sm:hidden cursor-pointer" onClick={() => setIsSearchOpen(true)} />
+                <SearchIcon
+                  className="sm:hidden cursor-pointer"
+                  onClick={() => setIsSearchOpen(true)}
+                />
               )}
-              <form className={`${classes.search_form} ${isSearchOpen ? classes.open : ''}`}>
+              <form
+                className={`${classes.search_form} ${isSearchOpen ? classes.open : ""}`}
+              >
                 <SearchForm
                   onSearch={onSearch}
                   onRecenter={onRecenter}
@@ -50,8 +62,12 @@ export default function Header({ onSearch, onRecenter }: HeaderProps) {
                 />
               </form>
 
-              <RotateCcw className="md:hidden cursor-pointer" onClick={onRecenter} />
-              {/* <button className="button hidden md:inline-block" onClick={onRecenter}>Re-center</button> */}
+              {onRecenter && (
+                <RotateCcw
+                  className="md:hidden cursor-pointer"
+                  onClick={onRecenter}
+                />
+              )}
             </>
           ) : (
             <NavLink href="/">
@@ -61,7 +77,6 @@ export default function Header({ onSearch, onRecenter }: HeaderProps) {
           )}
         </div>
       </div>
-
     </header>
-  )
+  );
 }

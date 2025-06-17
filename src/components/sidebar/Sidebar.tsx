@@ -1,18 +1,26 @@
-import { useState } from 'react';
+"use client";
+
+import { useState } from "react";
 import classes from "./sidebar.module.css";
 import headerClasses from "../header/header.module.css";
 import { MarkerProps } from "@/interfaces/markers";
 import { useAuth } from "@/contexts/AuthProvider";
-import { CircleUserRound, LocateFixed, MapPinPlusInside, Info, Trophy } from "lucide-react";
-import BikeLockIcon from '@/components/icons/bike-lock-icon';
+import {
+  CircleUserRound,
+  LocateFixed,
+  MapPinPlusInside,
+  Info,
+  Trophy,
+} from "lucide-react";
+import BikeLockIcon from "@/components/icons/bike-lock-icon";
 import Link from "next/link";
 import { useModal } from "@/contexts/ModalProvider";
 import AddLock from "@/components/addlock/AddLock";
 import { NavLink } from "../header/NavLink";
 import SearchWrapper from "../searchform/SearchWrapper";
 import { useIsMobile } from "@/app/hooks/useIsMobile";
-import { useUserDocument } from '@/lib/users';
-import Image from 'next/image';
+import { useUserDocument } from "@/lib/users";
+import Image from "next/image";
 
 interface SidebarProps {
   updateLocation: () => void;
@@ -21,15 +29,22 @@ interface SidebarProps {
   onRecenter?: () => void;
 }
 
-export default function Sidebar({ updateLocation, onAddLock, onSearch, onRecenter }: SidebarProps) {
+export default function Sidebar({
+  updateLocation,
+  onAddLock,
+  onSearch,
+  onRecenter,
+}: SidebarProps) {
   const { user, isLoading: authLoading } = useAuth();
   const isMobile = useIsMobile();
   const { openModal } = useModal();
-  const [searchInput, setSearchInput] = useState('');
-  const { userData, isLoading: userLoading } = useUserDocument(user?.uid || null);
+  const [searchInput, setSearchInput] = useState("");
+  const { userData, isLoading: userLoading } = useUserDocument(
+    user?.uid || null
+  );
 
   const handleAddLock = () => {
-    openModal(<AddLock formMode="add" />, 'Add Lock');
+    openModal(<AddLock formMode="add" />, "Add Lock");
   };
 
   // Show loading state while auth is initializing
@@ -40,7 +55,6 @@ export default function Sidebar({ updateLocation, onAddLock, onSearch, onRecente
   return (
     <aside className={classes.sidebar}>
       <div className="sidebar-layout-wrapper flex flex-col gap-8 justify-between md:px-8 h-full">
-
         <div className="flex flex-col gap-6">
           {!isMobile && (
             <div className="flex items-center justify-between px-4 md:px-0">
@@ -49,7 +63,9 @@ export default function Sidebar({ updateLocation, onAddLock, onSearch, onRecente
                   <span className="m-0">
                     <NavLink href="/" classes={headerClasses.logo}>
                       {/* <BikeLockIcon /> */}
-                      <span className="font-display font-bold text-[3rem]">Dockly</span>
+                      <span className="font-display font-bold text-[3rem]">
+                        Dockly
+                      </span>
                     </NavLink>
                   </span>
                 </h1>
@@ -58,13 +74,19 @@ export default function Sidebar({ updateLocation, onAddLock, onSearch, onRecente
           )}
 
           <div className="flex flex-col gap-6">
-
             <div className="hidden md:block intro">
-              <p className="italic">Find and share safe locking spots in your city.</p>
+              <p className="italic">
+                Find and share safe locking spots in your city.
+              </p>
             </div>
 
-            {!isMobile && onSearch && onRecenter && (
-              <SearchWrapper onSearch={onSearch} onRecenter={onRecenter} searchInput={searchInput} setSearchInput={setSearchInput} />
+            {!isMobile && (
+              <SearchWrapper
+                onSearch={onSearch}
+                onRecenter={onRecenter}
+                searchInput={searchInput}
+                setSearchInput={setSearchInput}
+              />
             )}
 
             <nav className={classes.nav}>
@@ -88,11 +110,16 @@ export default function Sidebar({ updateLocation, onAddLock, onSearch, onRecente
                 {user ? (
                   <>
                     <li>
-                      <button onClick={handleAddLock} className={classes.button}>
+                      <button
+                        onClick={handleAddLock}
+                        className={classes.button}
+                      >
                         <span className={classes.button__icon}>
                           <MapPinPlusInside />
                         </span>
-                        <span className="text-xs hidden md:block">Add Lock</span>
+                        <span className="text-xs hidden md:block">
+                          Add Lock
+                        </span>
                       </button>
                     </li>
 
@@ -102,7 +129,9 @@ export default function Sidebar({ updateLocation, onAddLock, onSearch, onRecente
                           <span className={classes.button__icon}>
                             <CircleUserRound />
                           </span>
-                          <span className="text-xs hidden md:block">Account</span>
+                          <span className="text-xs hidden md:block">
+                            Account
+                          </span>
                         </Link>
                       </li>
                     )}
@@ -126,36 +155,45 @@ export default function Sidebar({ updateLocation, onAddLock, onSearch, onRecente
           <div className="flex pt-2 md:pt-8 border-t border-gray-700">
             <div className="user-info">
               <Link href="/account" className="flex items-center gap-2">
-                {userData?.photoURL && typeof userData.photoURL === 'string' && (() => {
-                  try {
-                    new URL(userData.photoURL);
-                    return (
-                      <Image
-                        src={userData.photoURL}
-                        width={50}
-                        height={50}
-                        className="rounded-full object-cover w-[50px] h-[50px]"
-                        alt='User profile photo'
-                        priority={true}
-                      />
-                    );
-                  } catch {
-                    return null;
-                  }
-                })()}
+                {userData?.photoURL &&
+                  typeof userData.photoURL === "string" &&
+                  (() => {
+                    try {
+                      new URL(userData.photoURL);
+                      return (
+                        <Image
+                          src={userData.photoURL}
+                          width={50}
+                          height={50}
+                          className="rounded-full object-cover w-[50px] h-[50px]"
+                          alt="User profile photo"
+                          priority={true}
+                        />
+                      );
+                    } catch {
+                      return null;
+                    }
+                  })()}
                 <div className="flex items-center gap-2">
-                  {(!userData?.photoURL || typeof userData.photoURL !== 'string') && <CircleUserRound />}
+                  {(!userData?.photoURL ||
+                    typeof userData.photoURL !== "string") && (
+                    <CircleUserRound />
+                  )}
                   <div className="flex flex-col gap-1">
-                    <span className="font-bold text-[var(--primary-white)] text-sm">{userData?.displayName || userData?.email}</span>
-                    <span className="flex items-center gap-2 text-[var(--primary-white)] text-sm text-gray-400 font-light bg-[var(--primary-light-gray)] px-2 py-1 rounded-md"><Trophy size={12} color={"var(--primary-gold)"}/>{25} contributions</span>
+                    <span className="font-bold text-[var(--primary-white)] text-sm">
+                      {userData?.displayName || userData?.email}
+                    </span>
+                    <span className="flex items-center gap-2 text-[var(--primary-white)] text-sm text-gray-400 font-light bg-[var(--primary-light-gray)] px-2 py-1 rounded-md">
+                      <Trophy size={12} color={"var(--primary-gold)"} />
+                      {25} contributions
+                    </span>
                   </div>
                 </div>
               </Link>
             </div>
           </div>
         )}
-
       </div>
     </aside>
   );
-};
+}

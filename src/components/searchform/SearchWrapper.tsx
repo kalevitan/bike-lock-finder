@@ -1,3 +1,5 @@
+"use client";
+
 import { SearchIcon, Map } from "lucide-react";
 
 import { CircleX } from "lucide-react";

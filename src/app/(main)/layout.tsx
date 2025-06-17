@@ -9,12 +9,12 @@ export default function MainLayout({
 
   return (
     <div className="flex flex-col h-screen">
-      <Header onSearch={() => {}} onRecenter={() => {}} />
+      <Header />
       <main className="flex-1 mt-20 px-8 md:px-12 md:py-16 overflow-y-auto">
         {children}
       </main>
       <footer className="text-center py-6 text-neutral-500 text-sm">
-        © {currentYear} BikeLock Finder. All rights reserved.
+        © {currentYear} Dockly. All rights reserved.
       </footer>
     </div>
   );
