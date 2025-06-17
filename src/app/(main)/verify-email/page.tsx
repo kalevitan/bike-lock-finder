@@ -1,123 +1,47 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAuth } from "@/contexts/AuthProvider";
 import { useRouter, useSearchParams } from "next/navigation";
-import { sendEmailVerification, signOut, updateEmail } from "firebase/auth";
+import { verifyPendingRegistration } from "@/lib/auth";
 import Loading from "@/app/loading";
 import { Mail, CheckCircle2, AlertCircle } from "lucide-react";
-import { auth } from "@/lib/firebase";
-import { updateUserDocument } from "@/lib/users";
 
 export default function VerifyEmail() {
-  const { user, isLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [isSigningOut, setIsSigningOut] = useState(false);
-
-  // Get the new email from URL if it exists
-  const newEmail = searchParams.get("newEmail");
+  const [isVerifying, setIsVerifying] = useState(true);
 
   useEffect(() => {
-    if (!isLoading && !user) {
-      router.push("/login");
-    }
-  }, [isLoading, user, router]);
-
-  useEffect(() => {
-    const checkVerification = async () => {
-      if (!user) return;
+    const verifyToken = async () => {
+      const token = searchParams.get("token");
+      if (!token) {
+        setError("Invalid verification link");
+        setIsVerifying(false);
+        return;
+      }
 
       try {
-        // Force reload the user to get the latest verification status
-        await user.reload();
-        const currentUser = auth.currentUser;
-
-        if (!currentUser) {
-          router.push("/login");
-          return;
-        }
-
-        // If there's a new email to update
-        if (newEmail && newEmail !== currentUser.email) {
-          try {
-            await updateEmail(currentUser, newEmail);
-            await sendEmailVerification(currentUser);
-            setSuccess(
-              "Email updated. Please check your inbox to verify your new email address."
-            );
-          } catch (err: any) {
-            if (err.code === "auth/requires-recent-login") {
-              setError("Please log out and log back in to update your email.");
-            } else {
-              setError("Failed to update email. Please try again.");
-            }
-          }
-        }
-        // If the user is now verified, update their document and redirect
-        else if (currentUser.emailVerified) {
-          try {
-            // Update the user document with the verified status
-            await updateUserDocument(currentUser.uid, {
-              emailVerified: true,
-              updatedAt: new Date().toISOString(),
-            });
-            router.push("/account");
-          } catch (err) {
-            console.error("Failed to update user document:", err);
-            // Still redirect even if document update fails
-            router.push("/account");
-          }
-        }
+        const email = await verifyPendingRegistration(token);
+        setSuccess("Email verified successfully!");
+        // Redirect to complete registration after a short delay
+        setTimeout(() => {
+          router.push(
+            `/complete-registration?email=${encodeURIComponent(email)}`
+          );
+        }, 2000);
       } catch (err: any) {
-        // Ignore token refresh errors as they don't affect functionality
-        if (err.code !== "auth/network-request-failed") {
-          console.error("Verification check error:", err);
-        }
+        setError(err.message || "Failed to verify email");
+      } finally {
+        setIsVerifying(false);
       }
     };
 
-    checkVerification();
-  }, [user, router, newEmail]);
+    verifyToken();
+  }, [searchParams, router]);
 
-  const handleResendVerification = async () => {
-    if (!user) return;
-
-    setIsSending(true);
-    setError(null);
-    setSuccess(null);
-
-    try {
-      await sendEmailVerification(user, {
-        url: `${window.location.origin}/verify-email${
-          newEmail ? `?newEmail=${encodeURIComponent(newEmail)}` : ""
-        }`,
-      });
-      setSuccess("Verification email sent! Please check your inbox.");
-    } catch (err: any) {
-      console.error("Error sending verification email:", err);
-      if (err.code === "auth/too-many-requests") {
-        setError(
-          "Too many verification emails sent. Please wait a few minutes before trying again."
-        );
-      } else {
-        setError("Failed to send verification email. Please try again later.");
-      }
-    } finally {
-      setIsSending(false);
-    }
-  };
-
-  const handleSignOut = async () => {
-    await signOut(auth);
-    router.push("/login");
-  };
-
-  // Don't render anything if we're loading or redirecting
-  if (isLoading || !user) {
+  if (isVerifying) {
     return <Loading />;
   }
 
@@ -129,7 +53,7 @@ export default function VerifyEmail() {
             Verify your email
           </h1>
           <p className="text-[var(--primary-white)] text-lg">
-            Please verify your email address to continue using the app.
+            Please wait while we verify your email address.
           </p>
         </div>
 
@@ -147,7 +71,7 @@ export default function VerifyEmail() {
           </div>
         )}
 
-        {!user.emailVerified && (
+        {!error && !success && (
           <div className="flex flex-col gap-4">
             <div className="flex flex-col items-center gap-6 p-8 bg-[var(--primary-light-gray)]/10 rounded-lg border border-[var(--primary-gray)]/20">
               <div className="w-20 h-20 rounded-full bg-[var(--primary-gray)]/20 flex items-center justify-center">
@@ -155,30 +79,13 @@ export default function VerifyEmail() {
               </div>
               <div className="flex flex-col gap-3 text-center">
                 <h2 className="text-xl font-semibold text-[var(--primary-white)]">
-                  Check your email
+                  Verifying your email
                 </h2>
                 <p className="text-[var(--primary-gray)] text-lg">
-                  We've sent a verification link to{" "}
-                  <span className="text-[var(--primary-white)] font-medium">
-                    {user.email}
-                  </span>
+                  Please wait while we verify your email address...
                 </p>
               </div>
-              <button
-                onClick={handleResendVerification}
-                disabled={isSending}
-                className="button text-[var(--primary-white)] w-full"
-              >
-                {isSending ? "Sending..." : "Resend verification email"}
-              </button>
             </div>
-            <button
-              onClick={handleSignOut}
-              disabled={isSigningOut}
-              className="button button--secondary text-[var(--primary-white)] border border-[var(--primary-gray)]/20 w-full"
-            >
-              {isSigningOut ? "Signing out..." : "Sign out"}
-            </button>
           </div>
         )}
       </div>

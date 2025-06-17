@@ -1,18 +1,17 @@
-'use client';
+"use client";
 
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import React from "react";
 import classes from "./modal.module.css";
 import { X } from "lucide-react";
 import { ModalProps } from "@/interfaces/modal";
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from "framer-motion";
 
 export function Modal({ title, children, closeModal, isOpen }: ModalProps) {
-  const router = useRouter();
+  // const router = useRouter();
 
   const closeHandler = () => {
     closeModal();
-    router.push('..');
   };
 
   return (
@@ -31,14 +30,14 @@ export function Modal({ title, children, closeModal, isOpen }: ModalProps) {
             open
             className={classes.modal}
             aria-modal="true"
-            initial={{ y: '100%' }}
+            initial={{ y: "100%" }}
             animate={{ y: 0 }}
-            exit={{ y: '100%' }}
+            exit={{ y: "100%" }}
             transition={{
-              type: 'spring',
+              type: "spring",
               stiffness: 300,
               damping: 30,
-              exit: { duration: 0.2, ease: 'easeInOut' }
+              exit: { duration: 0.2, ease: "easeInOut" },
             }}
           >
             <div className="modal-header flex justify-between items-center mb-4">

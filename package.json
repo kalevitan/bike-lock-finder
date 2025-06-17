@@ -11,19 +11,23 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@types/uuid": "10.0.0",
     "@vercel/analytics": "1.5.0",
     "@vercel/speed-insights": "1.2.0",
     "@vis.gl/react-google-maps": "latest",
     "browser-image-compression": "2.0.2",
     "classnames": "2.5.1",
     "firebase": "10.13.1",
+    "firebase-admin": "13.4.0",
     "lucide-react": "0.509.0",
     "motion": "12.16.0",
     "next": "15.3.2",
     "postcss-nested": "7.0.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "resend": "4.6.0",
     "swr": "2.3.3",
+    "uuid": "11.1.0",
     "xss": "1.0.15"
   },
   "devDependencies": {

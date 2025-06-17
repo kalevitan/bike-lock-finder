@@ -71,7 +71,9 @@ export default function Sidebar({
                   <span className="m-0">
                     <NavLink href="/" classes={headerClasses.logo}>
                       {/* <BikeLockIcon /> */}
-                      <span className="font-display font-bold text-[3rem]">Dockly</span>
+                      <span className="font-display font-bold text-[3rem]">
+                        Dockly
+                      </span>
                     </NavLink>
                   </span>
                 </h1>
@@ -80,13 +82,19 @@ export default function Sidebar({
           )}
 
           <div className="flex flex-col gap-6">
-
             <div className="hidden md:block intro">
-              <p className="italic">Find and share safe locking spots in your city.</p>
+              <p className="italic">
+                Find and share safe locking spots in your city.
+              </p>
             </div>
 
             {!isMobile && onSearch && onRecenter && (
-              <SearchWrapper onSearch={onSearch} onRecenter={onRecenter} searchInput={searchInput} setSearchInput={setSearchInput} />
+              <SearchWrapper
+                onSearch={onSearch}
+                onRecenter={onRecenter}
+                searchInput={searchInput}
+                setSearchInput={setSearchInput}
+              />
             )}
 
             <nav className={classes.nav}>

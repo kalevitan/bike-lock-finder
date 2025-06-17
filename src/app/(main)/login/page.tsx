@@ -4,14 +4,11 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  sendEmailVerification,
-  updateProfile,
   signOut,
+  fetchSignInMethodsForEmail,
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useAuth } from "@/contexts/AuthProvider";
-import { createUserDocument } from "@/lib/users";
 import Loading from "@/app/loading";
 import { useModal } from "@/contexts/ModalProvider";
 import { CheckCircle2, AlertCircle } from "lucide-react";
@@ -19,9 +16,9 @@ import { CheckCircle2, AlertCircle } from "lucide-react";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [displayName, setDisplayName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [formMode, setFormMode] = useState("login");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { user, isLoading: authLoading } = useAuth();
   const { openModal } = useModal();
@@ -36,49 +33,43 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
+    setIsSubmitting(true);
 
     if (formMode === "register") {
       try {
-        const userCredential = await createUserWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
+        // Check if email already exists in Firebase Auth
+        const methods = await fetchSignInMethodsForEmail(auth, email);
+        if (methods.length > 0) {
+          setError(
+            "An account with this email already exists. Please try logging in instead."
+          );
+          setFormMode("login");
+          return;
+        }
 
-        // Set display name in Firebase Auth
-        await updateProfile(userCredential.user, {
-          displayName: displayName,
+        // Create pending registration
+        const response = await fetch("/api/auth/pending-registration", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
         });
 
-        // Send verification email
-        try {
-          await sendEmailVerification(userCredential.user);
-        } catch (verificationError: any) {
-          console.error("Error sending verification email:", verificationError);
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(
+            data.message || "Failed to create pending registration"
+          );
         }
 
-        // Create user document in Firestore
-        const userData = {
-          uid: userCredential.user.uid,
-          email: userCredential.user.email!,
-          displayName: displayName,
-          photoURL: undefined,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          emailVerified: false,
-        };
+        const data = await response.json();
 
-        const success = await createUserDocument(userData);
-        if (!success) {
-          throw new Error("Failed to create user profile");
-        }
-
-        // Show success message and redirect to login
+        // Show success message
         setError(null);
         setFormMode("login");
         setEmail("");
         setPassword("");
-        setDisplayName("");
         openModal(
           <div className="flex flex-col items-center gap-6 p-4">
             <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
@@ -86,38 +77,23 @@ export default function Login() {
             </div>
             <div className="flex flex-col gap-3 text-center">
               <h3 className="text-xl font-semibold text-[var(--primary-gray)]">
-                Registration Successful!
+                {data.isReverification
+                  ? "Verification email resent!"
+                  : "Check your email!"}
               </h3>
               <p className="text-[var(--primary-gray)]">
-                Please check your email to verify your account. If you don't see
-                the email, check your spam folder or request a new verification
-                email from your account page.
+                We've sent a verification link to {email}. Click the link to
+                complete your registration. If you don't see the email, check
+                your spam folder.
               </p>
             </div>
-            {/* <div className="flex flex-col gap-3 w-full">
-              <button
-                className="button text-[var(--primary-white)] w-full"
-                onClick={() => router.push("/account")}
-                type="button"
-              >
-                Go to account page
-              </button>
-            </div> */}
           </div>,
           ""
         );
       } catch (err: any) {
-        if (err.code === "auth/email-already-in-use") {
-          setError(
-            "This email is already registered. Please try logging in instead."
-          );
-        } else if (err.code === "auth/weak-password") {
-          setError("Password is too weak. Please use a stronger password.");
-        } else if (err.code === "auth/invalid-email") {
-          setError("Please enter a valid email address.");
-        } else {
-          setError(err.message);
-        }
+        setError(err.message);
+      } finally {
+        setIsSubmitting(false);
       }
       return;
     }
@@ -132,8 +108,6 @@ export default function Login() {
 
       // Check if user is verified
       if (!userCredential.user.emailVerified) {
-        // Send verification email if not verified
-        await sendEmailVerification(userCredential.user);
         // Sign out the user since they're not verified
         await signOut(auth);
         setError(
@@ -168,7 +142,8 @@ export default function Login() {
         default:
           setError("An error occurred during login. Please try again.");
       }
-      return;
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -198,26 +173,6 @@ export default function Login() {
               </div>
             )}
 
-            {formMode === "register" && (
-              <div className="flex flex-col text-left gap-2">
-                <label
-                  htmlFor="displayName"
-                  className="text-[var(--primary-white)]"
-                >
-                  Name
-                </label>
-                <input
-                  type="text"
-                  name="displayName"
-                  id="displayName"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  className="rounded-[4px]"
-                  placeholder="Enter your name"
-                  required
-                />
-              </div>
-            )}
             <div className="flex flex-col text-left gap-2">
               <label htmlFor="email" className="text-[var(--primary-white)]">
                 Email
@@ -233,26 +188,38 @@ export default function Login() {
                 required
               />
             </div>
-            <div className="flex flex-col text-left gap-2">
-              <label htmlFor="password" className="text-[var(--primary-white)]">
-                Password
-              </label>
-              <input
-                type="password"
-                name="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="rounded-[4px]"
-                placeholder="Enter your password"
-                required
-              />
-            </div>
+
+            {formMode === "login" && (
+              <div className="flex flex-col text-left gap-2">
+                <label
+                  htmlFor="password"
+                  className="text-[var(--primary-white)]"
+                >
+                  Password
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="rounded-[4px]"
+                  placeholder="Enter your password"
+                  required
+                />
+              </div>
+            )}
+
             <button
               className="button mt-6 text-[var(--primary-white)]"
               type="submit"
+              disabled={isSubmitting}
             >
-              {formMode === "login" ? "Login" : "Sign up"}
+              {isSubmitting
+                ? "Please wait..."
+                : formMode === "login"
+                ? "Login"
+                : "Send verification email"}
             </button>
           </div>
           <div className="pt-6 pb-4 text-center text-[var(--primary-white)]">

@@ -17,8 +17,6 @@ export default function MarkerPin({
 }: MarkerPinProps) {
   const { user } = useAuth();
 
-  console.log(user);
-
   return (
     <div className="custom-pin">
       <div className="image-container">
