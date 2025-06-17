@@ -9,7 +9,7 @@ export default function MainLayout({
 
   return (
     <div className="flex flex-col h-screen">
-      <Header />
+      <Header onSearch={() => {}} onRecenter={() => {}} />
       <main className="flex-1 mt-20 px-8 md:px-12 md:py-16 overflow-y-auto">
         {children}
       </main>
