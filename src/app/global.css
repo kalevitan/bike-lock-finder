@@ -88,7 +88,7 @@ input::placeholder {
   font-family: inherit;
   background-color: var(--primary-purple);
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: filter 0.2s ease-in-out;
   box-sizing: border-box;
 }
 
@@ -98,6 +98,13 @@ input::placeholder {
 
 .button--danger {
   background-color: var(--primary-red);
+}
+
+.button--outline {
+  background-color: transparent;
+  border: 0.0625rem solid var(--primary-white);
+  color: var(--primary-white);
+  transition: all 0.2s ease-in-out;
 }
 
 .button:disabled {
@@ -117,8 +124,14 @@ input::placeholder {
 }
 
 .button:hover {
-  border-color: var(--primary-purple);
+  filter: brightness(0.9);
 }
+
+.button--outline:hover {
+  background-color: var(--primary-white);
+  color: var(--primary-gray);
+}
+
 .button:focus,
 .button:focus-visible {
   outline: 0.5rem auto -webkit-focus-ring-color;

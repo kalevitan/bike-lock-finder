@@ -94,7 +94,7 @@ export default function About() {
           <Link
             href="https://github.com/kalevitan/bike-lock-finder/issues"
             rel="noopener noreferrer"
-            className="button button--secondary flex items-center gap-2 text-white justify-center"
+            className="button button--outline flex items-center gap-2 text-white justify-center"
             target="_blank"
           >
             <MessageCircleWarning size={15} />
