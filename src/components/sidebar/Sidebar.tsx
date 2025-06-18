@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import classes from "./sidebar.module.css";
 import headerClasses from "../header/header.module.css";
@@ -11,6 +9,9 @@ import {
   MapPinPlusInside,
   Info,
   Trophy,
+  MessageCircleWarning,
+  SquareUser,
+  Lock,
 } from "lucide-react";
 import BikeLockIcon from "@/components/icons/bike-lock-icon";
 import Link from "next/link";
@@ -21,6 +22,8 @@ import SearchWrapper from "../searchform/SearchWrapper";
 import { useIsMobile } from "@/app/hooks/useIsMobile";
 import { useUserDocument } from "@/lib/users";
 import Image from "next/image";
+import VerifyEmail from "../boundaries/VerifyEmail";
+import { useRouter } from "next/navigation";
 
 interface SidebarProps {
   updateLocation: () => void;
@@ -42,8 +45,12 @@ export default function Sidebar({
   const { userData, isLoading: userLoading } = useUserDocument(
     user?.uid || null
   );
-
+  const router = useRouter();
   const handleAddLock = () => {
+    if (!user?.emailVerified) {
+      router.push("/verify-email");
+      return;
+    }
     openModal(<AddLock formMode="add" />, "Add Lock");
   };
 
@@ -58,26 +65,29 @@ export default function Sidebar({
         <div className="flex flex-col gap-6">
           {!isMobile && (
             <div className="flex items-center justify-between px-4 md:px-0">
-              <div className="logo md:min-w-72 max-w-72 min-w-fit">
-                <h1 className="">
-                  <span className="m-0">
-                    <NavLink href="/" classes={headerClasses.logo}>
-                      {/* <BikeLockIcon /> */}
-                      <span className="font-display font-bold text-[3rem]">
-                        Dockly
-                      </span>
-                    </NavLink>
-                  </span>
+              <div className="logo">
+                <h1 className="m-0">
+                  <NavLink href="/" classes={headerClasses.logo}>
+                    <span className="font-display font-bold text-[3rem]">
+                      Dockly
+                    </span>
+                  </NavLink>
                 </h1>
               </div>
             </div>
           )}
 
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-8">
             <div className="hidden md:block intro">
-              <p className="italic">
-                Find and share safe locking spots in your city.
-              </p>
+              <div className="flex items-center justify-start gap-3">
+                <p className="text-sm text-[var(--primary-purple)] font-light">
+                  <BikeLockIcon />
+                </p>
+                <p className="text-sm text-[var(--primary-white)] font-light">
+                  Find and share safe locking
+                  <br /> spots in your city.
+                </p>
+              </div>
             </div>
 
             {!isMobile && (
@@ -92,7 +102,10 @@ export default function Sidebar({
             <nav className={classes.nav}>
               <ul className="flex justify-between w-full">
                 <li>
-                  <Link href="/about" className={classes.button}>
+                  <Link
+                    href="/about"
+                    className={`${classes.button} flex flex-col items-center gap-1`}
+                  >
                     <span className={classes.button__icon}>
                       <Info />
                     </span>
@@ -100,7 +113,10 @@ export default function Sidebar({
                   </Link>
                 </li>
                 <li>
-                  <button onClick={updateLocation} className={classes.button}>
+                  <button
+                    onClick={updateLocation}
+                    className={`${classes.button} flex flex-col items-center gap-1`}
+                  >
                     <span className={classes.button__icon}>
                       <LocateFixed />
                     </span>
@@ -112,7 +128,7 @@ export default function Sidebar({
                     <li>
                       <button
                         onClick={handleAddLock}
-                        className={classes.button}
+                        className={`${classes.button} flex flex-col items-center gap-1`}
                       >
                         <span className={classes.button__icon}>
                           <MapPinPlusInside />
@@ -125,7 +141,10 @@ export default function Sidebar({
 
                     {isMobile && (
                       <li>
-                        <Link href="/account" className={classes.button}>
+                        <Link
+                          href="/account"
+                          className={`${classes.button} flex flex-col items-center gap-1`}
+                        >
                           <span className={classes.button__icon}>
                             <CircleUserRound />
                           </span>
@@ -138,7 +157,10 @@ export default function Sidebar({
                   </>
                 ) : (
                   <li>
-                    <Link href="/login" className={classes.button}>
+                    <Link
+                      href="/login"
+                      className={`${classes.button} flex flex-col items-center gap-1`}
+                    >
                       <span className={classes.button__icon}>
                         <CircleUserRound />
                       </span>
@@ -152,46 +174,50 @@ export default function Sidebar({
         </div>
 
         {user && !userLoading && !isMobile && (
-          <div className="flex pt-2 md:pt-8 border-t border-gray-700">
-            <div className="user-info">
-              <Link href="/account" className="flex items-center gap-2">
-                {userData?.photoURL &&
-                  typeof userData.photoURL === "string" &&
-                  (() => {
-                    try {
-                      new URL(userData.photoURL);
-                      return (
-                        <Image
-                          src={userData.photoURL}
-                          width={50}
-                          height={50}
-                          className="rounded-full object-cover w-[50px] h-[50px]"
-                          alt="User profile photo"
-                          priority={true}
-                        />
-                      );
-                    } catch {
-                      return null;
-                    }
-                  })()}
-                <div className="flex items-center gap-2">
-                  {(!userData?.photoURL ||
-                    typeof userData.photoURL !== "string") && (
-                    <CircleUserRound />
+          <VerifyEmail>
+            <div className="flex gap-y-4 pt-2 md:pt-8 border-t border-[var(--primary-light-gray)]">
+              <div className="user-info w-full flex flex-col gap-4">
+                <Link href="/account" className="flex items-center gap-4">
+                  {userData?.photoURL &&
+                  typeof userData.photoURL === "string" ? (
+                    <Image
+                      src={userData.photoURL}
+                      width={50}
+                      height={50}
+                      className="rounded-full object-cover w-[50px] h-[50px]"
+                      alt="User profile photo"
+                      priority={true}
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center w-[50px] h-[50px] border border-[#6b7280] rounded-full">
+                      <SquareUser color="#6b7280" size={20} />
+                    </div>
                   )}
-                  <div className="flex flex-col gap-1">
-                    <span className="font-bold text-[var(--primary-white)] text-sm">
-                      {userData?.displayName || userData?.email}
-                    </span>
-                    <span className="flex items-center gap-2 text-[var(--primary-white)] text-sm text-gray-400 font-light bg-[var(--primary-light-gray)] px-2 py-1 rounded-md">
-                      <Trophy size={12} color={"var(--primary-gold)"} />
-                      {25} contributions
-                    </span>
+                  <div className="flex items-center gap-4">
+                    <div className="flex flex-col gap-1">
+                      <span className="font-bold text-lg text-[var(--primary-white)]">
+                        {userData?.displayName || userData?.email}
+                      </span>
+                      <span className="flex items-center gap-2 text-sm text-[var(--primary-white)] font-light bg-[var(--primary-light-gray)] px-2 py-1 rounded-md">
+                        <Trophy size={12} color={"var(--primary-gold)"} />
+                        {userData?.contributions || 0} Contributions
+                      </span>
+                    </div>
                   </div>
+                </Link>
+                <div className="grid grid-cols-2 items-center gap-2 pt-4">
+                  <button className="text-sm text-[var(--primary-white)] font-light bg-[var(--primary-light-gray)] px-2 py-2 rounded-md flex items-center justify-center gap-2 hover:bg-gray-700 transition-colors duration-200">
+                    <Lock size={15} />
+                    My Locks
+                  </button>
+                  <button className="text-sm text-[var(--primary-white)] font-light bg-[var(--primary-light-gray)] px-2 py-2 rounded-md flex items-center justify-center gap-2 hover:bg-gray-700 transition-colors duration-200">
+                    <MessageCircleWarning size={15} />
+                    Report Issue
+                  </button>
                 </div>
-              </Link>
+              </div>
             </div>
-          </div>
+          </VerifyEmail>
         )}
       </div>
     </aside>

@@ -16,7 +16,8 @@ export default function MapContent({
 }: MapContentProps) {
   const map = useMap();
   const { markers, isLoading } = useMarkerContext();
-  const searchMarkerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
+  const searchMarkerRef =
+    useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
 
   useEffect(() => {
     if (map) {
@@ -33,22 +34,26 @@ export default function MapContent({
       bounds.extend(location);
       map.fitBounds(bounds);
 
-      const listener = google.maps.event.addListenerOnce(map, 'bounds_changed', () => {
-        if (location.zoom) {
-          map.setZoom(location.zoom);
-        } else {
-          map.setZoom(map.getZoom()! - 2);
+      const listener = google.maps.event.addListenerOnce(
+        map,
+        "bounds_changed",
+        () => {
+          if (location.zoom) {
+            map.setZoom(location.zoom);
+          } else {
+            map.setZoom(map.getZoom()! - 2);
+          }
         }
-      });
+      );
 
       return () => {
         google.maps.event.removeListener(listener);
       };
-    };
+    }
   }, [map, location]);
 
   useEffect(() => {
-    if (!map || (!place)) {
+    if (!map || !place) {
       // Clear marker when place is null
       if (searchMarkerRef.current) {
         searchMarkerRef.current.map = null;
@@ -92,21 +97,21 @@ export default function MapContent({
   useEffect(() => {
     if (!map || !openMarkerId) return;
 
-    const openMarker = markers.find(marker => marker.id === openMarkerId);
+    const openMarker = markers.find((marker) => marker.id === openMarkerId);
     if (!openMarker) return;
 
     const markerPosition = {
       lat: parseFloat(openMarker.latitude),
-      lng: parseFloat(openMarker.longitude)
+      lng: parseFloat(openMarker.longitude),
     };
 
     // Calculate dynamic offset based on zoom level
     const currentZoom = map.getZoom() || 14;
     const zoomFactor = Math.pow(2, 14 - currentZoom); // Adjust offset based on zoom level
-    const offsetLat = markerPosition.lat + (0.0025 * zoomFactor);
+    const offsetLat = markerPosition.lat + 0.0025 * zoomFactor;
     const offsetPosition = {
       lat: offsetLat,
-      lng: markerPosition.lng
+      lng: markerPosition.lng,
     };
 
     // Pan to the offset position

@@ -1,103 +1,96 @@
-'use client';
+"use client";
 
-import { useAuth } from '@/contexts/AuthProvider';
-import { redirect } from "next/navigation";
+import React, { useEffect, useState, useRef } from "react";
+import { useAuth } from "@/contexts/AuthProvider";
+import { useRouter } from "next/navigation";
 import { signOut } from "@/lib/auth";
-import { useState, useEffect } from "react";
-import Loading from "@/app/loading";
-import { useUserDocument, updateUserDocument } from "@/lib/users";
+import { getUserDocument, updateUserDocument } from "@/lib/users";
+import type { UserData } from "@/interfaces/user";
 import { uploadAndCompressImage } from "@/lib/storage";
+import Loading from "@/app/loading";
 import Image from "next/image";
-import { ImagePlus, Trophy } from "lucide-react";
+import {
+  Camera,
+  Check,
+  Edit,
+  LogOut,
+  ShieldCheck,
+  Trophy,
+  X,
+  AlertCircle,
+  CheckCircle2,
+} from "lucide-react";
 
-export default function AccountPage() {
+export default function Account() {
   const { user, isLoading: authLoading } = useAuth();
-  const { userData, isLoading: userLoading, mutate } = useUserDocument(user?.uid || null);
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+
+  // Component State
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Form State
+  const [displayName, setDisplayName] = useState("");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [isSigningOut, setIsSigningOut] = useState(false);
 
-  // Redirect if not authenticated
+  // UI Feedback State
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  // Ref for the display name input
+  const displayNameInputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch User Data
   useEffect(() => {
-    // Only redirect if auth is done loading and there's no user
-    if (!authLoading && !user) {
-      // Use setTimeout to ensure the redirect happens after the current render cycle
-      setTimeout(() => {
-        redirect('/login');
-      }, 0);
+    // Wait until auth is resolved before doing anything
+    if (authLoading) {
+      return;
     }
-  }, [authLoading, user]);
 
-  const handleSignOut = async () => {
-    setIsSigningOut(true);
-    setError(null);
-    try {
-      const success = await signOut();
-      if (!success) {
-        throw new Error('Failed to sign out');
-      }
-    } catch (error) {
-      console.error('Error signing out:', error);
-      setError(error instanceof Error ? error.message : 'Failed to sign out');
-      setIsSigningOut(false);
+    // If no user, redirect to login
+    if (!user) {
+      router.push("/login");
+      return;
     }
-  };
 
-  const handleUserUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!user?.uid) return;
+    // If user is not verified, redirect to verify page
+    if (!user.emailVerified) {
+      router.push("/verify-email");
+      return;
+    }
 
-    setIsUpdating(true);
-    setError(null);
-
-    try {
-      const formData = new FormData(e.currentTarget);
-      const file = formData.get('photoURL') as File;
-      let photoURL = userData?.photoURL;
-
-      if (file && file.size > 0) {
-        setIsUploadingImage(true);
-        try {
-          photoURL = await uploadAndCompressImage(file, 'profiles');
-        } finally {
-          setIsUploadingImage(false);
+    // If we have a verified user, fetch their document
+    const fetchUserData = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getUserDocument(user.uid);
+        if (data) {
+          setUserData(data);
+          setDisplayName(data.displayName || "");
+        } else {
+          // This case might happen if Firestore doc creation failed
+          setError("Could not find user profile. Please contact support.");
         }
+      } catch (error) {
+        setError("Failed to load profile. Please try again.");
+      } finally {
+        setIsLoading(false);
       }
+    };
 
-      const updateData = {
-        displayName: formData.get('displayName') as string,
-        email: formData.get('email') as string,
-        photoURL,
-        updatedAt: new Date().toISOString()
-      };
+    fetchUserData();
+  }, [user, authLoading, router]);
 
-      const success = await updateUserDocument(user.uid, updateData);
-      if (success) {
-        await mutate();
-      } else {
-        throw new Error('Failed to update profile');
-      }
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      setError(error instanceof Error ? error.message : 'Failed to update profile');
-    } finally {
-      setIsUpdating(false);
+  // Focus input when editing starts
+  useEffect(() => {
+    if (isEditing && displayNameInputRef.current) {
+      displayNameInputRef.current.focus();
     }
-  };
+  }, [isEditing]);
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
-    }
-  };
-
+  // Cleanup for image preview URL
   useEffect(() => {
     return () => {
       if (previewUrl) {
@@ -106,109 +99,202 @@ export default function AccountPage() {
     };
   }, [previewUrl]);
 
-  // Show loading state while auth or user data is loading
-  if (authLoading || userLoading) {
+  // Handlers
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/login");
+  };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    // Set preview
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(URL.createObjectURL(file));
+
+    try {
+      const photoURL = await uploadAndCompressImage(
+        file,
+        `profile-images/${user.uid}`
+      );
+      if (userData) {
+        await updateUserDocument(user.uid, { ...userData, photoURL });
+        setUserData((prev) => (prev ? { ...prev, photoURL } : null));
+        setSuccess("Profile picture updated!");
+      }
+    } catch (err) {
+      setError("Failed to upload image. Please try again.");
+    }
+  };
+
+  const handleUpdate = async () => {
+    if (!user || !userData) return;
+
+    // Prevent saving if display name hasn't changed
+    if (displayName === userData.displayName) {
+      setIsEditing(false);
+      return;
+    }
+
+    setIsSaving(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      await updateUserDocument(user.uid, { displayName });
+      setUserData((prev) => (prev ? { ...prev, displayName } : null));
+      setIsEditing(false);
+      setSuccess("Profile updated successfully!");
+    } catch (err) {
+      setError("Failed to update profile. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    if (userData) {
+      setDisplayName(userData.displayName || "");
+    }
+  };
+
+  // Render Logic
+  if (authLoading || isLoading) {
     return <Loading />;
   }
 
-  // Don't render anything if we're not authenticated (will redirect)
-  if (!user || !userData) {
-    return null;
+  if (!userData) {
+    return (
+      <div className="text-center text-[var(--primary-white)]">
+        Could not load user profile.
+      </div>
+    );
   }
 
   return (
-    <div className="w-full md:max-w-[26rem] md:mx-auto">
-      <div className="flex flex-col gap-4">
-        {(previewUrl || userData.photoURL) ? (
-          <div className="relative m-auto overflow-hidden cursor-pointer hover:opacity-70 transition-opacity duration-300">
-            <Image
-              src={previewUrl || userData.photoURL || ''}
-              alt="Preview"
-              width={150}
-              height={150}
-              className="w-[150px] h-[150px] object-cover rounded-full border border-[#6b7280]"
-              onClick={() => {
-                document.getElementById('photoURL')?.click();
-              }}
-            />
-            {isUploadingImage && (
-              <div className="absolute inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center rounded-full">
-                <div className="text-[var(--primary-white)]">Uploading...</div>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="flex flex-col text-left">
-            <label htmlFor="photoURL" className="mb-2 text-[var(--primary-white)]">Profile Picture</label>
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => document.getElementById('photoURL')?.click()}
-                className="w-[150px] h-[150px] border rounded-full flex items-center justify-center cursor-pointer border-[#6b7280] hover:opacity-70 transition-opacity duration-300"
-              >
-                <ImagePlus color="#6b7280" size={32}/>
-              </button>
-            </div>
+    <div className="w-full md:max-w-2xl md:mx-auto">
+      <div className="flex flex-col gap-6">
+        {/* Feedback Messages */}
+        {error && (
+          <div className="flex items-start gap-3 p-4 bg-red-950/50 border border-red-800/50 rounded-lg">
+            <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+            <p className="text-red-200">{error}</p>
           </div>
         )}
-        <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-center">Hi, {userData.displayName || userData.email} 👋</h1>
-        <div className="flex gap-2 items-center justify-center text-center text-sm text-[var(--primary-light-gray)]">
-          <span className="flex items-center gap-2 text-sm text-gray-400 font-light bg-[var(--primary-light-gray)] px-2 py-1 rounded-md"><Trophy size={12} color={"var(--primary-gold)"}/>{25} contributions</span>
-        </div>
-        <form className="flex flex-col gap-4" onSubmit={handleUserUpdate}>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="displayName" className="text-[var(--primary-white)]">Display Name</label>
-            <input
-              type="text"
-              id="displayName"
-              name="displayName"
-              defaultValue={userData.displayName}
-              className="rounded-[0.25rem]"
-            />
+        {success && (
+          <div className="flex items-start gap-3 p-4 bg-green-950/50 border border-green-800/50 rounded-lg">
+            <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+            <p className="text-green-200">{success}</p>
           </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="email" className="text-[var(--primary-white)]">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              className="rounded-[0.25rem]"
-              defaultValue={userData.email}
-            />
-          </div>
-          <div className="flex flex-col gap-2">
+        )}
+
+        {/* Profile Card */}
+        <div className="flex flex-col md:flex-row items-center gap-8 bg-[var(--primary-light-gray)]/10 p-8 rounded-lg border border-[var(--primary-gray)]/20">
+          {/* Profile Image */}
+          <div className="relative min-w-[150px] min-h-[150px]">
             <input
               type="file"
-              id="photoURL"
-              name="photoURL"
+              id="file-image"
               accept="image/*"
-              hidden={true}
+              className="hidden"
               onChange={handleFileSelect}
+              disabled={!isEditing}
             />
+            <Image
+              src={
+                previewUrl ||
+                userData.photoURL ||
+                "/images/user-placeholder.png"
+              }
+              alt="Profile Picture"
+              width={150}
+              height={150}
+              className="w-[150px] h-[150px] object-cover rounded-full border border-[var(--primary-gray)]"
+            />
+            {isEditing && (
+              <label
+                htmlFor="file-image"
+                className="absolute bottom-0 right-0 bg-[var(--primary-white)] text-black p-2 rounded-full cursor-pointer hover:bg-gray-200"
+              >
+                <Camera size={20} />
+              </label>
+            )}
           </div>
-          {error && (
-            <div className="text-red-500 text-sm p-2 bg-red-50 rounded-md" role="alert">
-              {error}
+
+          {/* User Info & Actions */}
+          <div className="flex flex-col gap-4 w-full md:flex-grow">
+            <div className="flex flex-col gap-3 text-center md:text-left">
+              {isEditing ? (
+                <input
+                  ref={displayNameInputRef}
+                  type="text"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  className="text-3xl font-bold bg-transparent border-b-2 border-[var(--primary-gray)] focus:outline focus:border-[var(--primary-white)] text-[var(--primary-white)]"
+                />
+              ) : (
+                <h1 className="text-3xl font-bold text-[var(--primary-white)]">
+                  {userData.displayName}
+                </h1>
+              )}
+
+              <p className="text-lg text-[var(--primary-white)]">
+                {userData.email}
+              </p>
+              <div className="flex items-center gap-4 justify-center md:justify-start">
+                <div className="flex items-center gap-2 text-[var(--primary-white)]">
+                  <ShieldCheck size={18} className="text-green-500" />
+                  <span className="text-sm">Verified Member</span>
+                </div>
+                <div className="flex items-center gap-2 text-[var(--primary-white)]">
+                  <Trophy size={18} className="text-[var(--primary-gold)]" />
+                  <span className="text-sm">
+                    {userData.contributions || 0} Contributions
+                  </span>
+                </div>
+              </div>
             </div>
-          )}
-          <div className="flex flex-col md:flex-row gap-4">
-            <button
-              type="submit"
-              className="button flex-1 text-[var(--primary-white)]"
-              disabled={isUpdating}
-            >
-              {isUpdating ? 'Updating...' : 'Update Profile'}
-            </button>
-            <button
-              type="button"
-              className="button button--secondary flex-1 text-[var(--primary-white)]"
-              onClick={handleSignOut}
-              disabled={isSigningOut}
-            >
-              {isSigningOut ? 'Signing out...' : 'Sign Out'}
-            </button>
           </div>
-        </form>
+        </div>
+        {/* Action Buttons */}
+        <div className="mt-auto pt-4 flex flex-col justify-center md:flex-row gap-4">
+          {isEditing ? (
+            <>
+              <button
+                onClick={handleUpdate}
+                disabled={isSaving}
+                className="button button--primary flex items-center justify-center gap-2"
+              >
+                <Check size={20} />
+                {isSaving ? "Saving..." : "Save Changes"}
+              </button>
+              <button
+                onClick={handleCancel}
+                className="button button--secondary flex items-center justify-center gap-2"
+              >
+                <X size={20} />
+                Cancel
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="button button--secondary flex items-center justify-center gap-2"
+            >
+              <Edit size={20} />
+              Edit Profile
+            </button>
+          )}
+          <button
+            onClick={handleSignOut}
+            className="button button--danger flex items-center justify-center gap-2"
+          >
+            <LogOut size={20} />
+            Sign Out
+          </button>
+        </div>
       </div>
     </div>
   );
