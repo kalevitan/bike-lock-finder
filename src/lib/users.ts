@@ -5,12 +5,10 @@ import {
   updateDoc,
   serverTimestamp,
   setDoc,
+  onSnapshot,
 } from "firebase/firestore";
 import { db } from "./firebase";
 import type { UserData } from "@/interfaces/user";
-
-// Simple in-memory cache
-const cache = new Map<string, UserData>();
 
 export async function getUserDocument(uid: string): Promise<UserData | null> {
   if (!uid) return null;
@@ -48,8 +46,6 @@ export async function createUserDocument(userData: UserData): Promise<boolean> {
       throw new Error(errorData.message || "Failed to create user document");
     }
 
-    // Update cache
-    cache.set(userData.uid, userData);
     return true;
   } catch (error) {
     console.error("Error creating user document:", error);
@@ -106,43 +102,30 @@ export function useUserDocument(uid: string | null) {
       return;
     }
 
-    const fetchData = async () => {
-      try {
-        const data = await getUserDocument(uid);
-        if (data) {
-          setUserData(data);
+    setIsLoading(true);
+    const userDocRef = doc(db, "users", uid);
+
+    const unsubscribe = onSnapshot(
+      userDocRef,
+      (docSnap) => {
+        if (docSnap.exists()) {
+          setUserData(docSnap.data() as UserData);
         } else {
-          setIsError(true);
+          console.warn("No user document found for UID:", uid);
+          setUserData(null);
         }
-      } catch (error) {
-        console.error("Error in useUserDocument:", error);
+        setIsLoading(false);
+      },
+      (error) => {
+        console.error("Error in useUserDocument listener:", error);
         setIsError(true);
-      } finally {
         setIsLoading(false);
       }
-    };
+    );
 
-    fetchData();
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
   }, [uid]);
 
-  const mutate = async () => {
-    if (!uid) return;
-
-    setIsLoading(true);
-    try {
-      const data = await getUserDocument(uid);
-      if (data) {
-        setUserData(data);
-      } else {
-        setIsError(true);
-      }
-    } catch (error) {
-      console.error("Error in mutate:", error);
-      setIsError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return { userData, isLoading, isError, mutate };
+  return { userData, isLoading, isError };
 }

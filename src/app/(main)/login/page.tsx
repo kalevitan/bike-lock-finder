@@ -13,7 +13,6 @@ import {
 import { auth } from "@/lib/firebase";
 import { useAuth } from "@/contexts/AuthProvider";
 import Loading from "@/app/loading";
-import { useModal } from "@/contexts/ModalProvider";
 import { CheckCircle2, AlertCircle } from "lucide-react";
 import { createUserDocument } from "@/lib/auth";
 
@@ -28,7 +27,6 @@ export default function Login() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, isLoading: authLoading } = useAuth();
-  const { openModal } = useModal();
 
   const handlePasswordReset = async () => {
     if (!email) {
