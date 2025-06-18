@@ -9,7 +9,7 @@
   --primary-white: #f9f9f9;
   --primary-purple: #646cff;
   --primary-gold: #ffd700;
-
+  --primary-red: #e84a4a;
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   font-size: 1rem;
   line-height: 1.5;
@@ -46,6 +46,7 @@ h3,
 h4 {
   color: var(--primary-white);
   font-family: "var(--font-urbanist)", sans-serif;
+  line-height: 1.2;
 }
 
 body {
@@ -80,6 +81,7 @@ input::placeholder {
 .button {
   border-radius: 0.25rem;
   border: 0.0625rem solid transparent;
+  color: var(--primary-white);
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
@@ -92,6 +94,10 @@ input::placeholder {
 
 .button--secondary {
   background-color: var(--primary-light-gray);
+}
+
+.button--danger {
+  background-color: var(--primary-red);
 }
 
 .button:disabled {
@@ -107,7 +113,6 @@ input::placeholder {
 
 .button--icon {
   border-radius: 100%;
-  color: var(--primary-white);
   padding: 0.75rem;
 }
 

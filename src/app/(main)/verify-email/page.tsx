@@ -1,7 +1,6 @@
 "use client";
 
 import { useAuth } from "@/contexts/AuthProvider";
-import { auth } from "@/lib/firebase";
 import { sendEmailVerification } from "firebase/auth";
 import { Mail, AlertCircle, CheckCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -38,7 +37,7 @@ export default function VerifyEmailPage() {
     <div className="w-full md:max-w-[26rem] md:mx-auto">
       <div className="flex flex-col gap-8 text-center">
         <div className="flex flex-col gap-3">
-          <div className="w-20 h-20 mx-auto rounded-full bg-[var(--primary-gray)]/20 flex items-center justify-center">
+          <div className="w-20 h-20 mx-auto rounded-full bg-[var(--primary-light-gray)] flex items-center justify-center">
             <Mail className="w-10 h-10 text-[var(--primary-white)]" />
           </div>
           <h1 className="text-3xl font-bold text-[var(--primary-white)]">
@@ -48,7 +47,7 @@ export default function VerifyEmailPage() {
             A verification link has been sent to your email address. Please
             click the link to activate your account.
           </p>
-          <p className="text-sm text-[var(--primary-gray)]">
+          <p className="text-sm text-[var(--primary-white)]/50">
             (You may need to check your spam folder)
           </p>
         </div>
@@ -71,7 +70,7 @@ export default function VerifyEmailPage() {
           <button
             onClick={handleResend}
             disabled={isSubmitting}
-            className="button button--secondary"
+            className="button button--primary"
           >
             {isSubmitting ? "Sending..." : "Resend Verification Email"}
           </button>

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
@@ -22,12 +23,49 @@ export default function Login() {
   const [displayName, setDisplayName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [formMode, setFormMode] = useState("login");
+  const [formMode, setFormMode] = useState("login"); // "login", "register", "reset-password"
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, isLoading: authLoading } = useAuth();
   const { openModal } = useModal();
+
+  const handlePasswordReset = async () => {
+    if (!email) {
+      setError("Please enter your email address to reset your password.");
+      return;
+    }
+    setError(null);
+    setSuccess(null);
+    setIsSubmitting(true);
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setSuccess("Password reset email sent. Please check your inbox.");
+      setFormMode("login");
+    } catch (err: any) {
+      setError(err.message || "Failed to send password reset email.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handlePasswordValidation = async () => {
+    const uppercaseRegex = /[A-Z]/;
+    const lowercaseRegex = /[a-z]/;
+    const specialCharRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+    const lengthRegex = /^.{8,}$/;
+
+    if (!uppercaseRegex.test(password)) {
+      setError("Password must contain at least one uppercase character.");
+    } else if (!lowercaseRegex.test(password)) {
+      setError("Password must contain at least one lowercase character.");
+    } else if (!specialCharRegex.test(password)) {
+      setError("Password must contain at least one special character.");
+    } else if (!lengthRegex.test(password)) {
+      setError("Password must be at least 8 characters long.");
+    }
+  };
 
   useEffect(() => {
     // Check for message in URL
@@ -50,6 +88,12 @@ export default function Login() {
     setSuccess(null);
     setIsSubmitting(true);
 
+    if (formMode === "reset-password") {
+      await handlePasswordReset();
+      setIsSubmitting(false);
+      return;
+    }
+
     if (formMode === "register") {
       try {
         // 1. Create user with email and password
@@ -71,7 +115,6 @@ export default function Login() {
           email,
           displayName,
           createdAt: new Date().toISOString(),
-          emailVerified: false, // Set to false initially
         });
 
         // 5. Sign the user out to force them to verify
@@ -131,11 +174,24 @@ export default function Login() {
     return null; // Will be redirected by useEffect
   }
 
+  const getTitle = () => {
+    if (formMode === "register") return "Create an Account";
+    if (formMode === "reset-password") return "Reset Your Password";
+    return "Login";
+  };
+
+  const getButtonText = () => {
+    if (isSubmitting) return "Please wait...";
+    if (formMode === "register") return "Create Account";
+    if (formMode === "reset-password") return "Send Reset Link";
+    return "Login";
+  };
+
   return (
     <div className="w-full md:max-w-[26rem] md:mx-auto">
       <div className="flex flex-col text-center">
-        <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight pb-6">
-          {formMode === "login" ? "Login" : "Create an Account"}
+        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight pb-6">
+          {getTitle()}
         </h1>
 
         <form method="post" onSubmit={handleSubmit} className="w-full">
@@ -174,6 +230,15 @@ export default function Login() {
               </div>
             )}
 
+            {formMode === "reset-password" && (
+              <div className="flex flex-col text-left gap-2">
+                <p className="text-center text-[var(--primary-white)]">
+                  To reset your password, enter the
+                  <br /> email address you use to log in.
+                </p>
+              </div>
+            )}
+
             <div className="flex flex-col text-left gap-2">
               <label htmlFor="email" className="text-[var(--primary-white)]">
                 Email
@@ -190,32 +255,47 @@ export default function Login() {
               />
             </div>
 
-            <div className="flex flex-col text-left gap-2">
-              <label htmlFor="password" className="text-[var(--primary-white)]">
-                Password
-              </label>
-              <input
-                type="password"
-                name="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="rounded-[4px]"
-                placeholder="Enter your password"
-                required
-              />
-            </div>
+            {formMode !== "reset-password" && (
+              <div className="flex flex-col text-left gap-2">
+                <label
+                  htmlFor="password"
+                  className="text-[var(--primary-white)]"
+                >
+                  Password
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="rounded-[4px]"
+                  placeholder="Enter your password"
+                  required={formMode !== "reset-password"}
+                />
+              </div>
+            )}
+
+            {formMode === "login" && (
+              <button
+                type="button"
+                className="text-sm text-[var(--primary-white)] hover:underline"
+                onClick={() => {
+                  setFormMode("reset-password");
+                  setError(null);
+                  setSuccess(null);
+                }}
+              >
+                Forgot Password?
+              </button>
+            )}
 
             <button
-              className="button mt-6 text-[var(--primary-white)]"
+              className="button mt-4 text-[var(--primary-white)]"
               type="submit"
               disabled={isSubmitting}
             >
-              {isSubmitting
-                ? "Please wait..."
-                : formMode === "login"
-                  ? "Login"
-                  : "Create Account"}
+              {getButtonText()}
             </button>
           </div>
           <div className="pt-6 pb-4 text-center text-[var(--primary-white)]">
@@ -239,7 +319,9 @@ export default function Login() {
                   setSuccess(null);
                 }}
               >
-                Already have an account? Login here.
+                {formMode === "register"
+                  ? "Already have an account? Login here."
+                  : "Nevermind, take me back to login."}
               </button>
             )}
           </div>

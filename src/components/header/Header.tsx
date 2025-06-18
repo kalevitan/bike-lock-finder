@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { NavLink } from "./NavLink";
 import SearchForm from "@/components/searchform/SearchForm";
 import { CircleX, RotateCcw, Map } from "lucide-react";
-import BikeLockIcon from "@/components/icons/bike-lock-icon";
 import { Search as SearchIcon } from "lucide-react";
 import classes from "./header.module.css";
 import { HeaderProps } from "@/interfaces/header";
@@ -18,14 +17,11 @@ export default function Header({ onSearch, onRecenter }: HeaderProps) {
 
   return (
     <header className="fixed top-0 z-10 w-full flex p-4 items-center text-white bg-[var(--primary-gray)]">
-      <div className="logo md:min-w-72 max-w-72 min-w-fit">
-        <h1 className="font-bold text-[1.25rem]">
-          <span className="font-bold m-0">
-            <NavLink href="/" classes={classes.logo}>
-              {/* <BikeLockIcon /> */}
-              <span className="font-display font-bold text-3xl">Dockly</span>
-            </NavLink>
-          </span>
+      <div className="logo">
+        <h1 className="font-bold text-[1.25rem] m-0">
+          <NavLink href="/" classes={classes.logo}>
+            <span className="font-display font-bold text-3xl">Dockly</span>
+          </NavLink>
         </h1>
       </div>
 

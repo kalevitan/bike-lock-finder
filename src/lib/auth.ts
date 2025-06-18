@@ -1,25 +1,9 @@
 import { NextResponse } from "next/server";
 import { auth } from "./firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import {
-  addDoc,
-  collection,
-  query,
-  where,
-  getDocs,
-  deleteDoc,
-  setDoc,
-  doc,
-} from "firebase/firestore";
+import { setDoc, doc } from "firebase/firestore";
 import { db } from "./firebase";
-
-interface UserDocument {
-  email: string;
-  displayName: string;
-  createdAt: string;
-  photoURL?: string;
-  emailVerified: boolean;
-}
+import type { UserData } from "@/interfaces/user";
 
 export const signIn = async (email: string, password: string) => {
   try {
@@ -55,30 +39,17 @@ export const signOut = async () => {
 
 export async function createUserDocument(
   uid: string,
-  userData: UserDocument
+  userData: Omit<UserData, "uid" | "updatedAt" | "contributions">
 ): Promise<void> {
   try {
-    const userDoc: {
-      uid: string;
-      email: string;
-      displayName: string;
-      createdAt: string;
-      updatedAt: string;
-      emailVerified: boolean;
-      photoURL?: string;
-    } = {
-      uid,
+    const userDoc: Omit<UserData, "uid"> = {
       email: userData.email,
       displayName: userData.displayName,
       createdAt: userData.createdAt,
       updatedAt: new Date().toISOString(),
-      emailVerified: true,
+      photoURL: userData.photoURL || "",
+      contributions: 0,
     };
-
-    // Only add photoURL if it exists
-    if (userData.photoURL) {
-      userDoc.photoURL = userData.photoURL;
-    }
 
     // Use setDoc with the user's UID as the document ID
     await setDoc(doc(db, "users", uid), userDoc);

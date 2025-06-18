@@ -1,16 +1,13 @@
 import { useState, useEffect } from "react";
-import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore";
 import { db } from "./firebase";
-
-export interface UserData {
-  uid: string;
-  email: string;
-  displayName?: string;
-  photoURL?: string;
-  createdAt: string;
-  updatedAt: string;
-  emailVerified: boolean;
-}
+import type { UserData } from "@/interfaces/user";
 
 // Simple in-memory cache
 const cache = new Map<string, UserData>();
@@ -73,6 +70,27 @@ export async function updateUserDocument(
   } catch (error) {
     console.error("Error updating user document:", error);
     throw new Error("Failed to update user profile");
+  }
+}
+
+export async function incrementUserContributions(uid: string): Promise<void> {
+  try {
+    const userDocRef = doc(db, "users", uid);
+    const userDoc = await getDoc(userDocRef);
+
+    if (userDoc.exists()) {
+      const currentContributions = userDoc.data().contributions || 0;
+      await updateDoc(userDocRef, {
+        contributions: currentContributions + 1,
+        updatedAt: serverTimestamp(),
+      });
+    } else {
+      // If user doc somehow doesn't exist, create it with 1 contribution
+      await setDoc(userDocRef, { contributions: 1 }, { merge: true });
+    }
+  } catch (error) {
+    console.error("Error incrementing user contributions:", error);
+    throw new Error("Failed to update contribution count");
   }
 }
 
