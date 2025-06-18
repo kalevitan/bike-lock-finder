@@ -6,8 +6,9 @@ import { MarkerProvider } from "../contexts/MarkerProvider";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { AuthProvider } from "@/contexts/AuthProvider";
-import "./global.css";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { Toaster } from "sonner";
+import "./global.css";
 
 import { Urbanist, Work_Sans } from "next/font/google";
 
@@ -59,6 +60,7 @@ export default function RouteLayout({
         </AuthProvider>
         <Analytics />
         <SpeedInsights />
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID!} />
       </body>
     </html>
   );
