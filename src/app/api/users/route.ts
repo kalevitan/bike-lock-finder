@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/firebase";
-import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
+import { adminDb } from "@/lib/firebase-admin";
+import { FieldValue } from "firebase-admin/firestore";
 import { UserData } from "@/interfaces/user";
 
 export async function GET(request: Request) {
@@ -15,10 +15,10 @@ export async function GET(request: Request) {
       );
     }
 
-    const userRef = doc(db, "users", uid);
-    const userSnap = await getDoc(userRef);
+    const userRef = adminDb.collection("users").doc(uid);
+    const userSnap = await userRef.get();
 
-    if (!userSnap.exists()) {
+    if (!userSnap.exists) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
@@ -40,15 +40,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    let userData: UserData;
-    try {
-      userData = await request.json();
-    } catch (e) {
-      return NextResponse.json(
-        { error: "Invalid request body" },
-        { status: 400 }
-      );
-    }
+    const userData: UserData = await request.json();
 
     if (!userData.uid) {
       return NextResponse.json(
@@ -57,11 +49,11 @@ export async function POST(request: Request) {
       );
     }
 
-    const userRef = doc(db, "users", userData.uid);
-    await setDoc(userRef, {
+    const userRef = adminDb.collection("users").doc(userData.uid);
+    await userRef.set({
       ...userData,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
     });
 
     return NextResponse.json({ success: true });
@@ -78,16 +70,7 @@ export async function PUT(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const uid = searchParams.get("uid");
-    let data: Partial<UserData>;
-
-    try {
-      data = await request.json();
-    } catch (e) {
-      return NextResponse.json(
-        { error: "Invalid request body" },
-        { status: 400 }
-      );
-    }
+    const data: Partial<UserData> = await request.json();
 
     if (!uid) {
       return NextResponse.json(
@@ -96,10 +79,10 @@ export async function PUT(request: Request) {
       );
     }
 
-    const userRef = doc(db, "users", uid);
-    await updateDoc(userRef, {
+    const userRef = adminDb.collection("users").doc(uid);
+    await userRef.update({
       ...data,
-      updatedAt: new Date().toISOString(),
+      updatedAt: FieldValue.serverTimestamp(),
     });
 
     return NextResponse.json({ success: true });
