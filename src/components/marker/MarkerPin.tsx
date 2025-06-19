@@ -3,6 +3,7 @@ import { MarkerProps } from "@/interfaces/markers";
 import MarkerDetails from "./MarkerDetails";
 import BikeLockIcon from "@/components/icons/bike-lock-icon";
 import { useAuth } from "@/contexts/AuthProvider";
+import { getPublicUrl } from "@/utils/storageUtils";
 
 interface MarkerPinProps {
   markerData: MarkerProps;
@@ -28,13 +29,11 @@ export default function MarkerPin({
               return (
                 <div className="w-full h-full relative">
                   <Image
-                    src={markerData.file}
+                    src={getPublicUrl(markerData.file)}
                     width={300}
                     height={300}
-                    sizes="50vw"
                     className="image"
                     alt={`Bike lock location: ${markerData.title}`}
-                    priority={isOpen}
                   />
                 </div>
               );
