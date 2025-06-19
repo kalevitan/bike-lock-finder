@@ -47,7 +47,11 @@ export const uploadImage = async (
       const filename = `${timestamp}-${file.name}`;
       const storageRef = ref(storage, `${path}/${filename}`);
 
-      const uploadTask = uploadBytesResumable(storageRef, file);
+      const metadata = {
+        contentType: file.type,
+      };
+
+      const uploadTask = uploadBytesResumable(storageRef, file, metadata);
 
       uploadTask.on(
         "state_changed",
