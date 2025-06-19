@@ -14,7 +14,7 @@ import { auth } from "@/lib/firebase";
 import { useAuth } from "@/contexts/AuthProvider";
 import Loading from "@/app/loading";
 import { CheckCircle2, AlertCircle } from "lucide-react";
-import { createUserDocument } from "@/lib/auth";
+import { createUserDocument } from "@/lib/users";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -67,7 +67,7 @@ export default function Login() {
 
   useEffect(() => {
     // Check for message in URL
-    const message = searchParams.get("message");
+    const message = searchParams?.get("message");
     if (message) {
       setError(decodeURIComponent(message));
     }
@@ -109,10 +109,14 @@ export default function Login() {
         await sendEmailVerification(newUser);
 
         // 4. Create user document in Firestore
-        await createUserDocument(newUser.uid, {
+        await createUserDocument({
+          uid: newUser.uid,
           email,
           displayName,
           createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          photoURL: "",
+          contributions: 0,
         });
 
         // 5. Sign the user out to force them to verify

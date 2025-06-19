@@ -26,15 +26,27 @@ const useSubmitForm = ({
   closeModal,
   formData,
 }: UseSubmitFormProps) => {
-  const { refreshMarkers } = useMarkerContext();
+  const { refreshMarkers, addOptimisticMarker } = useMarkerContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const { user } = useAuth();
+  const { user, isLoading: isAuthLoading } = useAuth();
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
+
+      if (isAuthLoading) {
+        setError(
+          "Authentication is initializing. Please wait a moment and try again."
+        );
+        return;
+      }
+      if (!user) {
+        setError("You must be logged in to save a location.");
+        return;
+      }
+
       setIsSubmitting(true);
       setError(null);
       setSuccess(null);
@@ -43,7 +55,6 @@ const useSubmitForm = ({
         const url = "/api/markers";
         const method = pointData?.id ? "PUT" : "POST";
 
-        // Upload file first if it exists
         let downloadURL = null;
         if (formData.file instanceof File) {
           downloadURL = await uploadAndCompressImage(formData.file, "images");
@@ -75,7 +86,6 @@ const useSubmitForm = ({
           );
         }
 
-        // Increment user contributions on successful creation
         if (method === "POST" && user) {
           await incrementUserContributions(user.uid);
         }
@@ -105,7 +115,20 @@ const useSubmitForm = ({
           });
         }
 
-        await refreshMarkers();
+        if (method === "POST") {
+          const newMarker = {
+            ...formData,
+            id: responseData.id,
+            file: downloadURL || null,
+            author: user?.uid,
+            isOpen: false,
+            onClick: () => {},
+            onClose: () => {},
+            onEditPoint: () => {},
+          } as MarkerProps;
+          addOptimisticMarker(newMarker);
+        }
+
         setSuccess("Location saved successfully!");
         closeModal();
       } catch (err) {
@@ -116,10 +139,18 @@ const useSubmitForm = ({
         setIsSubmitting(false);
       }
     },
-    [pointData, setMarkers, closeModal, formData, refreshMarkers]
+    [
+      pointData,
+      setMarkers,
+      closeModal,
+      formData,
+      user,
+      addOptimisticMarker,
+      isAuthLoading,
+    ]
   );
 
-  return { handleSubmit, isSubmitting, error, success };
+  return { handleSubmit, isSubmitting, error, success, isAuthLoading };
 };
 
 export default useSubmitForm;

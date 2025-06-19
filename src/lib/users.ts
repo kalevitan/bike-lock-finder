@@ -1,26 +1,23 @@
 import { useState, useEffect } from "react";
-import {
-  doc,
-  getDoc,
-  updateDoc,
-  serverTimestamp,
-  setDoc,
-  onSnapshot,
-} from "firebase/firestore";
-import { db } from "./firebase";
 import type { UserData } from "@/interfaces/user";
 
 export async function getUserDocument(uid: string): Promise<UserData | null> {
   if (!uid) return null;
   try {
-    const userDocRef = doc(db, "users", uid);
-    const userDocSnap = await getDoc(userDocRef);
-    if (userDocSnap.exists()) {
-      return userDocSnap.data() as UserData;
-    } else {
-      console.warn("No user document found for UID:", uid);
-      return null;
+    const response = await fetch(`/api/users?uid=${uid}`, {
+      method: "GET",
+    });
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        console.warn("No user document found for UID:", uid);
+        return null;
+      }
+      throw new Error(`Failed to fetch user document: ${response.status}`);
     }
+
+    const userData = await response.json();
+    return userData as UserData;
   } catch (error) {
     console.error("Error fetching user document:", error);
     return null;
@@ -58,11 +55,18 @@ export async function updateUserDocument(
   data: Partial<UserData>
 ): Promise<void> {
   try {
-    const userDocRef = doc(db, "users", uid);
-    await updateDoc(userDocRef, {
-      ...data,
-      updatedAt: serverTimestamp(),
+    const response = await fetch("/api/users", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ uid, ...data }),
     });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to update user document");
+    }
   } catch (error) {
     console.error("Error updating user document:", error);
     throw new Error("Failed to update user profile");
@@ -71,18 +75,17 @@ export async function updateUserDocument(
 
 export async function incrementUserContributions(uid: string): Promise<void> {
   try {
-    const userDocRef = doc(db, "users", uid);
-    const userDoc = await getDoc(userDocRef);
+    const response = await fetch("/api/users/increment-contributions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ uid }),
+    });
 
-    if (userDoc.exists()) {
-      const currentContributions = userDoc.data().contributions || 0;
-      await updateDoc(userDocRef, {
-        contributions: currentContributions + 1,
-        updatedAt: serverTimestamp(),
-      });
-    } else {
-      // If user doc somehow doesn't exist, create it with 1 contribution
-      await setDoc(userDocRef, { contributions: 1 }, { merge: true });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to increment contributions");
     }
   } catch (error) {
     console.error("Error incrementing user contributions:", error);
@@ -102,29 +105,38 @@ export function useUserDocument(uid: string | null) {
       return;
     }
 
-    setIsLoading(true);
-    const userDocRef = doc(db, "users", uid);
+    let isMounted = true;
 
-    const unsubscribe = onSnapshot(
-      userDocRef,
-      (docSnap) => {
-        if (docSnap.exists()) {
-          setUserData(docSnap.data() as UserData);
-        } else {
-          console.warn("No user document found for UID:", uid);
-          setUserData(null);
+    const fetchUserData = async () => {
+      try {
+        setIsLoading(true);
+        setIsError(false);
+        const data = await getUserDocument(uid);
+
+        if (isMounted) {
+          if (data) {
+            setUserData(data);
+          } else {
+            console.warn("No user document found for UID:", uid);
+            setUserData(null);
+          }
+          setIsLoading(false);
         }
-        setIsLoading(false);
-      },
-      (error) => {
-        console.error("Error in useUserDocument listener:", error);
-        setIsError(true);
-        setIsLoading(false);
+      } catch (error) {
+        console.error("Error in useUserDocument:", error);
+        if (isMounted) {
+          setIsError(true);
+          setIsLoading(false);
+        }
       }
-    );
+    };
 
-    // Cleanup subscription on unmount
-    return () => unsubscribe();
+    fetchUserData();
+
+    // Cleanup function
+    return () => {
+      isMounted = false;
+    };
   }, [uid]);
 
   return { userData, isLoading, isError };

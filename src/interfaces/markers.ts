@@ -3,6 +3,7 @@ export interface MarkerContextProps {
   setMarkers: React.Dispatch<React.SetStateAction<MarkerProps[]>>;
   isLoading: boolean;
   refreshMarkers: () => Promise<void>;
+  addOptimisticMarker: (marker: MarkerProps) => void;
 }
 
 export interface MarkerData {

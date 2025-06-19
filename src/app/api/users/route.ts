@@ -22,15 +22,16 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const response = NextResponse.json(userSnap.data());
-    // Cache for 5 minutes
+    const data = userSnap.data();
+
+    const response = NextResponse.json(data);
     response.headers.set(
       "Cache-Control",
       "public, s-maxage=300, stale-while-revalidate=600"
     );
     return response;
   } catch (error) {
-    console.error("Error getting user:", error);
+    console.error("Error fetching user:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -68,9 +69,8 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const uid = searchParams.get("uid");
-    const data: Partial<UserData> = await request.json();
+    const data = await request.json();
+    const { uid, ...updateData } = data;
 
     if (!uid) {
       return NextResponse.json(
@@ -81,7 +81,7 @@ export async function PUT(request: Request) {
 
     const userRef = adminDb.collection("users").doc(uid);
     await userRef.update({
-      ...data,
+      ...updateData,
       updatedAt: FieldValue.serverTimestamp(),
     });
 

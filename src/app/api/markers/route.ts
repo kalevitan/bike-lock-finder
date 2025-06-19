@@ -10,7 +10,13 @@ export async function GET() {
       ...doc.data(),
     }));
 
-    return NextResponse.json(markers);
+    const response = NextResponse.json(markers);
+    // Cache for 5 minutes on the edge, and allow stale data to be served while revalidating
+    response.headers.set(
+      "Cache-Control",
+      "public, s-maxage=300, stale-while-revalidate=600"
+    );
+    return response;
   } catch (e) {
     const error = e as Error;
     console.error("Error fetching markers:", error);

@@ -1,5 +1,5 @@
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { storage } from "./firebase";
+import { storage, auth } from "./firebase";
 import imageCompression from "browser-image-compression";
 
 const validateFile = (file: File): string | null => {
@@ -81,6 +81,13 @@ export const uploadAndCompressImage = async (
   file: File,
   path: string
 ): Promise<string> => {
+  // First, check if the user is authenticated according to Firebase
+  if (!auth.currentUser) {
+    throw new Error(
+      "You must be logged in to upload images. Please refresh the page and try again."
+    );
+  }
+
   const validationError = validateFile(file);
   if (validationError) {
     throw new Error(validationError);
