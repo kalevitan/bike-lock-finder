@@ -5,16 +5,25 @@ import { getStorage } from "firebase/storage";
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import { getAnalytics } from "firebase/analytics";
 
+// Helper function to get environment variables and throw a clear error if they are missing
+const getEnvVar = (key: string): string => {
+  const value = process.env[key];
+  if (!value) {
+    // This error will be thrown both on the server and in the browser console
+    throw new Error(`Missing required environment variable: ${key}`);
+  }
+  return value;
+};
+
 // Explicitly type the environment variables
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY as string,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN as string,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID as string,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET as string,
-  messagingSenderId: process.env
-    .NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID as string,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID as string,
-  measurementId: process.env.NEXT_PUBLIC_GA_ID as string,
+  apiKey: getEnvVar("NEXT_PUBLIC_FIREBASE_API_KEY"),
+  authDomain: getEnvVar("NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN"),
+  projectId: getEnvVar("NEXT_PUBLIC_FIREBASE_PROJECT_ID"),
+  storageBucket: getEnvVar("NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET"),
+  messagingSenderId: getEnvVar("NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID"),
+  appId: getEnvVar("NEXT_PUBLIC_FIREBASE_APP_ID"),
+  measurementId: getEnvVar("NEXT_PUBLIC_GA_ID"),
 };
 
 export const app = initializeApp(firebaseConfig);
@@ -34,7 +43,7 @@ if (typeof window !== "undefined") {
     (self as any).FIREBASE_APPCHECK_DEBUG_TOKEN = true;
     const appCheck = initializeAppCheck(app, {
       provider: new ReCaptchaV3Provider(
-        process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY as string
+        getEnvVar("NEXT_PUBLIC_RECAPTCHA_SITE_KEY")
       ),
       isTokenAutoRefreshEnabled: true,
     });
