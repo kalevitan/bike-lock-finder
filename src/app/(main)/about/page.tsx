@@ -43,31 +43,31 @@ export default function About() {
       <section className="space-y-8 text-center">
         <h2 className="text-3xl md:text-4xl font-bold">How It Works</h2>
         <div className="grid md:grid-cols-3 gap-8 pt-4">
-          <div className="flex flex-col items-center gap-3 p-6 rounded-lg">
-            <Search size={32} className="text-[var(--primary-purple)]" />
+          <div className="flex flex-col items-center gap-3 p-8 rounded-lg bg-[var(--primary-purple)] hover:scale-105 transition-all duration-300">
+            <Search size={40} className="text-[var(--primary-white)]" />
             <h3 className="text-xl font-semibold mt-2">1. Find a Spot</h3>
-            <p className="text-neutral-400">
+            <p>
               Use our interactive map to find safe, user-verified bike lock
               locations near you.
             </p>
           </div>
-          <div className="flex flex-col items-center gap-3 p-6 rounded-lg">
+          <div className="flex flex-col items-center gap-3 p-8 rounded-lg bg-[var(--primary-purple)] hover:scale-105 transition-all duration-300">
             <MapPinPlusInside
-              size={32}
-              className="text-[var(--primary-purple)]"
+              size={40}
+              className="text-[var(--primary-white)]"
             />
             <h3 className="text-xl font-semibold mt-2">2. Add a New Lock</h3>
-            <p className="text-neutral-400">
+            <p>
               Found a great spot that's not on the map? Add it in seconds to
               help fellow cyclists.
             </p>
           </div>
-          <div className="flex flex-col items-center gap-3 p-6 rounded-lg">
-            <Users size={32} className="text-[var(--primary-purple)]" />
+          <div className="flex flex-col items-center gap-3 p-8 rounded-lg bg-[var(--primary-purple)] hover:scale-105 transition-all duration-300">
+            <Users size={40} className="text-[var(--primary-white)]" />
             <h3 className="text-xl font-semibold mt-2">
               3. Grow the Community
             </h3>
-            <p className="text-neutral-400">
+            <p>
               Every contribution makes our community stronger and our streets
               safer for everyone.
             </p>

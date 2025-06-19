@@ -47,6 +47,7 @@ export const uploadImage = async (
       const filename = `${timestamp}-${file.name}`;
       const storageRef = ref(storage, `${path}/${filename}`);
 
+      // Cloud storage is setting improper metadata, so we need to manually set the content type in order to make it cacheable
       const metadata = {
         contentType: file.type,
       };
