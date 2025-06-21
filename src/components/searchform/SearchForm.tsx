@@ -118,7 +118,7 @@ const SearchForm = memo(function SearchForm({
         name="search"
         value={searchInput}
         onChange={(e) => setSearchInput?.(e.target.value)}
-        className="w-full rounded-xl h-[44px] px-4 py-3 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[var(--primary-purple)] focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-[var(--primary-gray)] placeholder:text-[var(--primary-gray)]/60"
+        className="w-full rounded-xl h-[44px] px-4 py-3 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[var(--primary-purple)] focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-[var(--primary-gray)] placeholder:text-gray-500 md:!text-[var(--primary-gray)]"
         placeholder="Search locations..."
       />
       {searchInput ? (

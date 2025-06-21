@@ -8,6 +8,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { AuthProvider } from "@/contexts/AuthProvider";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { Toaster } from "sonner";
+import ClientProviders from "@/components/providers/ClientProviders";
 import "./global.css";
 
 import { Urbanist, Work_Sans } from "next/font/google";
@@ -50,14 +51,16 @@ export default function RouteLayout({
         className={`${urbanist.variable} ${workSans.variable}`}
         style={{ overscrollBehaviorX: "auto" }}
       >
-        <AuthProvider>
-          <MapProvider>
-            <MarkerProvider>
-              <ModalProvider>{children}</ModalProvider>
-            </MarkerProvider>
-            <Toaster richColors position="top-center" />
-          </MapProvider>
-        </AuthProvider>
+        <ClientProviders>
+          <AuthProvider>
+            <MapProvider>
+              <MarkerProvider>
+                <ModalProvider>{children}</ModalProvider>
+              </MarkerProvider>
+              <Toaster richColors position="top-center" />
+            </MapProvider>
+          </AuthProvider>
+        </ClientProviders>
         <Analytics />
         <SpeedInsights />
         <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID!} />

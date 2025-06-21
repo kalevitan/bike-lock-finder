@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { APIProvider, Map } from "@vis.gl/react-google-maps";
+import { Map } from "@vis.gl/react-google-maps";
 import Header from "@/components/header/Header";
 import { useMapContext } from "@/contexts/MapProvider";
 import { getLocation } from "@/utils/locationutils";
@@ -13,15 +13,7 @@ import { useModal } from "@/contexts/ModalProvider";
 import { useIsMobile } from "./hooks/useIsMobile";
 
 export default function Points() {
-  const {
-    apiKey,
-    libraries,
-    version,
-    mapId,
-    mapTypeId,
-    defaultCenter,
-    defaultZoom,
-  } = useMapContext();
+  const { mapId, mapTypeId, defaultCenter, defaultZoom } = useMapContext();
   const [location, setLocation] = useState<{
     lat: number;
     lng: number;
@@ -76,7 +68,7 @@ export default function Points() {
   }, [openModal]);
 
   return (
-    <APIProvider apiKey={apiKey} libraries={libraries} version={version}>
+    <>
       {isMobile && (
         <Header onSearch={handleSearch} onRecenter={handleRecenter} />
       )}
@@ -115,6 +107,6 @@ export default function Points() {
           </div>
         </div>
       </main>
-    </APIProvider>
+    </>
   );
 }
