@@ -26,7 +26,7 @@ export default function Header({ onSearch, onRecenter }: HeaderProps) {
       </div>
 
       <div className="flex w-full justify-end">
-        <div className="search-wrapper flex gap-4 items-center">
+        <div className="search-wrapper flex gap-6 items-center">
           {isMapPage ? (
             <>
               {isSearchOpen ? (
