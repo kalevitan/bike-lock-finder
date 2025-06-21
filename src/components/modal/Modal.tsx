@@ -3,7 +3,7 @@
 // import { useRouter } from "next/navigation";
 import React, { useRef, useState } from "react";
 import classes from "./modal.module.css";
-import { X, ChevronDown } from "lucide-react";
+import { X } from "lucide-react";
 import { ModalProps } from "@/interfaces/modal";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
 
@@ -21,8 +21,8 @@ export function Modal({ title, children, closeModal, isOpen }: ModalProps) {
     info: PanInfo
   ) => {
     setIsDragging(false);
-    // If dragged down more than 100px, close the modal
-    if (info.offset.y > 100) {
+    // If dragged down more than 200px, close the modal
+    if (info.offset.y > 200) {
       closeModal();
     }
   };
@@ -77,13 +77,6 @@ export function Modal({ title, children, closeModal, isOpen }: ModalProps) {
                 {title}
               </h2>
               <div className="flex items-center gap-2">
-                <button
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
-                  onClick={closeHandler}
-                  title="Slide down to close"
-                >
-                  <ChevronDown className="w-5 h-5 text-[var(--primary-gray)]" />
-                </button>
                 <button
                   className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
                   onClick={closeHandler}

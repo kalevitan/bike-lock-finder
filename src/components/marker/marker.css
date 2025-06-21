@@ -2,7 +2,7 @@
 .bike-lock-marker {
   position: relative;
   cursor: pointer;
-  max-width: 320px;
+  max-width: 350px;
   transform: translateY(-5px);
   transition: transform 0.2s ease;
 }
@@ -146,7 +146,7 @@
   border: 2px solid var(--steel-blue);
   border-radius: 12px;
   padding: 0;
-  width: 240px;
+  width: 250px;
   max-width: calc(100vw - 40px);
 
   box-shadow:
@@ -242,7 +242,7 @@
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .pin-details {
-    width: 220px;
+    width: 240px;
     margin-top: 6px;
   }
 

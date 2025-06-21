@@ -20,6 +20,7 @@ import {
   AlertCircle,
   CheckCircle2,
   Mail,
+  Calendar,
 } from "lucide-react";
 
 export default function Account() {
@@ -242,9 +243,10 @@ export default function Account() {
                 <input
                   ref={displayNameInputRef}
                   type="text"
+                  name="displayName"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  className="text-center text-2xl font-bold bg-transparent border-b-2 border-gray-200 focus:border-[var(--primary-purple)] focus:outline-none transition-colors duration-200 text-[var(--primary-gray)] px-4 py-2"
+                  className="text-center text-2xl font-bold bg-transparent border-b-2 w-full border-gray-200 focus:border-[var(--primary-purple)] focus:outline-none transition-colors duration-200 text-[var(--primary-gray)] px-4 py-2"
                 />
               </div>
             ) : (
@@ -319,10 +321,13 @@ export default function Account() {
           </div>
         </div>
 
-        {/* Footer */}
+        {/* Member footer */}
         <div className="text-center mt-6">
-          <p className="text-[var(--primary-white)]/50 text-xs">
-            Member since {new Date(userData.createdAt).toLocaleDateString()}
+          <p className="flex items-center justify-center text-[var(--primary-white)]/50 text-xs">
+            <Calendar size={12} />
+            <span className="ml-1">
+              Member since {new Date(userData.createdAt).toLocaleDateString()}
+            </span>
           </p>
         </div>
       </div>

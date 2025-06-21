@@ -6,6 +6,7 @@ import {
   Search,
   MapPinPlusInside,
   Users,
+  Map,
 } from "lucide-react";
 
 export default function About() {
@@ -20,7 +21,7 @@ export default function About() {
                 <div className="inline-block py-2 bg-[var(--accent-mint)]/10 text-[var(--primary-purple)] rounded-full text-sm font-semibold">
                   Community-Driven
                 </div>
-                <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-[var(--primary-gray)] leading-tight">
+                <h1 className="text-4xl md:text-6xl font-black tracking-tight text-[var(--primary-gray)] leading-tight">
                   Our Mission
                 </h1>
                 <div className="w-20 h-1 bg-gradient-to-r from-[var(--accent-mint)] to-[var(--primary-purple)] rounded-full"></div>
@@ -31,23 +32,31 @@ export default function About() {
                   locate safe and reliable bike lock stations around town.
                 </p>
                 <p className="text-lg text-[var(--primary-gray)] leading-relaxed">
-                  Whether you're commuting or exploring, our interactive map
+                  Whether you're commuting or exploring, our{" "}
+                  <span className="font-semibold text-[var(--accent-mint)]">
+                    interactive map
+                  </span>{" "}
                   provides the information you need to secure your bike with
-                  confidence. Built by cyclists, for cyclists.
+                  confidence. Built by{" "}
+                  <span className="font-semibold text-[var(--primary-purple)]">
+                    cyclists, for cyclists
+                  </span>
+                  .
                 </p>
               </div>
-              <div className="flex gap-4">
+              <div className="flex gap-4 justify-evenly md:justify-start">
                 <Link
                   href="/login"
                   className="button button--accent flex items-center gap-2"
                 >
                   <UserRound size={16} />
-                  Get Started
+                  Sign Up
                 </Link>
                 <Link
                   href="/"
                   className="button button--outline flex items-center gap-2"
                 >
+                  <Map size={16} />
                   View Map
                 </Link>
               </div>
@@ -59,7 +68,7 @@ export default function About() {
                   src="/images/bike-lock-about.jpg"
                   alt="A black and white photo of a bike rack"
                   fill
-                  className="rounded-2xl shadow-2xl object-cover"
+                  className="rounded-2xl shadow object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-br from-[var(--accent-mint)]/20 to-[var(--primary-purple)]/20 rounded-2xl"></div>
               </div>
@@ -75,10 +84,10 @@ export default function About() {
       <section className="py-20 bg-gradient-to-br from-[var(--primary-gray)] to-[var(--deep-purple)]">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           <div className="text-center space-y-4 mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold text-[var(--primary-white)]">
+            <h2 className="text-3xl md:text-5xl font-black text-[var(--primary-white)]">
               How It Works
             </h2>
-            <p className="text-xl text-[var(--primary-white)] max-w-2xl mx-auto">
+            <p className="text-xl text-[var(--primary-white)] font-light max-w-2xl mx-auto">
               Three simple steps to find and share secure bike parking
             </p>
           </div>
@@ -92,9 +101,12 @@ export default function About() {
                 <h3 className="text-2xl font-bold text-[var(--primary-gray)] mb-4">
                   Find a Spot
                 </h3>
-                <p className="text-[var(--primary-gray)] leading-relaxed">
-                  Use our interactive map to discover safe, user-verified bike
-                  lock locations near you.
+                <p className="text-[var(--primary-gray)] leading-relaxed font-medium">
+                  Use our interactive map to discover{" "}
+                  <span className="font-semibold text-[var(--primary-purple)]">
+                    safe, user-verified
+                  </span>{" "}
+                  bike lock locations near you.
                 </p>
                 <div className="mt-6 text-[var(--primary-purple)] font-semibold">
                   Step 1 →
@@ -110,9 +122,12 @@ export default function About() {
                 <h3 className="text-2xl font-bold text-[var(--primary-gray)] mb-4">
                   Add a New Lock
                 </h3>
-                <p className="text-[var(--primary-gray)] leading-relaxed">
-                  Found a great spot that's not on the map? Add it in seconds to
-                  help fellow cyclists.
+                <p className="text-[var(--primary-gray)] leading-relaxed font-medium">
+                  Found a great spot that's not on the map?{" "}
+                  <span className="font-semibold text-[var(--accent-mint)]">
+                    Add it in seconds
+                  </span>{" "}
+                  to help fellow cyclists.
                 </p>
                 <div className="mt-6 text-[var(--primary-purple)] font-semibold">
                   Step 2 →
@@ -128,9 +143,16 @@ export default function About() {
                 <h3 className="text-2xl font-bold text-[var(--primary-gray)] mb-4">
                   Grow the Community
                 </h3>
-                <p className="text-[var(--primary-gray)] leading-relaxed">
-                  Every contribution makes our community stronger and our
-                  streets safer for everyone.
+                <p className="text-[var(--primary-gray)] leading-relaxed font-medium">
+                  Every contribution makes our community{" "}
+                  <span className="font-semibold text-[var(--primary-purple)]">
+                    stronger
+                  </span>{" "}
+                  and our streets{" "}
+                  <span className="font-semibold text-[var(--accent-mint)]">
+                    safer
+                  </span>{" "}
+                  for everyone.
                 </p>
                 <div className="mt-6 text-[var(--primary-purple)] font-semibold">
                   Step 3 ✓
@@ -163,7 +185,7 @@ export default function About() {
                   className="button button--accent flex items-center gap-2 justify-center"
                 >
                   <UserRound size={16} />
-                  Join the Community
+                  Join Us
                 </Link>
                 <Link
                   href="https://github.com/kalevitan/bike-lock-finder/issues"

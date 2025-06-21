@@ -14,10 +14,10 @@ function MainLayout({ children }: { children: React.ReactNode }) {
       <Header />
       <main className="flex-1 overflow-y-auto">
         {pathname === "/" ? <MapProvider>{children}</MapProvider> : children}
+        <div className="text-center py-6 text-white/50 text-sm">
+          © {currentYear} Dockly. All rights reserved.
+        </div>
       </main>
-      {/* <footer className="text-center py-6 text-neutral-500 text-sm">
-        © {currentYear} Dockly. All rights reserved.
-      </footer> */}
     </div>
   );
 }

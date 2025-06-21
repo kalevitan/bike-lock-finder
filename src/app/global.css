@@ -74,11 +74,6 @@ p {
   color: var(--primary-white);
 }
 
-/* nav ul {
-  margin-left: 0;
-  padding-left: 0;
-} */
-
 /* Override text colors for white sections */
 .text-dark h1,
 .text-dark h2,
@@ -135,7 +130,7 @@ input::placeholder {
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   box-sizing: border-box;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.102);
   text-transform: uppercase;
   letter-spacing: 0.025em;
 }
@@ -170,7 +165,12 @@ input::placeholder {
   background-color: transparent;
   border: 2px solid var(--accent-mint);
   color: var(--accent-mint);
-  transition: all 0.2s ease-in-out;
+}
+
+.button--outline--dark {
+  background-color: transparent;
+  border: 2px solid var(--primary-gray);
+  color: var(--primary-gray);
 }
 
 .button:disabled {
@@ -220,10 +220,6 @@ input::placeholder {
   grid-template-rows: max-content 1fr;
   grid-template-columns: max-content 1fr;
   height: 100dvh;
-}
-
-.gm-title {
-  color: #333;
 }
 
 /* Updated utility classes with new palette */

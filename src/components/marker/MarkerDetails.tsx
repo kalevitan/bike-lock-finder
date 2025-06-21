@@ -68,25 +68,31 @@ export default function MarkerDetails({
         </div>
 
         {/* Description */}
-        <p className="details-description">{details.description}</p>
+        {details.description && (
+          <p className="details-description">{details.description}</p>
+        )}
 
         {/* Rating and Edit Section */}
         <div className="details-footer">
-          <div className="details-rating">
-            <span className="rating-stars">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <Star
-                  key={index}
-                  size="16"
-                  color={
-                    index < details.rating ? "var(--primary-gold)" : "#d1d5db"
-                  }
-                  fill={index < details.rating ? "var(--primary-gold)" : "none"}
-                />
-              ))}
-            </span>
-            <span className="rating-badge">{details.rating}.0</span>
-          </div>
+          {details.rating && details.rating > 0 && (
+            <div className="details-rating">
+              <span className="rating-stars">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <Star
+                    key={index}
+                    size="16"
+                    color={
+                      index < details.rating ? "var(--primary-gold)" : "#d1d5db"
+                    }
+                    fill={
+                      index < details.rating ? "var(--primary-gold)" : "none"
+                    }
+                  />
+                ))}
+              </span>
+              <span className="rating-badge">{details.rating}.0</span>
+            </div>
+          )}
 
           {isAuthenticated && (
             <button className="details-edit-button" onClick={handleEditClick}>

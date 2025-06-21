@@ -1,14 +1,19 @@
 import React from "react";
 import { Star } from "lucide-react";
-import classes from "./addlock.module.css";
 
 interface RatingProps {
   rating: number;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   disabled: boolean;
+  formMode: string;
 }
 
-export default function Rating({ rating, onChange, disabled }: RatingProps) {
+export default function Rating({
+  rating,
+  onChange,
+  disabled,
+  formMode,
+}: RatingProps) {
   return (
     <div className="space-y-3">
       <label className="block text-sm font-semibold text-[var(--primary-gray)]">
@@ -47,7 +52,7 @@ export default function Rating({ rating, onChange, disabled }: RatingProps) {
           </div>
         ))}
       </div>
-      {rating > 0 && (
+      {rating > 0 && formMode === "add" && (
         <p className="text-sm font-medium text-[var(--primary-gray)] bg-[var(--primary-gold)]/10 px-3 py-2 rounded-lg border border-[var(--primary-gold)]/20">
           You rated this lock {rating} out of 5 stars
         </p>

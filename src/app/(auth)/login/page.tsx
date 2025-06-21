@@ -365,13 +365,6 @@ export default function Login() {
             </div>
           </form>
         </div>
-
-        {/* Footer */}
-        <div className="text-center mt-8">
-          <p className="text-[var(--primary-white)]/60 text-xs">
-            © 2025 Dockly. All rights reserved.
-          </p>
-        </div>
       </div>
     </div>
   );

@@ -1,6 +1,5 @@
 .sidebar {
   background: linear-gradient(145deg, var(--primary-gray) 0%, #252349 100%);
-  border: 2px solid var(--steel-blue);
   box-shadow: 0 8px 32px rgba(43, 42, 82, 0.4);
   z-index: 15;
   width: 100%;
@@ -15,6 +14,7 @@
   border-bottom-right-radius: 0;
 
   @media (min-width: 768px) {
+    border: 2px solid var(--steel-blue);
     position: fixed;
     width: 22rem;
     height: fit-content;

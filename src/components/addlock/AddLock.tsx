@@ -418,6 +418,7 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
             rating={formData.rating}
             onChange={handleRatingChange}
             disabled={formMode == "edit" && !expandGeometry}
+            formMode={formMode || "add"}
           />
         </div>
 
