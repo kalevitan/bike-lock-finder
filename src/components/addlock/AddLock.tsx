@@ -251,8 +251,8 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
 
   return (
     <div className="add-point">
-      <form method="post" className="space-y-4 text-black" onSubmit={onSubmit}>
-        <div className="grid grid-cols-1 gap-4">
+      <form method="post" className="space-y-6" onSubmit={onSubmit}>
+        <div className="space-y-5">
           <FormField
             label="Title"
             type="text"
@@ -264,27 +264,34 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
           />
 
           {expandGeometry && (
-            <div className="flex flex-col text-left">
-              <label htmlFor="search" className="mb-2">
-                Location<span className="text-red-500">*</span>
+            <div className="space-y-2">
+              <label
+                htmlFor="search"
+                className="block text-sm font-semibold text-[var(--primary-gray)]"
+              >
+                Location<span className="text-red-500 ml-1">*</span>
               </label>
-              <div className="grid grid-cols-[3fr_50px] gap-3 items-center">
-                <SearchForm
-                  onSearch={handleOnSearch}
-                  searchInput={searchInput}
-                  setSearchInput={setSearchInput}
-                  onRecenter={() => {}}
-                  shouldFocus={true}
-                />
-                <div className="text-left h-full">
-                  <button
-                    onClick={locateMe}
-                    className="w-full h-full flex items-center justify-center rounded-[0.25rem] border border-[#6b7280]"
-                  >
-                    <Locate color="#6b7280" />
-                  </button>
-                  <span className="sr-only">Locate me</span>
+              <div className="grid grid-cols-[1fr_auto] gap-3 items-end">
+                <div className="flex-1">
+                  <SearchForm
+                    onSearch={handleOnSearch}
+                    searchInput={searchInput}
+                    setSearchInput={setSearchInput}
+                    onRecenter={() => {}}
+                    shouldFocus={true}
+                  />
                 </div>
+                <button
+                  onClick={locateMe}
+                  className="h-[44px] w-[44px] flex items-center justify-center rounded-xl border-2 border-[var(--steel-blue)]/30 hover:border-[var(--primary-purple)] hover:bg-[var(--primary-purple)]/10 transition-all duration-200 group"
+                  title="Use my current location"
+                >
+                  <Locate
+                    size={20}
+                    className="text-[var(--steel-blue)] group-hover:text-[var(--primary-purple)] transition-colors duration-200"
+                  />
+                  <span className="sr-only">Locate me</span>
+                </button>
               </div>
             </div>
           )}
@@ -311,62 +318,92 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
               />
             </div>
           )}
-          <FormField
-            label="Image"
-            type="file"
-            name="file-image"
-            value={fileUrl || undefined}
-            onFileChange={handleFileChange}
-            required={false}
-            disabled={isUploading}
-            hidden={true}
-          />
-          {fileUrl && fileUrl.startsWith("http") ? (
-            <div className="relative mt-2 hover:opacity-70 transition-opacity duration-300 cursor-pointer">
-              <Image
-                src={fileUrl}
-                alt="Bike lock image"
-                width={300}
-                height={300}
-                className="w-full h-[300px] object-cover object-center rounded-[0.25rem] border border-[#6b7280]"
-                onClick={() => {
-                  if (expandGeometry) {
-                    document.getElementById("file-image")?.click();
-                  } else {
-                    window.open(fileUrl, "_blank");
-                  }
-                }}
-              />
-              {isUploading && (
-                <div className="absolute inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center rounded-md">
-                  <div className="text-white">Uploading...</div>
+
+          {/* Image Upload Section */}
+          <div className="space-y-2">
+            <FormField
+              label="Image"
+              type="file"
+              name="file-image"
+              value={fileUrl || undefined}
+              onFileChange={handleFileChange}
+              required={false}
+              disabled={isUploading}
+              hidden={true}
+            />
+
+            {fileUrl && fileUrl.startsWith("http") ? (
+              <div className="relative group">
+                <div className="relative overflow-hidden rounded-xl border-2 border-[var(--steel-blue)]/20 shadow-lg">
+                  <Image
+                    src={fileUrl}
+                    alt="Bike lock image"
+                    width={300}
+                    height={300}
+                    className="w-full h-[240px] object-cover cursor-pointer transition-transform duration-200 group-hover:scale-105"
+                    onClick={() => {
+                      if (expandGeometry) {
+                        document.getElementById("file-image")?.click();
+                      } else {
+                        window.open(fileUrl, "_blank");
+                      }
+                    }}
+                  />
+                  {isUploading && (
+                    <div className="absolute inset-0 bg-[var(--primary-gray)]/80 flex items-center justify-center rounded-xl">
+                      <div className="text-[var(--primary-white)] font-medium">
+                        Uploading...
+                      </div>
+                    </div>
+                  )}
+                  {expandGeometry && (
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                      <div className="bg-[var(--primary-white)] text-[var(--primary-gray)] px-3 py-1 rounded-full text-sm font-medium">
+                        Click to change
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          ) : (
-            <div className="flex flex-col text-left">
-              <label htmlFor="file-image" className="mb-2">
-                Image
-              </label>
-              <div className="relative">
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-[var(--primary-gray)]">
+                  Image
+                </label>
                 <button
                   type="button"
                   onClick={() => document.getElementById("file-image")?.click()}
-                  className={`w-full p-8 border rounded-md flex items-center justify-center ${
+                  className={`w-full p-8 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-3 transition-all duration-200 ${
                     expandGeometry
-                      ? "cursor-pointer border-[#6b7280] hover:opacity-70 transition-opacity duration-300"
-                      : "cursor-not-allowed border-[#d1d5db]"
+                      ? "border-[var(--steel-blue)]/40 hover:border-[var(--primary-purple)] hover:bg-[var(--primary-purple)]/5 cursor-pointer group"
+                      : "border-gray-300 cursor-not-allowed bg-gray-50"
                   }`}
                   disabled={formMode === "edit" && !expandGeometry}
                 >
                   <ImagePlus
-                    color={expandGeometry ? "#6b7280" : "#d1d5db"}
                     size={32}
+                    className={
+                      expandGeometry
+                        ? "text-[var(--steel-blue)] group-hover:text-[var(--primary-purple)] transition-colors duration-200"
+                        : "text-gray-400"
+                    }
                   />
+                  <span
+                    className={`text-sm font-medium ${
+                      expandGeometry
+                        ? "text-[var(--primary-gray)] group-hover:text-[var(--primary-purple)]"
+                        : "text-gray-400"
+                    }`}
+                  >
+                    {expandGeometry
+                      ? "Click to add an image"
+                      : "Image upload disabled"}
+                  </span>
                 </button>
               </div>
-            </div>
-          )}
+            )}
+          </div>
+
           <FormField
             label="Description"
             type="textarea"
@@ -376,6 +413,7 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
             required={false}
             disabled={formMode == "edit" && !expandGeometry}
           />
+
           <Rating
             rating={formData.rating}
             onChange={handleRatingChange}
@@ -383,44 +421,46 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
           />
         </div>
 
+        {/* Error and Success Messages */}
         {validationError && (
-          <div
-            className="text-red-500 text-sm p-2 bg-red-50 rounded-md"
-            role="alert"
-          >
-            {validationError}
+          <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-xl">
+            <div className="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+            </div>
+            <p className="text-red-800 text-sm">{validationError}</p>
           </div>
         )}
 
         {error && (
-          <div
-            className="text-red-500 text-sm p-2 bg-red-50 rounded-md"
-            role="alert"
-          >
-            {error}
+          <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-xl">
+            <div className="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+            </div>
+            <p className="text-red-800 text-sm">{error}</p>
           </div>
         )}
 
         {success && (
-          <div
-            className="text-green-500 text-sm p-2 bg-green-50 rounded-md"
-            role="alert"
-          >
-            {success}
+          <div className="flex items-start gap-3 p-4 bg-green-50 border border-green-200 rounded-xl">
+            <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            </div>
+            <p className="text-green-800 text-sm">{success}</p>
           </div>
         )}
 
-        <div className="actions flex flex-row justify-end gap-2">
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-100">
           <button
             type="button"
             onClick={closeModal}
-            className="button button--secondary mt-4 text-[var(--primary-white)]"
+            className="flex-1 bg-gray-100 text-[var(--primary-gray)] font-semibold py-3 px-4 rounded-xl hover:bg-gray-200 transition-colors duration-200 text-sm"
           >
             Cancel
           </button>
           <button
             type="button"
-            className="button mt-4 text-[var(--primary-white)]"
+            className="flex-1 bg-gradient-to-r from-[var(--primary-purple)] to-[var(--deep-purple)] text-white font-semibold py-3 px-4 rounded-xl hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm"
             disabled={
               isSubmitting || isAuthLoading || (formMode !== "edit" && noChange)
             }
@@ -433,17 +473,20 @@ export default function AddLock({ pointData, formMode }: AddLockProps) {
                 : formMode === "edit"
                   ? noChange
                     ? "Edit"
-                    : "Save"
-                  : "Save"}
+                    : "Save Changes"
+                  : "Add Lock"}
           </button>
         </div>
-        <div className="report-issue text-sm">
+
+        {/* Report Issue Link */}
+        <div className="pt-4 border-t border-gray-100">
           <a
             href="https://github.com/kalevitan/bike-lock-finder/issues"
-            className="flex items-center justify-end gap-1 text-gray-500"
+            className="flex items-center justify-center gap-2 text-[var(--primary-gray)]/60 hover:text-[var(--primary-purple)] text-sm transition-colors duration-200"
             target="_blank"
+            rel="noopener noreferrer"
           >
-            <MessageCircleWarning size={15} />
+            <MessageCircleWarning size={16} />
             <span>Report an issue</span>
           </a>
         </div>

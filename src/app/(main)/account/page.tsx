@@ -19,6 +19,7 @@ import {
   X,
   AlertCircle,
   CheckCircle2,
+  Mail,
 } from "lucide-react";
 
 export default function Account() {
@@ -174,126 +175,155 @@ export default function Account() {
   }
 
   return (
-    <div className="w-full md:max-w-2xl md:mx-auto">
-      <div className="flex flex-col gap-6">
+    <div className="min-h-screen bg-gradient-to-br from-[var(--primary-gray)] to-[var(--deep-purple)] pt-20 px-4 pb-8">
+      <div className="max-w-xl mx-auto">
         {/* Feedback Messages */}
         {error && (
-          <div className="flex items-start gap-3 p-4 bg-red-950/50 border border-red-800/50 rounded-lg">
-            <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-            <p className="text-red-200">{error}</p>
+          <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-xl mb-6">
+            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+            <p className="text-red-800 text-sm">{error}</p>
           </div>
         )}
         {success && (
-          <div className="flex items-start gap-3 p-4 bg-green-950/50 border border-green-800/50 rounded-lg">
-            <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-            <p className="text-green-200">{success}</p>
+          <div className="flex items-start gap-3 p-4 bg-green-50 border border-green-200 rounded-xl mb-6">
+            <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+            <p className="text-green-800 text-sm">{success}</p>
           </div>
         )}
 
-        {/* Profile Card */}
-        <div className="flex flex-col md:flex-row items-center gap-8 bg-[var(--primary-light-gray)]/10 p-8 rounded-lg border border-[var(--primary-gray)]/20">
-          {/* Profile Image */}
-          <div className="relative min-w-[150px] min-h-[150px]">
-            <input
-              type="file"
-              id="file-image"
-              accept="image/*"
-              className="hidden"
-              onChange={handleFileSelect}
-              disabled={!isEditing}
-            />
-            <Image
-              src={
-                previewUrl ||
-                userData.photoURL ||
-                "/images/user-placeholder.png"
-              }
-              alt="Profile Picture"
-              width={150}
-              height={150}
-              className="w-[150px] h-[150px] object-cover rounded-full border border-[var(--primary-gray)]"
-            />
-            {isEditing && (
-              <label
-                htmlFor="file-image"
-                className="absolute bottom-0 right-0 bg-[var(--primary-white)] text-black p-2 rounded-full cursor-pointer hover:bg-gray-200"
-              >
-                <Camera size={20} />
-              </label>
-            )}
-          </div>
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold text-[var(--primary-white)] mb-2">
+            My Account
+          </h1>
+          <p className="text-[var(--primary-white)]/70 text-sm">
+            Manage your profile and contributions
+          </p>
+        </div>
 
-          {/* User Info & Actions */}
-          <div className="flex flex-col gap-4 w-full md:flex-grow">
-            <div className="flex flex-col gap-3 text-center md:text-left">
-              {isEditing ? (
+        {/* Profile Card */}
+        <div className="bg-[var(--primary-white)] rounded-2xl shadow-2xl border border-[var(--steel-blue)]/20 overflow-hidden">
+          {/* Profile Header */}
+          <div className="p-6 text-center">
+            {/* Profile Image */}
+            <div className="relative inline-block mb-4">
+              <input
+                type="file"
+                id="file-image"
+                accept="image/*"
+                className="hidden"
+                onChange={handleFileSelect}
+                disabled={!isEditing}
+              />
+              <Image
+                src={
+                  previewUrl ||
+                  userData.photoURL ||
+                  "/images/user-placeholder.png"
+                }
+                alt="Profile Picture"
+                width={100}
+                height={100}
+                className="w-[100px] h-[100px] object-cover rounded-full border-4 border-[var(--steel-blue)]/20 shadow-lg"
+              />
+              {isEditing && (
+                <label
+                  htmlFor="file-image"
+                  className="absolute -bottom-1 -right-1 bg-[var(--primary-purple)] text-white p-2.5 rounded-full cursor-pointer hover:bg-[var(--deep-purple)] transition-colors duration-200 shadow-lg"
+                >
+                  <Camera size={14} />
+                </label>
+              )}
+            </div>
+
+            {/* Display Name */}
+            {isEditing ? (
+              <div className="mb-3">
                 <input
                   ref={displayNameInputRef}
                   type="text"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  className="text-3xl font-bold bg-transparent border-b-2 border-[var(--primary-gray)] focus:outline focus:border-[var(--primary-white)] text-[var(--primary-white)]"
+                  className="text-center text-2xl font-bold bg-transparent border-b-2 border-gray-200 focus:border-[var(--primary-purple)] focus:outline-none transition-colors duration-200 text-[var(--primary-gray)] px-4 py-2"
                 />
-              ) : (
-                <h1 className="text-3xl font-bold text-[var(--primary-white)]">
-                  {userData.displayName}
-                </h1>
-              )}
+              </div>
+            ) : (
+              <h1 className="text-2xl font-bold text-[var(--primary-gray)] mb-3">
+                {userData.displayName}
+              </h1>
+            )}
 
-              <p className="text-lg text-[var(--primary-white)]">
+            {/* Email */}
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Mail size={14} className="text-[var(--primary-gray)]/60" />
+              <p className="text-[var(--primary-gray)] text-sm">
                 {userData.email}
               </p>
-              <div className="flex items-center gap-4 justify-center md:justify-start">
-                <div className="flex items-center gap-2 text-[var(--primary-white)]">
-                  <ShieldCheck size={18} className="text-green-500" />
-                  <span className="text-sm">Verified Member</span>
-                </div>
-                <div className="flex items-center gap-2 text-[var(--primary-white)]">
-                  <Trophy size={18} className="text-[var(--primary-gold)]" />
-                  <span className="text-sm">
-                    {userData.contributions || 0} Contributions
-                  </span>
-                </div>
+            </div>
+
+            {/* Stats Badges */}
+            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+              <div className="flex items-center gap-2 bg-green-50 px-3 py-2 rounded-full border border-green-200">
+                <ShieldCheck size={16} className="text-green-600" />
+                <span className="text-xs font-semibold text-green-800">
+                  Verified
+                </span>
+              </div>
+              <div className="flex items-center gap-2 bg-gradient-to-r from-[var(--primary-gold)]/20 to-[var(--accent-mint)]/20 px-4 py-2.5 rounded-full border border-[var(--primary-gold)]/30 shadow-sm">
+                <Trophy size={18} className="text-[var(--primary-gold)]" />
+                <span className="text-sm font-bold text-[var(--primary-white)]">
+                  {userData.contributions || 0} Contributions
+                </span>
               </div>
             </div>
           </div>
+
+          {/* Action Buttons */}
+          <div className="p-6 pt-0 space-y-3">
+            {isEditing ? (
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={handleUpdate}
+                  disabled={isSaving}
+                  className="bg-gradient-to-r from-[var(--accent-mint)] to-[var(--primary-purple)] text-white font-semibold py-3 px-4 rounded-xl hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 text-sm"
+                >
+                  <Check size={16} />
+                  {isSaving ? "Saving..." : "Save"}
+                </button>
+                <button
+                  onClick={handleCancel}
+                  className="bg-gray-100 text-[var(--primary-gray)] font-semibold py-3 px-4 rounded-xl hover:bg-gray-200 transition-colors duration-200 flex items-center justify-center gap-2 text-sm"
+                >
+                  <X size={16} />
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <>
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="w-full bg-[var(--primary-white)] text-[var(--primary-purple)] font-semibold py-3 px-4 rounded-xl hover:bg-gray-50 border-2 border-[var(--primary-purple)] transition-colors duration-200 flex items-center justify-center gap-2 text-sm"
+                >
+                  <Edit size={16} />
+                  Edit Profile
+                </button>
+                <button
+                  onClick={handleSignOut}
+                  className="w-full bg-red-500 text-white font-semibold py-3 px-4 rounded-xl hover:bg-red-600 transition-colors duration-200 flex items-center justify-center gap-2 text-sm"
+                >
+                  <LogOut size={16} />
+                  Sign Out
+                </button>
+              </>
+            )}
+          </div>
         </div>
-        {/* Action Buttons */}
-        <div className="mt-auto pt-4 flex flex-col justify-center md:flex-row gap-4">
-          {isEditing ? (
-            <>
-              <button
-                onClick={handleUpdate}
-                disabled={isSaving}
-                className="button button--primary flex items-center justify-center gap-2"
-              >
-                <Check size={20} />
-                {isSaving ? "Saving..." : "Save Changes"}
-              </button>
-              <button
-                onClick={handleCancel}
-                className="button button--secondary flex items-center justify-center gap-2"
-              >
-                <X size={20} />
-                Cancel
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={() => setIsEditing(true)}
-              className="button button--secondary flex items-center justify-center gap-2"
-            >
-              <Edit size={20} />
-              Edit Profile
-            </button>
-          )}
-          <button
-            onClick={handleSignOut}
-            className="button button--danger flex items-center justify-center gap-2"
-          >
-            <LogOut size={20} />
-            Sign Out
-          </button>
+
+        {/* Footer */}
+        <div className="text-center mt-6">
+          <p className="text-[var(--primary-white)]/50 text-xs">
+            Member since {new Date(userData.createdAt).toLocaleDateString()}
+          </p>
         </div>
       </div>
     </div>

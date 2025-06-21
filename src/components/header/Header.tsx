@@ -18,11 +18,11 @@ export default function Header({ onSearch, onRecenter }: HeaderProps) {
   return (
     <header className="fixed top-0 z-10 w-full flex p-4 items-center text-white bg-[var(--primary-gray)]">
       <div className="logo">
-        <h1 className="font-bold text-[1.25rem] m-0">
-          <NavLink href="/" classes={classes.logo}>
-            <span className="font-display font-bold text-3xl">Dockly</span>
-          </NavLink>
-        </h1>
+        <NavLink href="/" classes={classes.logo}>
+          <span className="font-display font-bold text-3xl bg-gradient-to-r from-[var(--accent-mint)] to-[var(--primary-purple)] bg-clip-text text-transparent">
+            Dockly
+          </span>
+        </NavLink>
       </div>
 
       <div className="flex w-full justify-end">

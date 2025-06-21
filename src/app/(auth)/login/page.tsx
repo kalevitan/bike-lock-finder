@@ -190,32 +190,49 @@ export default function Login() {
   };
 
   return (
-    <div className="w-full md:max-w-[26rem] md:mx-auto">
-      <div className="flex flex-col text-center">
-        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight pb-6">
-          {getTitle()}
-        </h1>
+    <div className="flex items-center justify-center min-h-[calc(100vh-120px)]">
+      <div className="w-full max-w-md">
+        {/* Tagline */}
+        <div className="text-center mb-8">
+          <p className="text-[var(--primary-white)] text-xl font-light leading-relaxed">
+            Find and share secure places
+            <br />
+            to lock your bike
+          </p>
+        </div>
 
-        <form method="post" onSubmit={handleSubmit} className="w-full">
-          <div className="flex flex-col gap-4">
+        {/* Main Form Card */}
+        <div className="bg-[var(--primary-white)] rounded-2xl shadow-2xl p-8 border border-[var(--steel-blue)]/20">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold text-[var(--primary-gray)] mb-2">
+              {getTitle()}
+            </h2>
+            <div className="w-12 h-1 bg-gradient-to-r from-[var(--accent-mint)] to-[var(--primary-purple)] rounded-full mx-auto"></div>
+          </div>
+
+          <form method="post" onSubmit={handleSubmit} className="space-y-5">
+            {/* Error Message */}
             {error && (
-              <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-xl">
                 <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                <p className="text-red-800">{error}</p>
-              </div>
-            )}
-            {success && (
-              <div className="flex items-start gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
-                <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <p className="text-green-800">{success}</p>
+                <p className="text-red-800 text-sm">{error}</p>
               </div>
             )}
 
+            {/* Success Message */}
+            {success && (
+              <div className="flex items-start gap-3 p-4 bg-green-50 border border-green-200 rounded-xl">
+                <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <p className="text-green-800 text-sm">{success}</p>
+              </div>
+            )}
+
+            {/* Display Name Field */}
             {formMode === "register" && (
-              <div className="flex flex-col text-left gap-2">
+              <div className="space-y-2">
                 <label
                   htmlFor="displayName"
-                  className="text-[var(--primary-white)]"
+                  className="block text-sm font-semibold text-[var(--primary-gray)]"
                 >
                   Display Name
                 </label>
@@ -225,25 +242,30 @@ export default function Login() {
                   id="displayName"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  className="rounded-[4px]"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--primary-purple)] focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
                   placeholder="Enter your display name"
                   required
                 />
               </div>
             )}
 
+            {/* Reset Password Instructions */}
             {formMode === "reset-password" && (
-              <div className="flex flex-col text-left gap-2">
-                <p className="text-center text-[var(--primary-white)]">
-                  To reset your password, enter the
-                  <br /> email address you use to log in.
+              <div className="text-center p-4 bg-[var(--accent-mint)]/10 rounded-xl border border-[var(--accent-mint)]/20">
+                <p className="text-[var(--primary-gray)] text-sm">
+                  Enter your email address and we'll send you a link to reset
+                  your password.
                 </p>
               </div>
             )}
 
-            <div className="flex flex-col text-left gap-2">
-              <label htmlFor="email" className="text-[var(--primary-white)]">
-                Email
+            {/* Email Field */}
+            <div className="space-y-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-semibold text-[var(--primary-gray)]"
+              >
+                Email Address
               </label>
               <input
                 type="email"
@@ -251,17 +273,18 @@ export default function Login() {
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="rounded-[4px]"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--primary-purple)] focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
                 placeholder="Enter your email"
                 required
               />
             </div>
 
+            {/* Password Field */}
             {formMode !== "reset-password" && (
-              <div className="flex flex-col text-left gap-2">
+              <div className="space-y-2">
                 <label
                   htmlFor="password"
-                  className="text-[var(--primary-white)]"
+                  className="block text-sm font-semibold text-[var(--primary-gray)]"
                 >
                   Password
                 </label>
@@ -271,63 +294,84 @@ export default function Login() {
                   id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="rounded-[4px]"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--primary-purple)] focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
                   placeholder="Enter your password"
                   required={formMode !== "reset-password"}
                 />
               </div>
             )}
 
+            {/* Forgot Password Link */}
             {formMode === "login" && (
-              <button
-                type="button"
-                className="text-sm text-[var(--primary-white)] hover:underline"
-                onClick={() => {
-                  setFormMode("reset-password");
-                  setError(null);
-                  setSuccess(null);
-                }}
-              >
-                Forgot Password?
-              </button>
+              <div className="text-center">
+                <button
+                  type="button"
+                  className="text-sm text-[var(--primary-purple)] hover:text-[var(--deep-purple)] font-medium transition-colors duration-200"
+                  onClick={() => {
+                    setFormMode("reset-password");
+                    setError(null);
+                    setSuccess(null);
+                  }}
+                >
+                  Forgot your password?
+                </button>
+              </div>
             )}
 
+            {/* Submit Button */}
             <button
-              className="button mt-4 text-[var(--primary-white)]"
               type="submit"
               disabled={isSubmitting}
+              className="w-full bg-gradient-to-r from-[var(--primary-purple)] to-[var(--deep-purple)] text-white font-semibold py-3 px-4 rounded-xl hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {getButtonText()}
             </button>
-          </div>
-          <div className="pt-6 pb-4 text-center text-[var(--primary-white)]">
-            {formMode === "login" ? (
-              <button
-                type="button"
-                onClick={() => {
-                  setFormMode("register");
-                  setError(null);
-                  setSuccess(null);
-                }}
-              >
-                Don't have an account? Sign up here.
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => {
-                  setFormMode("login");
-                  setError(null);
-                  setSuccess(null);
-                }}
-              >
-                {formMode === "register"
-                  ? "Already have an account? Login here."
-                  : "Nevermind, take me back to login."}
-              </button>
-            )}
-          </div>
-        </form>
+
+            {/* Mode Switch */}
+            <div className="text-center pt-4 border-t border-gray-100">
+              {formMode === "login" ? (
+                <p className="text-[var(--primary-gray)] text-sm">
+                  Don't have an account?{" "}
+                  <button
+                    type="button"
+                    className="text-[var(--primary-purple)] hover:text-[var(--deep-purple)] font-semibold transition-colors duration-200"
+                    onClick={() => {
+                      setFormMode("register");
+                      setError(null);
+                      setSuccess(null);
+                    }}
+                  >
+                    Sign up here
+                  </button>
+                </p>
+              ) : (
+                <p className="text-[var(--primary-gray)] text-sm">
+                  {formMode === "register"
+                    ? "Already have an account?"
+                    : "Remember your password?"}{" "}
+                  <button
+                    type="button"
+                    className="text-[var(--primary-purple)] hover:text-[var(--deep-purple)] font-semibold transition-colors duration-200"
+                    onClick={() => {
+                      setFormMode("login");
+                      setError(null);
+                      setSuccess(null);
+                    }}
+                  >
+                    {formMode === "register" ? "Login here" : "Back to login"}
+                  </button>
+                </p>
+              )}
+            </div>
+          </form>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center mt-8">
+          <p className="text-[var(--primary-white)]/60 text-xs">
+            © 2025 Dockly. All rights reserved.
+          </p>
+        </div>
       </div>
     </div>
   );

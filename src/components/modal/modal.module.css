@@ -11,26 +11,39 @@
 .modal {
   border: none;
   background: white;
-  border-radius: 0.25rem;
-  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.26);
-  padding: 20px 20px 32px 20px;
+  border-radius: 1rem 1rem 0 0;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  padding: 16px 20px 32px 20px;
   overflow: hidden;
   overflow-y: auto;
-  max-height: calc(100dvh - 120px);
   position: fixed;
   bottom: 0;
+  left: 0;
+  right: 0;
   width: 100dvw;
   top: 60px;
   z-index: 20;
   padding-bottom: calc(32px + env(safe-area-inset-bottom));
   margin-bottom: env(safe-area-inset-bottom);
+  max-height: calc(100dvh - 60px);
 
   @media (min-width: 640px) {
-    padding: 20px;
+    padding: 20px 24px 32px 24px;
     margin-bottom: 0;
     bottom: auto;
-    max-height: calc(100dvh - 120px);
+    left: 50%;
+    right: auto;
+    width: 32rem;
+    max-width: calc(100vw - 2rem);
+    transform: translateX(-50%);
+    border-radius: 1rem;
+    top: 80px;
+    max-height: calc(100dvh - 100px);
   }
+}
+
+.modal_body {
+  pointer-events: auto;
 }
 
 @media (min-width: 640px) {

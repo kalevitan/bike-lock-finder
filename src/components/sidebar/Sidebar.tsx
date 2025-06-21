@@ -12,6 +12,9 @@ import {
   MessageCircleWarning,
   SquareUser,
   Lock,
+  Heart,
+  Target,
+  ShieldCheck,
 } from "lucide-react";
 import BikeLockIcon from "@/components/icons/bike-lock-icon";
 import Link from "next/link";
@@ -64,11 +67,11 @@ export default function Sidebar({
       <div className="sidebar-layout-wrapper flex flex-col gap-8 justify-between md:px-8 h-full">
         <div className="flex flex-col gap-6">
           {!isMobile && (
-            <div className="flex items-center justify-between px-4 md:px-0">
+            <div className="flex items-center justify-center px-4 md:px-0">
               <div className="logo">
-                <h1 className="m-0">
+                <h1 className="leading-tight mb-0">
                   <NavLink href="/" classes={headerClasses.logo}>
-                    <span className="font-display font-bold text-[3rem]">
+                    <span className="font-display font-bold text-[3rem] text-bold pb-2 block bg-gradient-to-r from-[var(--accent-mint)] to-[var(--primary-purple)] bg-clip-text text-transparent">
                       Dockly
                     </span>
                   </NavLink>
@@ -79,13 +82,10 @@ export default function Sidebar({
 
           <div className="flex flex-col gap-8">
             <div className="hidden md:block intro">
-              <div className="flex items-center justify-start gap-3">
-                <p className="text-sm text-[var(--primary-purple)] font-light">
-                  <BikeLockIcon />
-                </p>
-                <p className="text-sm text-[var(--primary-white)] font-light">
-                  Find and share safe locking
-                  <br /> spots in your city.
+              <div className="flex items-center justify-center gap-3">
+                <p className="text-lg text-center text-[var(--primary-white)] font-light">
+                  Find and share secure places
+                  <br /> to lock your bike.
                 </p>
               </div>
             </div>
@@ -107,9 +107,9 @@ export default function Sidebar({
                     className={`${classes.button} flex flex-col items-center gap-1`}
                   >
                     <span className={classes.button__icon}>
-                      <Info />
+                      <Heart />
                     </span>
-                    <span className="text-xs hidden md:block">About</span>
+                    <span className="text-xs hidden md:block">Our Mission</span>
                   </Link>
                 </li>
                 <li>
@@ -175,47 +175,65 @@ export default function Sidebar({
 
         {user && !userLoading && !isMobile && (
           <VerifyEmail>
-            <div className="flex gap-y-4 pt-2 md:pt-8 border-t border-[var(--primary-light-gray)]">
-              <div className="user-info w-full flex flex-col gap-4">
-                <Link href="/account" className="flex items-center gap-4">
-                  {userData?.photoURL &&
-                  typeof userData.photoURL === "string" ? (
-                    <Image
-                      src={userData.photoURL}
-                      width={50}
-                      height={50}
-                      className="rounded-full object-cover w-[50px] h-[50px]"
-                      alt="User profile photo"
-                      priority={true}
-                    />
-                  ) : (
-                    <div className="flex items-center justify-center w-[50px] h-[50px] border border-[#6b7280] rounded-full">
-                      <SquareUser color="#6b7280" size={20} />
-                    </div>
-                  )}
-                  <div className="flex items-center gap-4">
-                    <div className="flex flex-col gap-1">
-                      <span className="font-bold text-lg text-[var(--primary-white)]">
-                        {userData?.displayName || userData?.email}
-                      </span>
-                      <span className="flex items-center gap-2 text-sm text-[var(--primary-white)] font-light bg-[var(--primary-light-gray)] px-2 py-1 rounded-md">
-                        <Trophy size={12} color={"var(--primary-gold)"} />
-                        {userData?.contributions || 0} Contributions
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-                <div className="grid grid-cols-2 items-center gap-2 pt-4">
-                  <button className="text-sm text-[var(--primary-white)] font-light bg-[var(--primary-light-gray)] px-2 py-2 rounded-md flex items-center justify-center gap-2 hover:bg-gray-700 transition-colors duration-200">
-                    <Lock size={15} />
-                    My Locks
-                  </button>
-                  <button className="text-sm text-[var(--primary-white)] font-light bg-[var(--primary-light-gray)] px-2 py-2 rounded-md flex items-center justify-center gap-2 hover:bg-gray-700 transition-colors duration-200">
-                    <MessageCircleWarning size={15} />
-                    Report Issue
-                  </button>
+            <div className="pt-6">
+              {/* Profile Section Header */}
+              <div className="px-4 pb-3">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-4 h-0.5 bg-gradient-to-r from-[var(--accent-mint)] to-[var(--primary-purple)] rounded-full"></div>
+                  <span className="text-xs font-semibold text-white/50 uppercase tracking-wider">
+                    Your Profile
+                  </span>
+                  <div className="flex-1 h-0.5 bg-gradient-to-r from-[var(--primary-purple)] to-transparent rounded-full"></div>
                 </div>
               </div>
+
+              {/* Profile Card */}
+              <Link
+                href="/account"
+                className="block p-6 mx-3 rounded-2xl bg-gradient-to-br from-[var(--primary-light-gray)]/15 to-[var(--steel-blue)]/10 hover:from-[var(--primary-light-gray)]/25 hover:to-[var(--steel-blue)]/15 transition-all duration-300 group shadow-lg hover:shadow-xl backdrop-blur-sm"
+              >
+                {/* Profile Image - Centered */}
+                <div className="flex flex-col items-center text-center">
+                  <div className="relative mb-4">
+                    {userData?.photoURL &&
+                    typeof userData.photoURL === "string" ? (
+                      <Image
+                        src={userData.photoURL}
+                        width={80}
+                        height={80}
+                        className="rounded-2xl object-cover w-[80px] h-[80px] border-3 border-[var(--steel-blue)]/40 group-hover:border-[var(--accent-mint)]/60 transition-all duration-300 shadow-lg"
+                        alt="User profile photo"
+                        priority={true}
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center w-[80px] h-[80px] border-3 border-[var(--steel-blue)]/40 group-hover:border-[var(--accent-mint)]/60 rounded-2xl bg-gradient-to-br from-[var(--primary-light-gray)] to-[var(--steel-blue)]/20 transition-all duration-300 shadow-lg">
+                        <SquareUser color="var(--accent-mint)" size={36} />
+                      </div>
+                    )}
+                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-[var(--accent-mint)] rounded-full border-2 border-[var(--primary-gray)] shadow-lg"></div>
+                  </div>
+
+                  {/* Name */}
+                  <h3 className="font-bold text-xl text-[var(--primary-white)] group-hover:text-[var(--accent-mint)] transition-colors duration-300 mb-3">
+                    {userData?.displayName || "User"}
+                  </h3>
+
+                  {/* Status Badges */}
+                  <div className="flex items-center gap-2 justify-center">
+                    {/* Verified Badge */}
+                    <div className="flex items-center gap-1.5 bg-green-500/20 text-green-400 px-2.5 py-1 rounded-full text-xs font-medium">
+                      <ShieldCheck size={12} />
+                      <span>Verified</span>
+                    </div>
+
+                    {/* Contributions Badge */}
+                    <div className="flex items-center gap-1.5 bg-[var(--primary-gold)]/20 text-[var(--primary-gold)] px-2.5 py-1 rounded-full text-xs font-medium">
+                      <Trophy size={12} />
+                      <span>{userData?.contributions || 0}</span>
+                    </div>
+                  </div>
+                </div>
+              </Link>
             </div>
           </VerifyEmail>
         )}

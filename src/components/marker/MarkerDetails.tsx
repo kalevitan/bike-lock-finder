@@ -1,6 +1,8 @@
 import React, { useMemo } from "react";
 import { Star, Navigation, LocationEdit } from "lucide-react";
 import { MarkerProps } from "@/interfaces/markers";
+import Image from "next/image";
+import { getPublicUrl } from "@/utils/storageUtils";
 
 interface MarkerDetailsProps {
   details: MarkerProps;
@@ -8,65 +10,91 @@ interface MarkerDetailsProps {
   isAuthenticated: boolean;
 }
 
-export default function MarkerDetails({ details, onEdit, isAuthenticated }: MarkerDetailsProps) {
+export default function MarkerDetails({
+  details,
+  onEdit,
+  isAuthenticated,
+}: MarkerDetailsProps) {
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onEdit(details);
   };
 
-  const googleMapsUrl = useMemo(() =>
-    `https://maps.google.com/?q=${details.latitude},${details.longitude}&mode=bicycling`,
+  const googleMapsUrl = useMemo(
+    () =>
+      `https://maps.google.com/?q=${details.latitude},${details.longitude}&mode=bicycling`,
     [details.latitude, details.longitude]
   );
 
   return (
-    <article className="details-container flex flex-col bg-primaryGray w-full h-full opacity-0 max-w-0 rounded-r-none invisible">
-      <div className="listing-content flex flex-col justify-center gap-[.25rem] h-full overflow-hidden">
-        <div className="heading">
+    <div className="marker-details-content">
+      {/* Large Image Display */}
+      {details.file &&
+        typeof details.file === "string" &&
+        (() => {
+          try {
+            new URL(details.file);
+            return (
+              <div className="details-image-container">
+                <Image
+                  src={getPublicUrl(details.file)}
+                  width={200}
+                  height={120}
+                  className="details-image"
+                  alt={`Bike lock at ${details.title}`}
+                />
+              </div>
+            );
+          } catch {
+            return null;
+          }
+        })()}
+
+      {/* Content Section */}
+      <div className="details-content">
+        {/* Title with Navigation */}
+        <div className="details-header">
           <a
             href={googleMapsUrl}
-            className="heading-link"
+            className="details-title-link group"
             target="_blank"
             rel="noreferrer"
           >
-            <h2 className="text-xl flex gap-1 items-center">
+            <h2 className="details-title">
               {details.title}
-              <Navigation size={20} className="min-w-fit" />
+              <Navigation size={16} className="details-nav-icon" />
             </h2>
           </a>
         </div>
 
-        <p className="description text-sm mb-0">{details.description}</p>
+        {/* Description */}
+        <p className="details-description">{details.description}</p>
 
-        <div className="details flex justify-between gap-4">
-          <div className="detail_item flex items-center gap-1">
-            <div className="ratings">
-              <h4 className="text-sm pb-2 sr-only">Rating</h4>
-              <span className="flex gap-1 items-center">
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <Star
-                    key={index}
-                    size="20"
-                    color={index < details.rating ? "var(--primary-gold)" : "var(--primary-lightest-gray)"}
-                    fill={index < details.rating ? "var(--primary-gold)" : "none"}
-                  />
-                ))}
-                <span className="border m-2 p-1 text-[var(--primary-white)]">
-                  {details.rating}.0
-                </span>
-              </span>
-            </div>
+        {/* Rating and Edit Section */}
+        <div className="details-footer">
+          <div className="details-rating">
+            <span className="rating-stars">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <Star
+                  key={index}
+                  size="16"
+                  color={
+                    index < details.rating ? "var(--primary-gold)" : "#d1d5db"
+                  }
+                  fill={index < details.rating ? "var(--primary-gold)" : "none"}
+                />
+              ))}
+            </span>
+            <span className="rating-badge">{details.rating}.0</span>
           </div>
+
           {isAuthenticated && (
-            <button
-              className="button button--icon"
-              onClick={handleEditClick}
-            >
-              <LocationEdit size="20" color="var(--primary-white)" />
+            <button className="details-edit-button" onClick={handleEditClick}>
+              <LocationEdit size="16" />
             </button>
           )}
         </div>
       </div>
-    </article>
+    </div>
   );
 }

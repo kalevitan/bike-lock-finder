@@ -19,40 +19,50 @@ export default function MarkerPin({
   const { user } = useAuth();
 
   return (
-    <div className="custom-pin">
-      <div className="image-container">
-        {markerData.file &&
-          typeof markerData.file === "string" &&
-          (() => {
-            try {
-              new URL(markerData.file);
-              return (
-                <div className="w-full h-full relative">
+    <div className="marker-pin">
+      {/* Pin Head */}
+      <div className="pin-head">
+        {/* Image or Icon */}
+        <div className="pin-content">
+          {markerData.file &&
+            typeof markerData.file === "string" &&
+            (() => {
+              try {
+                new URL(markerData.file);
+                return (
                   <Image
                     src={getPublicUrl(markerData.file)}
-                    width={300}
-                    height={300}
-                    className="image"
-                    alt={`Bike lock location: ${markerData.title}`}
+                    width={32}
+                    height={32}
+                    className="pin-image"
+                    alt={`Bike lock at ${markerData.title}`}
+                    priority
                   />
-                </div>
-              );
-            } catch {
-              return null;
-            }
-          })()}
-        <span className="icon">
-          <BikeLockIcon />
-        </span>
+                );
+              } catch {
+                return null;
+              }
+            })()}
+
+          <div className="pin-icon">
+            <BikeLockIcon />
+          </div>
+        </div>
       </div>
 
-      <MarkerDetails
-        details={markerData as MarkerProps}
-        onEdit={onEditPoint}
-        isAuthenticated={!!user?.emailVerified}
-      />
+      {/* Pin Tail (Triangle) */}
+      <div className="pin-tail" aria-hidden="true"></div>
 
-      <div className="triangle" />
+      {/* Details Panel */}
+      {isOpen && (
+        <div className="pin-details">
+          <MarkerDetails
+            details={markerData as MarkerProps}
+            onEdit={onEditPoint}
+            isAuthenticated={!!user?.emailVerified}
+          />
+        </div>
+      )}
     </div>
   );
 }
